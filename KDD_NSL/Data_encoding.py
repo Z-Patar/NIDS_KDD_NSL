@@ -2,7 +2,7 @@
 # 数据编码处理
 # def fileprocess(filename):
 import numpy as np
-fr = open('KDDTrain+_20Percent_top200Item.txt')  # 打开文件
+fr = open('KDDTrain+_20Percent_top200Item.csv')  # 打开文件
 arraylines = fr.readlines(1)  # 按行读取文件全部内容
 print(arraylines)
 arraylines[0].strip()
