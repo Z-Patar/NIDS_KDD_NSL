@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="make .txt file from KDD-NSL to .csv file in Data">
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="delete temp file data.csv">
       <change afterPath="$PROJECT_DIR$/Data_Pre_process.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Data_preProcess.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/KDDTrain+_20Percent_processed.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/KDDTrain+_20Percent_top200Item.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/KDDTrain+_20Percent_top200Item.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDD_NSL/Data_encoding.py" beforeDir="false" afterPath="$PROJECT_DIR$/KDD_NSL/Data_encoding.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data.csv" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +54,9 @@
     &quot;accountId&quot;: &quot;e13b5cdf-3247-4c48-bbbe-712372e3ce1c&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -87,7 +86,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.toDoOptions",
+    "settings.editor.selected.configurable": "preferences.intentionPowerPack",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -139,7 +138,7 @@
       <updated>1712662634350</updated>
       <workItem from="1712662661904" duration="17000" />
       <workItem from="1712662878295" duration="7898000" />
-      <workItem from="1712675292881" duration="6261000" />
+      <workItem from="1712675292881" duration="6917000" />
     </task>
     <task id="LOCAL-00001" summary="create NIDS project">
       <option name="closed" value="true" />
@@ -197,11 +196,39 @@
       <option name="project" value="LOCAL" />
       <updated>1712678632145</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="top 140 items in KDDTrain+_20Percent.csv">
+      <option name="closed" value="true" />
+      <created>1712681729986</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1712681729986</updated>
+    </task>
+    <task id="LOCAL-00009" summary="delete temp file data.csv">
+      <option name="closed" value="true" />
+      <created>1712681911956</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1712681911956</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+        <option value="GitHub.CommitStatus" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="RECENT_FILTERS">
@@ -247,7 +274,9 @@
     <MESSAGE value="add Data directory and txt_to_csv.py" />
     <MESSAGE value="create Data directory and txt_to_csv.py" />
     <MESSAGE value="make .txt file from KDD-NSL to .csv file in Data" />
-    <option name="LAST_COMMIT_MESSAGE" value="make .txt file from KDD-NSL to .csv file in Data" />
+    <MESSAGE value="top 140 items in KDDTrain+_20Percent.csv" />
+    <MESSAGE value="delete temp file data.csv" />
+    <option name="LAST_COMMIT_MESSAGE" value="delete temp file data.csv" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$txt_to_csv.coverage" NAME="txt_to_csv 覆盖结果" MODIFIED="1712678018648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
