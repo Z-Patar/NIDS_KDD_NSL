@@ -56,8 +56,8 @@ def preProcess(source_data_path, preprocessed_data_path):
     # 归一化
     scale_data(processed_file)
 
-    df = pd.read_csv(processed_file)
-    print(df)
+    # df = pd.read_csv(processed_file)
+    # print(df)
 
 
 # 独热编码字符型数据
