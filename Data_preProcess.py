@@ -7,34 +7,22 @@ import pandas as pd
 
 global staut_list
 # real py file to preprocess data
-# todo 参考下方注释中的方法，使用 pandas库将数据集的第 1，2，3，41列独热编码
+
 '''
 import pandas as pd
-
 # 从CSV文件中读取数据
 df = pd.read_csv('your_file.csv')
-
 # 选择需要独热编码的列
 columns_to_encode = df.columns[1:3]
-
 # 对这些列进行独热编码,删除原来的列并将新列插入在原来的位置
 df_encoded = pd.get_dummies(df, columns=columns_to_encode, drop_first=True)
-
 # 将独热编码后的数据集保存到新的CSV文件中
 df_encoded.to_csv('your_file_encoded.csv', index=False)
-
-
 在这段代码中，我们首先从CSV文件中读取数据。
 然后，我们选择需要独热编码的列，这里假设是第2和第3列（在Python中，索引是从0开始的，所以这里的索引是1和2）。
 最后，我们使用pandas的get_dummies方法对这些列进行独热编码。
-
 注意，get_dummies方法的columns参数接受一个列名的列表，这个列表中的列将被独热编码。其他列将保持不变。
-
 这段代码将打印出独热编码后的DataFrame。每个字符串属性值都变成了一个新的列，如果原来的属性值存在，则新的列的值为1，否则为0。
-
-思路：
-先创建一个数据副本，然后加上列名
-对第1、2、3、41列独热编码
 '''
 
 
