@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="add data preprocess file">
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="finish one-hot encoding">
+      <change afterPath="$PROJECT_DIR$/Data/attack_type_file.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Data/field_name_file.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/KDDTrain+_20Percent_top200Item.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/KDDTrain+_20Percent_top200Item.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data_preProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/Data_preProcess.py" afterDir="false" />
@@ -138,7 +140,7 @@
       <updated>1712662634350</updated>
       <workItem from="1712662661904" duration="17000" />
       <workItem from="1712662878295" duration="7898000" />
-      <workItem from="1712675292881" duration="14426000" />
+      <workItem from="1712675292881" duration="24514000" />
     </task>
     <task id="LOCAL-00001" summary="create NIDS project">
       <option name="closed" value="true" />
@@ -220,7 +222,31 @@
       <option name="project" value="LOCAL" />
       <updated>1712682424179</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="finish one-hot encoding">
+      <option name="closed" value="true" />
+      <created>1712744179538</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1712744179538</updated>
+    </task>
+    <task id="LOCAL-00012" summary="finish one-hot encoding">
+      <option name="closed" value="true" />
+      <created>1712749291711</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1712749291711</updated>
+    </task>
+    <task id="LOCAL-00013" summary="finish one-hot encoding">
+      <option name="closed" value="true" />
+      <created>1712749316129</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1712749316129</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -285,11 +311,12 @@
     <MESSAGE value="top 140 items in KDDTrain+_20Percent.csv" />
     <MESSAGE value="delete temp file data.csv" />
     <MESSAGE value="add data preprocess file" />
-    <option name="LAST_COMMIT_MESSAGE" value="add data preprocess file" />
+    <MESSAGE value="finish one-hot encoding" />
+    <option name="LAST_COMMIT_MESSAGE" value="finish one-hot encoding" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$txt_to_csv.coverage" NAME="txt_to_csv 覆盖结果" MODIFIED="1712678018648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_preProcess.coverage" NAME="Data_preProcess 覆盖结果" MODIFIED="1712744117749" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_preProcess.coverage" NAME="Data_preProcess 覆盖结果" MODIFIED="1712759832312" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main.coverage" NAME="main 覆盖结果" MODIFIED="1712669522732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_Pre_process.coverage" NAME="Data_Pre_process 覆盖结果" MODIFIED="1712680263854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_encoding.coverage" NAME="Data_encoding 覆盖结果" MODIFIED="1712676493403" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/KDD_NSL" />
