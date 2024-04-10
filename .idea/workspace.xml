@@ -5,12 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="improve one_hot encoding">
-      <change afterPath="$PROJECT_DIR$/Data/Train.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Train_20Percent.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Train_20Percent_top200.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/full_Train.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Processed_Train_20Percent_top200.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data_preProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/Data_preProcess.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -284,7 +278,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712767775574</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="improve one_hot encoding">
+      <option name="closed" value="true" />
+      <created>1712782648233</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1712782648233</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -308,6 +310,11 @@
         <entry key="Branch">
           <value>
             <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="test_build_CNN" />
+                </option>
+              </RecentGroup>
               <RecentGroup>
                 <option name="FILTER_VALUES">
                   <option value="data-preprocess" />
