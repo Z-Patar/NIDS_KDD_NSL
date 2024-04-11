@@ -61,12 +61,16 @@ def preProcess(source_data_path, preprocessed_data_path):
 # todo 输入特征项共 １２２维，舍弃其中 ｉｓ＿ｈｏｔ＿ｌｏｇｉｎ特征项，此项特征的值都为 ０，对入侵检测分类结果作用为零。
 #   将其转换为 １１×１１维的二维的“图像数据”，全连接层采用 Ｓｏｆｔｍａｘ进行分类。
 def oneHot_encoding(data_file_path):
-    print('One-hot encoding...')
+    print(data_file_path + ' One-hot encoding...')
 
     # 读取完整数据集和子集
     full_file_path = 'Data/full_Train.csv'  # 只有KDDTrain+.csv的service属性是全齐的
     full_dataset = pd.read_csv(full_file_path)
     subset_dataset = pd.read_csv(data_file_path)
+    # 提取子集文件名，生成新的文件名
+    subset_file_name = os.path.basename(data_file_path)  # 提取文件名，例如 "Your_Subset.csv"
+    subset_file_name_without_ext = os.path.splitext(subset_file_name)[0]  # 去掉扩展名，例如 "Your_Subset"
+    new_file_name = f"{subset_file_name_without_ext}_encoded.csv"  # 添加后缀，生成新的文件名，例如 "Your_Subset_encoded.csv"
 
     # 假设第2\3\4列是需要独热编码的列。如果要编码label，只需要将 "label" 添加到 columns_to_encode 列表中
     columns_to_encode = ['protocol_type', 'service', 'flag', 'label']
@@ -115,19 +119,13 @@ def oneHot_encoding(data_file_path):
     encoded_inserted_df = pd.concat([encoded_inserted_df, subset_encoded[label_encoded_cols]], axis=1)
 
     # 在subset_encoded中计算行数和列数
-    print("\n我们的DataFrame中的行数和列数 = ", encoded_inserted_df.shape)
-
-    subset_encoded = subset_encoded.dropna()
-    print("\n（更新后）我们的subset_encoded中的行数和列数 = ", encoded_inserted_df.shape)
-
-    # 提取子集文件名，生成新的文件名
-    subset_file_name = os.path.basename(data_file_path)  # 提取文件名，例如 "Your_Subset.csv"
-    subset_file_name_without_ext = os.path.splitext(subset_file_name)[0]  # 去掉扩展名，例如 "Your_Subset"
-    new_file_name = f"Processed_{subset_file_name_without_ext}.csv"  # 添加前缀，生成新的文件名，例如 "Your_Subset_encoded.csv"
+    print("\n(去除null前): " + new_file_name + "中的行数和列数 = ", encoded_inserted_df.shape)
+    subset_encoded.dropna()  # 去除有null的行
+    print("(去除null后): " + new_file_name + "中的行数和列数 = ", encoded_inserted_df.shape)
 
     # 保存处理后的子集数据集
     encoded_inserted_df.to_csv(new_file_name, index=False)
-    print(new_file_name+' One-hot encoding done!')
+    print(new_file_name + ' One-hot encoding done!\n')
 
 
 def print_data_info(data_file_path):
@@ -170,42 +168,84 @@ def scale_data(source_data_path):
 
     # 将归一化后的数据集保存到新的CSV文件中
     encoded_dataset.to_csv(source_file, index=False)
-    print(source_file + ' Scaling done!')
+    print(source_file + ' Scaling done!\n')
+
+
+# 初步处理所有源数据,以便后面进一步处理
+def preProcess_all():
+    print('all data begin Preprocess ...\n')
+    # 源文件路径
+    Train_file = 'Data/KDDTrain+.csv'
+    Train_20_file = 'Data/KDDTrain+_20Percent.csv'
+    # Train_20_top200_file = 'Data/KDDTrain+_20Percent_top200Item.csv'
+    Test_file = 'Data/KDDTest+.csv'
+    Test_21_file = 'Data/KDDTest-21.csv'  # Test去掉难度为21级(共21级)的子集
+
+    # 加表头，去掉第43列的难度等级后的文件路径
+    Processed_full_Train_file = 'Data/full_Train.csv'  # 作为全service类型文件独热编码，保证其他缺项文件独热编码一致
+    Processed_Train_file = 'Data/Train.csv'
+    Processed_Train_20_file = 'Data/Train_20Percent.csv'
+    # Processed_Train_20_top200_file = 'Data/Train_20Percent_top200.csv'
+    Processed_Test_file = 'Data/Test.csv'
+    Processed_Test_21_file = 'Data/Test_21.csv'
+
+    # 为数据文件添加表头，去除difficult_level，以方便后面的子集使用该文件进行独热编码，运行一次就好
+    preProcess(Train_file, Processed_full_Train_file)
+    preProcess(Train_file, Processed_Train_file)
+    preProcess(Train_20_file, Processed_Train_20_file)
+    # preProcess(Train_20_top200_file, Processed_Train_20_top200_file)
+    preProcess(Test_file, Processed_Test_file)
+    preProcess(Test_21_file, Processed_Test_21_file)
+
+    print("All data preprocess done!\n")
+
+
+# 独热编码所有数据
+def one_hot_all():
+    print('all data begin One-hot encode ...')
+
+    Train_file = 'Data/Train.csv'
+    Train_20_file = 'Data/Train_20Percent.csv'
+    # Train_20_top200_file = 'Data/Train_20Percent_top200.csv'
+    Test_file = 'Data/Test.csv'
+    Test_21_file = 'Data/Test_21.csv'
+
+    # oneHot_encoding(Train_20_top200_file)
+    oneHot_encoding(Train_20_file)
+    oneHot_encoding(Train_file)
+    oneHot_encoding(Test_file)
+    oneHot_encoding(Test_21_file)
+
+    print('all data one-hot encode done!\n')
+
+
+# 归一化所有数据
+def scale_all():
+    print("all data begin scale:")
+
+    Train_file = 'Train_encoded.csv'
+    Train_20_file = 'Train_20Percent_encoded.csv'
+    # Train_20_top200_file = 'Train_20Percent_top200_encoded.csv'
+    Test_file = 'Test_encoded.csv'
+    Test_21_file = 'Test_21_encoded.csv'
+    scale_data(Train_file)
+    scale_data(Train_20_file)
+    # scale_data(Train_20_top200_file)
+    scale_data(Test_file)
+    scale_data(Test_21_file)
+
+    print("all data scale done!")
 
 
 if __name__ == '__main__':
-    # 源文件路径
-    # Train_file = 'Data/KDDTrain+.csv'
-    # Train_20_file = 'Data/KDDTrain+_20Percent.csv'
-    # Train_20_top200_file = 'Data/KDDTrain+_20Percent_top200Item.csv'
-
-    # 加表头，去掉第43列的难度等级后的文件路径
-    # Processed_full_Train_file = 'Data/full_Train.csv'   # 作为全service类型文件独热编码，保证其他缺项文件独热编码一致
-    Processed_Train_file = 'Data/Train.csv'
-    Processed_Train_20_file = 'Data/Train_20Percent.csv'
-    Processed_Train_20_top200_file = 'Data/Train_20Percent_top200.csv'
-
-    # 为数据文件添加表头，去除difficult_level，以方便后面的子集使用该文件进行独热编码，运行一次就好
-    # preProcess(Train_file, Processed_full_Train_file)
-    # preProcess(Train_file, Processed_Train_file)
-    # preProcess(Train_20_file, Processed_Train_20_file)
-    # preProcess(Train_20_top200_file, Processed_Train_20_top200_file)
+    print("All data preprocess begin! ...\n")
+    # 为数据文件添加表头，去除'difficult_level'
+    preProcess_all()
 
     # 独热编码
-    # oneHot_encoding(Processed_Train_20_top200_file)
-    # oneHot_encoding(Processed_Train_20_file)
-    # oneHot_encoding(Processed_Train_file)
+    one_hot_all()
 
     # 归一化
-    # scale_data('Processed_Train.csv')
-    # scale_data('Processed_Train_20Percent.csv')
-    # scale_data('Processed_Train_20Percent_top200.csv')
+    scale_all()
 
-    # print_data_info(Processed_Train_20_top200_file)
-
-    data = pd.read_csv('Processed_Train_20Percent_top200.csv')
-    # print(data.columns)
-    # print(data.describe())
-    print(data.info)
-
-    print(data.isnull().sum())
+    print("All data preprocess finish!\n")
