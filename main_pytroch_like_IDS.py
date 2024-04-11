@@ -61,8 +61,9 @@ def load_data(file_path):
 # 在main函数中，首先加载训练集和测试集，并分割成训练集和测试集。
 # 然后，创建数据加载器，神经网络模型，损失函数和优化器。
 # 最后，进行训练和评估，每50个epoch打印一次训练损失和测试集上的准确率
+# todo 对代码进行注释并理解 with the help of GPT，
 def test_CNN_main():
-    features, labels = load_data()
+    features, labels = load_data(?)
     features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2,
                                                                                 random_state=42)
 
