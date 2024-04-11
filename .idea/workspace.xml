@@ -4,21 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="improve data preprocess">
-      <change afterPath="$PROJECT_DIR$/Data/Test.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Test_21.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_21_encoded.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_encoded.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2024_4_10_11_06____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_2024_4_10_11_06____.xml" afterDir="false" />
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data_preProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/01Data_preProcess.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Processed_Train.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Train_encoded.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Processed_Train_20Percent.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Train_20Percent_encoded.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Processed_Train_20Percent_top200.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main_in_IDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_in_IDS.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main_pytroch_like_IDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_pytroch_like_IDS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_build_CNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/build_CNN_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +91,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "settings.editor.selected.configurable": "fileTemplates",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -308,7 +297,63 @@
       <option name="project" value="LOCAL" />
       <updated>1712784588861</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="add Readme.md">
+      <option name="closed" value="true" />
+      <created>1712846258947</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1712846258947</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Iterate over the 01Data_preProcess.py file">
+      <option name="closed" value="true" />
+      <created>1712846325909</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1712846325909</updated>
+    </task>
+    <task id="LOCAL-00022" summary="rename file">
+      <option name="closed" value="true" />
+      <created>1712846372325</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1712846372325</updated>
+    </task>
+    <task id="LOCAL-00023" summary="preprocessed all data maybe in need">
+      <option name="closed" value="true" />
+      <created>1712846481545</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1712846481545</updated>
+    </task>
+    <task id="LOCAL-00024" summary="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py">
+      <option name="closed" value="true" />
+      <created>1712846709204</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1712846709204</updated>
+    </task>
+    <task id="LOCAL-00025" summary="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py">
+      <option name="closed" value="true" />
+      <created>1712847062021</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1712847062021</updated>
+    </task>
+    <task id="LOCAL-00026" summary="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py">
+      <option name="closed" value="true" />
+      <created>1712847179070</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1712847179070</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -335,6 +380,11 @@
               <RecentGroup>
                 <option name="FILTER_VALUES">
                   <option value="test_build_CNN" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="master" />
                 </option>
               </RecentGroup>
               <RecentGroup>
@@ -384,7 +434,12 @@
     <MESSAGE value="delete Data_Pre_process.py" />
     <MESSAGE value="improve one_hot encoding" />
     <MESSAGE value="improve data preprocess" />
-    <option name="LAST_COMMIT_MESSAGE" value="improve data preprocess" />
+    <MESSAGE value="add Readme.md" />
+    <MESSAGE value="Iterate over the 01Data_preProcess.py file" />
+    <MESSAGE value="rename file" />
+    <MESSAGE value="preprocessed all data maybe in need" />
+    <MESSAGE value="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$txt_to_csv.coverage" NAME="txt_to_csv 覆盖结果" MODIFIED="1712678018648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
