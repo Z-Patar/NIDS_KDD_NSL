@@ -7,7 +7,15 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import csv
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# 检查CUDA是否可用
+if torch.cuda.is_available():
+    # 选择第一个CUDA设备
+    device = torch.device("cuda:0")
+    print(f"Using CUDA device: {torch.cuda.get_device_name(0)}")
+else:
+    device = torch.device("cpu")
+    print("CUDA is not available. Using CPU instead.")
+
 
 # 定义了一个自定义的数据集类CustomDataset，这个类继承了PyTorch的Dataset类，可以用于加载数据。
 class CustomDataset(Dataset):
@@ -37,7 +45,8 @@ class Net(nn.Module):
     # 然后定义了一个全连接层(nn.Linear)，该层将输入维度为122，输出维度为5。
     def __init__(self):
         super(Net, self).__init__()
-        self.fc = nn.Linear(122, 5)
+        self.fc1 = nn.Linear(122, 60)
+        self.fc2 = nn.Linear(60, 5)
 
     # 定义数据在模型中的前向传播过程。
     # 输入x经过全连接层self.fc，
@@ -46,7 +55,10 @@ class Net(nn.Module):
     def forward(self, x):
         # 先通过全连接层self.fc对输入x进行线性变换，然后通过torch.softmax函数对结果进行softmax操作
         # dim = 1参数表示在第1维度（即每行）上进行softmax操作，确保输出的每行元素和为1，可以用于多分类任务。
-        x = torch.softmax(self.fc(x), dim=1)
+        # x = torch.softmax(self.fc(x), dim=1)   # 全连接层后接 softmax 操作
+
+        x = torch.relu(self.fc1(x))     # 第一层全连接层后接 ReLU 操作
+        x = torch.softmax(self.fc2(x), dim=1)   # 第二层全连接层后接 softmax 操作
         return x
 
 
@@ -85,8 +97,8 @@ def test_CNN_main(data):
     train_data = CustomDataset(features_train, labels_train)
     test_data = CustomDataset(features_test, labels_test)
     # 创建训练数据和测试数据的数据加载器，用于批量加载数据进行训练和测试。
-    trainloader = DataLoader(train_data, batch_size=1000, shuffle=True)
-    testloader = DataLoader(test_data, batch_size=1000, shuffle=False)
+    train_loader = DataLoader(train_data, batch_size=1000, shuffle=True)
+    test_loader = DataLoader(test_data, batch_size=1000, shuffle=False)
 
     # 创建了一个神经网络模型实例model，定义了交叉熵损失函数criterion和随机梯度下降优化器optimizer。
     model = Net().to(device)
@@ -95,8 +107,9 @@ def test_CNN_main(data):
 
     for epoch in range(1001):
         running_loss = 0.0
-        for i, data in enumerate(trainloader, 0):
+        for i, data in enumerate(train_loader, 0):
             inputs, labels = data
+            inputs, labels = inputs.to(device), labels.to(device)
             optimizer.zero_grad()
 
             outputs = model(inputs.float())
@@ -106,12 +119,14 @@ def test_CNN_main(data):
 
             running_loss += loss.item()
 
-        if epoch % 100 == 0:
+        # 每50个epoch，对测试数据进行测试，计算模型的准确率并输出。
+        if epoch % 50 == 0:
             correct = 0
             total = 0
-            with torch.no_grad():
-                for data in testloader:
+            with torch.no_grad():   # 使用torch.no_grad()来确保在测试阶段不进行梯度计算。测试时不需要梯度计算
+                for data in test_loader:
                     images, labels = data
+                    images, labels = images.to(device), labels.to(device)
                     outputs = model(images.float())
                     _, predicted = torch.max(outputs.data, 1)
                     total += labels.size(0)
@@ -124,8 +139,15 @@ def test_CNN_main(data):
 
 if __name__ == '__main__':
     data_file = 'Train_encoded.csv'
-    # test_CNN_main(data_file)
-    print(torch.cuda.is_available())
+    test_CNN_main(data_file)
+    # print(torch.cuda.is_available())
+    # # 获取可用的CUDA设备数量
+    # device_count = torch.cuda.device_count()
+    # print(f"Number of CUDA devices available: {device_count}")
+    #
+    # # 遍历并打印每个CUDA设备的属性
+    # for i in range(device_count):
+    #     print(f"Device {i}: {torch.cuda.get_device_name(i)}")
 
     # data_path = 'Processed_Train_20Percent.csv'
     # features_train, labels_train = load_data(data_path)
