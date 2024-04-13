@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="test build a neural network finish">
-      <change beforePath="$PROJECT_DIR$/main_pytroch_like_IDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_pytroch_like_IDS.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_CNN_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/build_CNN_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -470,10 +470,10 @@
     <MESSAGE value="rename file" />
     <MESSAGE value="preprocessed all data maybe in need" />
     <MESSAGE value="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py" />
-    <MESSAGE value="write todo work next day" />
     <MESSAGE value="modified main_pytroch_like_IDS.py" />
     <MESSAGE value="test build a neural network finish" />
-    <option name="LAST_COMMIT_MESSAGE" value="test build a neural network finish" />
+    <MESSAGE value="write todo work next day" />
+    <option name="LAST_COMMIT_MESSAGE" value="write todo work next day" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$txt_to_csv.coverage" NAME="txt_to_csv 覆盖结果" MODIFIED="1712678018648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

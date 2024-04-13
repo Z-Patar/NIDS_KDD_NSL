@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+
+# todo 借助 GPT 注释并理解代码，然后尝试实现一个简单的 CNN
 # 定义网络结构
 class Net(nn.Module):
     def __init__(self):
