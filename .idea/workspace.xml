@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py">
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="write todo work next day">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main_pytroch_like_IDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_pytroch_like_IDS.py" afterDir="false" />
     </list>
@@ -360,7 +360,15 @@
       <option name="project" value="LOCAL" />
       <updated>1712847267103</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="write todo work next day">
+      <option name="closed" value="true" />
+      <created>1712848206207</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1712848206207</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -446,11 +454,12 @@
     <MESSAGE value="rename file" />
     <MESSAGE value="preprocessed all data maybe in need" />
     <MESSAGE value="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py" />
+    <MESSAGE value="write todo work next day" />
+    <option name="LAST_COMMIT_MESSAGE" value="write todo work next day" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$txt_to_csv.coverage" NAME="txt_to_csv 覆盖结果" MODIFIED="1712678018648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main_pytroch_like_IDS.coverage" NAME="main_pytroch_like_IDS 覆盖结果" MODIFIED="1712840597470" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main_pytroch_like_IDS.coverage" NAME="main_pytroch_like_IDS 覆盖结果" MODIFIED="1713001406364" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_preProcess.coverage" NAME="Data_preProcess 覆盖结果" MODIFIED="1712845043606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main.coverage" NAME="main 覆盖结果" MODIFIED="1712669522732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_Pre_process.coverage" NAME="Data_Pre_process 覆盖结果" MODIFIED="1712680263854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

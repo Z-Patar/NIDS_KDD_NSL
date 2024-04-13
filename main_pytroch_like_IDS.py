@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import csv
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 定义了一个自定义的数据集类CustomDataset，这个类继承了PyTorch的Dataset类，可以用于加载数据。
 class CustomDataset(Dataset):
@@ -33,10 +34,10 @@ class CustomDataset(Dataset):
 class Net(nn.Module):
     # 构造函数。
     # 首先调用了父类nn.Module的构造函数，
-    # 然后定义了一个全连接层(nn.Linear)，该层将输入维度为41，输出维度为2。
+    # 然后定义了一个全连接层(nn.Linear)，该层将输入维度为122，输出维度为5。
     def __init__(self):
         super(Net, self).__init__()
-        self.fc = nn.Linear(41, 2)
+        self.fc = nn.Linear(122, 5)
 
     # 定义数据在模型中的前向传播过程。
     # 输入x经过全连接层self.fc，
@@ -58,24 +59,39 @@ def load_data(file_path):
     return features, labels
 
 
+# def load_data(data_file):
+#     features=[]
+#     labels=[]
+#     file_path = data_file
+#     with (open(file_path,'r')) as data_from:
+#         csv_reader=csv.reader(data_from)
+#         for i in csv_reader:
+#             features.append(i[:41])
+#             label_list=[0 for i in range(23)]
+#             label_list[i[41]]=1
+#             labels.append(label_list)
+#     return features, labels
+
 # 在main函数中，首先加载训练集和测试集，并分割成训练集和测试集。
 # 然后，创建数据加载器，神经网络模型，损失函数和优化器。
 # 最后，进行训练和评估，每50个epoch打印一次训练损失和测试集上的准确率
 # todo 对代码进行注释并理解 with the help of GPT，
-def test_CNN_main():
-    features, labels = load_data(?)
+def test_CNN_main(data):
+    # 设置训练集和测试集
+    features, labels = load_data(data)
     features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2,
                                                                                 random_state=42)
-
+    # 创建训练数据集和测试数据集的实例，使用前面定义的CustomDataset类来加载数据。
     train_data = CustomDataset(features_train, labels_train)
     test_data = CustomDataset(features_test, labels_test)
-
+    # 创建训练数据和测试数据的数据加载器，用于批量加载数据进行训练和测试。
     trainloader = DataLoader(train_data, batch_size=1000, shuffle=True)
     testloader = DataLoader(test_data, batch_size=1000, shuffle=False)
 
-    net = Net()
+    # 创建了一个神经网络模型实例model，定义了交叉熵损失函数criterion和随机梯度下降优化器optimizer。
+    model = Net().to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=0.5)
+    optimizer = optim.SGD(model.parameters(), lr=0.5)
 
     for epoch in range(1001):
         running_loss = 0.0
@@ -83,20 +99,20 @@ def test_CNN_main():
             inputs, labels = data
             optimizer.zero_grad()
 
-            outputs = net(inputs.float())
+            outputs = model(inputs.float())
             loss = criterion(outputs, torch.max(labels, 1)[1])
             loss.backward()
             optimizer.step()
 
             running_loss += loss.item()
 
-        if epoch % 50 == 0:
+        if epoch % 100 == 0:
             correct = 0
             total = 0
             with torch.no_grad():
                 for data in testloader:
                     images, labels = data
-                    outputs = net(images.float())
+                    outputs = model(images.float())
                     _, predicted = torch.max(outputs.data, 1)
                     total += labels.size(0)
                     correct += (predicted == torch.max(labels, 1)[1]).sum().item()
@@ -107,11 +123,14 @@ def test_CNN_main():
 
 
 if __name__ == '__main__':
-    # test_CNN_main()
-    data_path = 'Processed_Train_20Percent.csv'
-    features_train, labels_train = load_data(data_path)
-    print(features_train.shape)
-    print(labels_train.shape)
+    data_file = 'Train_encoded.csv'
+    # test_CNN_main(data_file)
+    print(torch.cuda.is_available())
+
+    # data_path = 'Processed_Train_20Percent.csv'
+    # features_train, labels_train = load_data(data_path)
+    # print(features_train.shape)
+    # print(labels_train.shape)
 
     # 查看数据集
     # df = pd.read_csv(data_path)
