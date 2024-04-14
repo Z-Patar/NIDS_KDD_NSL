@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="Implemented a simple CNN for handwritten digit recognition">
-      <change afterPath="$PROJECT_DIR$/MNIST/MNIST.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MNIST/mnist_test.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MNIST/mnist_train.csv" beforeDir="false" />
-    </list>
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="Implemented a simple CNN for handwritten digit recognition" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -85,7 +81,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ToolWindowPython 软件包.ShowToolbar": "false",
-    "git-widget-placeholder": "test__build__CNN",
+    "git-widget-placeholder": "test__build__simple__CNN",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -412,7 +408,23 @@
       <option name="project" value="LOCAL" />
       <updated>1713120863097</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="add MNIST dataset">
+      <option name="closed" value="true" />
+      <created>1713121803198</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1713121803198</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Implemented a simple CNN for handwritten digit recognition">
+      <option name="closed" value="true" />
+      <created>1713121813023</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1713121813023</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
