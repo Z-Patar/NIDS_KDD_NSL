@@ -44,7 +44,7 @@ class CNN(nn.Module):
         return x
 
 
-def load_data(dataset_path, batch_size=1024, shuffle=True):
+def load_data(dataset_path, batch_size=256, shuffle=True):
     data = read_csv(dataset_path)
     labels = torch.tensor(data.iloc[:, 0].values).long()
     features = torch.tensor(data.iloc[:, 1:].values, dtype=torch.float).view(-1, 1, 28, 28)  # 将数据reshape成图片格式
@@ -121,8 +121,8 @@ def main():
     # 加载数据集，初始化网络、损失函数和优化器
     train_dataset_path = 'MNIST/mnist_train.csv'
     test_dataset_path = 'MNIST/mnist_test.csv'
-    train_loader = load_data(train_dataset_path, batch_size=1024, shuffle=True)
-    test_loader = load_data(test_dataset_path, batch_size=1024, shuffle=False)
+    train_loader = load_data(train_dataset_path, batch_size=256, shuffle=True)
+    test_loader = load_data(test_dataset_path, batch_size=256, shuffle=False)
     net = CNN()
     criterion = nn.CrossEntropyLoss()  # 损失函数为交叉熵损失函数
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)  # 随机梯度下降（SGD）优化器，用于更新神经网络的参数以最小化损失函数。
