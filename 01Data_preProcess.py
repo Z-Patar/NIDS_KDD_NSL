@@ -61,7 +61,7 @@ def preProcess(source_data_path, preprocessed_data_path):
 # todo 输入特征项共 １２２维，舍弃其中 ｉｓ＿ｈｏｔ＿ｌｏｇｉｎ特征项，此项特征的值都为 ０，对入侵检测分类结果作用为零。
 #   将其转换为 １１×１１维的二维的“图像数据”，全连接层采用 Ｓｏｆｔｍａｘ进行分类。
 def oneHot_encoding(data_file_path):
-    print(data_file_path + ' One-hot encoding...')
+    # print(data_file_path + ' One-hot encoding...')
 
     # 读取完整数据集和子集
     full_file_path = 'Data/full_Train.csv'  # 只有KDDTrain+.csv的service属性是全齐的
@@ -119,7 +119,7 @@ def oneHot_encoding(data_file_path):
     encoded_inserted_df = pd.concat([encoded_inserted_df, subset_encoded[label_encoded_cols]], axis=1)
 
     # 在subset_encoded中计算行数和列数
-    print("\n(去除null前): " + new_file_name + "中的行数和列数 = ", encoded_inserted_df.shape)
+    print("(去除null前): " + new_file_name + "中的行数和列数 = ", encoded_inserted_df.shape)
     subset_encoded.dropna()  # 去除有null的行
     print("(去除null后): " + new_file_name + "中的行数和列数 = ", encoded_inserted_df.shape)
 
@@ -128,30 +128,10 @@ def oneHot_encoding(data_file_path):
     print(new_file_name + ' One-hot encoding done!\n')
 
 
-def print_data_info(data_file_path):
-    # 读取CSV文件
-    df = pd.read_csv(data_file_path)
-
-    # 计算和打印不同属性的数量
-    service_properties = df['service'].nunique()
-    flag_properties = df['flag'].nunique()
-    protocol_type_properties = df['protocol_type'].nunique()
-    print('Number of service properties=', service_properties)
-    print('Number of flag properties=', flag_properties)
-    print('Number of protocol types=', protocol_type_properties)
-
-    # 显示所有不同的属性
-    service_properties = df['service'].unique()
-    flag_properties = df['flag'].unique()
-    protocol_type_properties = df['protocol_type'].unique()
-    print('service properties:', service_properties)
-    print('flag properties:', flag_properties)
-    print('protocol types:', protocol_type_properties)
-
-
 # 数据归一化
 def scale_data(source_data_path):
-    print('Scaling...')
+    # print('Scaling...')
+
     source_file = source_data_path
     encoded_dataset = pd.read_csv(source_file)
 
@@ -202,7 +182,7 @@ def preProcess_all():
 
 # 独热编码所有数据
 def one_hot_all():
-    print('all data begin One-hot encode ...')
+    print('all data begin One-hot encode ...\n')
 
     Train_file = 'Data/Train.csv'
     Train_20_file = 'Data/Train_20Percent.csv'
@@ -234,7 +214,29 @@ def scale_all():
     scale_data(Test_file)
     scale_data(Test_21_file)
 
-    print("all data scale done!")
+    print("all data scale done!\n")
+
+
+# 打印数据文件信息
+def print_data_info(data_file_path):
+    # 读取CSV文件
+    df = pd.read_csv(data_file_path)
+    print("\n" + data_file_path+"  file info is ")
+    print(df.info)
+
+
+# 打印所有预处理完成的数据文件信息
+def print_all_data_info():
+    test_data = 'Test_encoded.csv'
+    test_21_data = 'Test_21_encoded.csv'
+    train_data = 'Train_encoded.csv'
+    train_21_data = 'Train_20Percent_encoded.csv'
+
+    print("All preprocessed data info is as follows :")
+    print_data_info(test_data)
+    print_data_info(test_21_data)
+    print_data_info(train_data)
+    print_data_info(train_21_data)
 
 
 if __name__ == '__main__':
@@ -249,3 +251,7 @@ if __name__ == '__main__':
     scale_all()
 
     print("All data preprocess finish!\n")
+
+    # 查看数据文件的shape
+    print_all_data_info()
+
