@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="modified batch_size">
-      <change afterPath="$PROJECT_DIR$/CNN_for_NIDS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/01Data_preProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/01Data_preProcess.py" afterDir="false" />
-    </list>
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="add print function to display preprocessed dataset info" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -445,7 +441,15 @@
       <option name="project" value="LOCAL" />
       <updated>1713166974447</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="add print function to display preprocessed dataset info">
+      <option name="closed" value="true" />
+      <created>1713179251082</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1713179251082</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -512,7 +516,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="add KDD-NSL dataset file" />
     <MESSAGE value="add Data directory and txt_to_csv.py" />
     <MESSAGE value="create Data directory and txt_to_csv.py" />
     <MESSAGE value="make .txt file from KDD-NSL to .csv file in Data" />
@@ -537,7 +540,8 @@
     <MESSAGE value="Implemented a simple CNN for handwritten digit recognition" />
     <MESSAGE value="update workspace.xml" />
     <MESSAGE value="modified batch_size" />
-    <option name="LAST_COMMIT_MESSAGE" value="modified batch_size" />
+    <MESSAGE value="add print function to display preprocessed dataset info" />
+    <option name="LAST_COMMIT_MESSAGE" value="add print function to display preprocessed dataset info" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$txt_to_csv.coverage" NAME="txt_to_csv 覆盖结果" MODIFIED="1712678018648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
