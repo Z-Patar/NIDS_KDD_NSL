@@ -22,10 +22,10 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
         # 第一个卷积层，输入通道数为1，输出通道数为6，卷积核大小为5x5。
         self.conv1 = nn.Conv2d(1, 6, 5)  # 1 input image channel, 6 output channels, 5x5 square convolution
-        # 池化层，使用最大池化，池化窗口大小为2x2。
-        self.pool = nn.MaxPool2d(2, 2)  # maxpooling
         # 第二个卷积层，输入通道数为6，输出通道数为16，卷积核大小为5x5。
         self.conv2 = nn.Conv2d(6, 16, 5)  # 6 input image channel, 16 output channels, 5x5 square convolution
+        # 池化层，使用最大池化，池化窗口大小为2x2。
+        self.pool = nn.MaxPool2d(2, 2)  # maxpooling
         # 三个全连接层，分别将卷积层输出展平后连接到全连接层。
         self.fc1 = nn.Linear(16 * 4 * 4, 120)  # an affine operation: y = Wx + b
         self.fc2 = nn.Linear(120, 84)

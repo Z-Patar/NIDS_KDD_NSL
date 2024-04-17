@@ -240,17 +240,17 @@ def print_all_data_info():
 
 
 if __name__ == '__main__':
-    print("All data preprocess begin! ...\n")
-    # 为数据文件添加表头，去除'difficult_level'
-    preProcess_all()
-
-    # 独热编码
-    one_hot_all()
-
-    # 归一化
-    scale_all()
-
-    print("All data preprocess finish!\n")
+    # print("All data preprocess begin! ...\n")
+    # # 为数据文件添加表头，去除'difficult_level'
+    # preProcess_all()
+    #
+    # # 独热编码
+    # one_hot_all()
+    #
+    # # 归一化
+    # scale_all()
+    #
+    # print("All data preprocess finish!\n")
 
     # 查看数据文件的shape
     print_all_data_info()
