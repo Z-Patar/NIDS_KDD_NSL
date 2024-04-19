@@ -87,7 +87,7 @@ def load_data(file_path):
 # 在main函数中，首先加载训练集和测试集，并分割成训练集和测试集。
 # 然后，创建数据加载器，神经网络模型，损失函数和优化器。
 # 最后，进行训练和评估，每50个epoch打印一次训练损失和测试集上的准确率
-def test_CNN_main(data):
+def test_NN_main(data):
     # 设置训练集和测试集
     features, labels = load_data(data)
     features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2,
@@ -138,7 +138,7 @@ def test_CNN_main(data):
 
 if __name__ == '__main__':
     data_file = 'Train_encoded.csv'
-    test_CNN_main(data_file)
+    test_NN_main(data_file)
     # print(torch.cuda.is_available())
     # # 获取可用的CUDA设备数量
     # device_count = torch.cuda.device_count()

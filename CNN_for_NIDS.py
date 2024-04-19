@@ -3,13 +3,11 @@
 # Copyright (c) Patar my copyright message. 2024-2024. All rights reserved.
 # @Time   :2024/4/15 下午3:11
 # @Author :Z_Patar
+import pandas as pd
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
-import pandas as pd
-
-import numpy as np
+import torch.optim as optim
 
 
 class CNN_Net(nn.Module):

@@ -1,14 +1,11 @@
+import numpy as np
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader, TensorDataset
-from sklearn.metrics import confusion_matrix
 import torch.nn.functional as F
+import torch.optim as optim
 from pandas import read_csv, set_option, DataFrame
-
-
-import numpy as np
+from sklearn.metrics import confusion_matrix
+from torch.utils.data import DataLoader, TensorDataset
 
 
 # 在这个例子中，我们假设你的数据集已经被处理为一个形状为 (batch_size, num_channels, height, width) 的张量，
