@@ -1,3 +1,5 @@
+#  Copyright (c) Patar my copyright message. 2024-2024. All rights reserved.
+
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -137,7 +139,7 @@ def test_NN_main(data):
 
 
 if __name__ == '__main__':
-    data_file = 'Train_encoded.csv'
+    data_file = 'Data_encoded/Train_encoded.csv'
     test_NN_main(data_file)
     # print(torch.cuda.is_available())
     # # 获取可用的CUDA设备数量

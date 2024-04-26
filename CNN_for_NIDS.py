@@ -1,8 +1,4 @@
-# python3.10
-# -*- coding:utf-8 -*-
-# Copyright (c) Patar my copyright message. 2024-2024. All rights reserved.
-# @Time   :2024/4/15 下午3:11
-# @Author :Z_Patar
+#  Copyright (c) Patar my copyright message. 2024-2024. All rights reserved.
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -45,7 +41,7 @@ def load_data(file_path):
 
 
 def main():
-    file_path = 'Train_encoded.csv'  # 数据集文件路径
+    file_path = 'Data_encoded/Train_encoded.csv'  # 数据集文件路径
 
     # 加载数据
     feature, label = load_data(file_path)

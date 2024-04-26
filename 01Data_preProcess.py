@@ -1,3 +1,5 @@
+#  Copyright (c) Patar my copyright message. 2024-2024. All rights reserved.
+
 # python3.10
 # coding:utf-8
 
@@ -24,8 +26,8 @@ from sklearn.preprocessing import MinMaxScaler
 def preProcess(source_data_path, preprocessed_data_path):
     source_file = source_data_path
     processed_file = preprocessed_data_path
-    field_name_file = 'Data/field_name_file.csv'
-    attack_type_file = 'Data/attack_type_file.csv'
+    field_name_file = 'KDD_NSL/Temp_Data/field_name_file.csv'
+    attack_type_file = 'KDD_NSL/Temp_Data/attack_type_file.csv'
 
     # 定义dataframe ，并定义column name，方便索引
     df = pd.read_csv(field_name_file, header=None, names=['name', 'data_type'])
@@ -60,17 +62,18 @@ def preProcess(source_data_path, preprocessed_data_path):
 # 用全集编码后再编码子集
 # todo 输入特征项共 １２２维，舍弃其中 ｉｓ＿ｈｏｔ＿ｌｏｇｉｎ特征项，此项特征的值都为 ０，对入侵检测分类结果作用为零。
 #   将其转换为 １１×１１维的二维的“图像数据”，全连接层采用 Ｓｏｆｔｍａｘ进行分类。
+#  已在模型前处理
 def oneHot_encoding(data_file_path):
     # print(data_file_path + ' One-hot encoding...')
 
     # 读取完整数据集和子集
-    full_file_path = 'Data/full_Train.csv'  # 只有KDDTrain+.csv的service属性是全齐的
+    full_file_path = 'KDD_NSL/Temp_Data/full_Train.csv'  # 只有KDDTrain+.csv的service属性是全齐的
     full_dataset = pd.read_csv(full_file_path)
     subset_dataset = pd.read_csv(data_file_path)
     # 提取子集文件名，生成新的文件名
     subset_file_name = os.path.basename(data_file_path)  # 提取文件名，例如 "Your_Subset.csv"
     subset_file_name_without_ext = os.path.splitext(subset_file_name)[0]  # 去掉扩展名，例如 "Your_Subset"
-    new_file_name = f"{subset_file_name_without_ext}_encoded.csv"  # 添加后缀，生成新的文件名，例如 "Your_Subset_encoded.csv"
+    new_file_name = f"Data_encoded/{subset_file_name_without_ext}_encoded.csv"  # 添加后缀，生成新的文件名，例如 "Data_encoded/Your_Subset_encoded.csv"
 
     # 假设第2\3\4列是需要独热编码的列。如果要编码label，只需要将 "label" 添加到 columns_to_encode 列表中
     columns_to_encode = ['protocol_type', 'service', 'flag', 'label']
@@ -114,7 +117,7 @@ def oneHot_encoding(data_file_path):
             # 如果当前列不需要独热编码，直接插入原始列
             encoded_inserted_df = pd.concat([encoded_inserted_df, subset_dataset[[col]]], axis=1)
 
-    # 确保最后的'label'独热编码列也被添加到DataFrame中
+    # 确保最后的 'label' 独热编码列也被添加到 DataFrame 中
     label_encoded_cols = [c for c in full_encoded.columns if c.startswith('label_')]
     encoded_inserted_df = pd.concat([encoded_inserted_df, subset_encoded[label_encoded_cols]], axis=1)
 
@@ -155,19 +158,19 @@ def scale_data(source_data_path):
 def preProcess_all():
     print('all data begin Preprocess ...\n')
     # 源文件路径
-    Train_file = 'Data/KDDTrain+.csv'
-    Train_20_file = 'Data/KDDTrain+_20Percent.csv'
-    # Train_20_top200_file = 'Data/KDDTrain+_20Percent_top200Item.csv'
-    Test_file = 'Data/KDDTest+.csv'
-    Test_21_file = 'Data/KDDTest-21.csv'  # Test去掉难度为21级(共21级)的子集
+    Train_file = 'KDD_NSL/Temp_Data/KDDTrain+.csv'
+    Train_20_file = 'KDD_NSL/Temp_Data/KDDTrain+_20Percent.csv'
+    # Train_20_top200_file = 'Temp_Data/KDDTrain+_20Percent_top200Item.csv'
+    Test_file = 'KDD_NSL/Temp_Data/KDDTest+.csv'
+    Test_21_file = 'KDD_NSL/Temp_Data/KDDTest-21.csv'  # Test去掉难度为21级(共21级)的子集
 
     # 加表头，去掉第43列的难度等级后的文件路径
-    Processed_full_Train_file = 'Data/full_Train.csv'  # 作为全service类型文件独热编码，保证其他缺项文件独热编码一致
-    Processed_Train_file = 'Data/Train.csv'
-    Processed_Train_20_file = 'Data/Train_20Percent.csv'
-    # Processed_Train_20_top200_file = 'Data/Train_20Percent_top200.csv'
-    Processed_Test_file = 'Data/Test.csv'
-    Processed_Test_21_file = 'Data/Test_21.csv'
+    Processed_full_Train_file = 'KDD_NSL/Temp_Data/full_Train.csv'  # 作为全service类型文件独热编码，保证其他缺项文件独热编码一致
+    Processed_Train_file = 'KDD_NSL/Temp_Data/Train.csv'
+    Processed_Train_20_file = 'KDD_NSL/Temp_Data/Train_20Percent.csv'
+    # Processed_Train_20_top200_file = 'Temp_Data/Train_20Percent_top200.csv'
+    Processed_Test_file = 'KDD_NSL/Temp_Data/Test.csv'
+    Processed_Test_21_file = 'KDD_NSL/Temp_Data/Test_21.csv'
 
     # 为数据文件添加表头，去除difficult_level，以方便后面的子集使用该文件进行独热编码，运行一次就好
     preProcess(Train_file, Processed_full_Train_file)
@@ -184,11 +187,11 @@ def preProcess_all():
 def one_hot_all():
     print('all data begin One-hot encode ...\n')
 
-    Train_file = 'Data/Train.csv'
-    Train_20_file = 'Data/Train_20Percent.csv'
-    # Train_20_top200_file = 'Data/Train_20Percent_top200.csv'
-    Test_file = 'Data/Test.csv'
-    Test_21_file = 'Data/Test_21.csv'
+    Train_file = 'KDD_NSL/Temp_Data/Train.csv'
+    Train_20_file = 'KDD_NSL/Temp_Data/Train_20Percent.csv'
+    # Train_20_top200_file = 'Temp_Data/Train_20Percent_top200.csv'
+    Test_file = 'KDD_NSL/Temp_Data/Test.csv'
+    Test_21_file = 'KDD_NSL/Temp_Data/Test_21.csv'
 
     # oneHot_encoding(Train_20_top200_file)
     oneHot_encoding(Train_20_file)
@@ -203,11 +206,11 @@ def one_hot_all():
 def scale_all():
     print("all data begin scale:")
 
-    Train_file = 'Train_encoded.csv'
-    Train_20_file = 'Train_20Percent_encoded.csv'
+    Train_file = 'Data_encoded/Train_encoded.csv'
+    Train_20_file = 'Data_encoded/Train_20Percent_encoded.csv'
     # Train_20_top200_file = 'Train_20Percent_top200_encoded.csv'
-    Test_file = 'Test_encoded.csv'
-    Test_21_file = 'Test_21_encoded.csv'
+    Test_file = 'Data_encoded/Test_encoded.csv'
+    Test_21_file = 'Data_encoded/Test_21_encoded.csv'
     scale_data(Train_file)
     scale_data(Train_20_file)
     # scale_data(Train_20_top200_file)
@@ -221,16 +224,16 @@ def scale_all():
 def print_data_info(data_file_path):
     # 读取CSV文件
     df = pd.read_csv(data_file_path)
-    print("\n" + data_file_path+"  file info is ")
+    print("\n" + data_file_path + "  file info is ")
     print(df.info)
 
 
 # 打印所有预处理完成的数据文件信息
 def print_all_data_info():
-    test_data = 'Test_encoded.csv'
-    test_21_data = 'Test_21_encoded.csv'
-    train_data = 'Train_encoded.csv'
-    train_21_data = 'Train_20Percent_encoded.csv'
+    test_data = 'Data_encoded/Test_encoded.csv'
+    test_21_data = 'Data_encoded/Test_21_encoded.csv'
+    train_data = 'Data_encoded/Train_encoded.csv'
+    train_21_data = 'Data_encoded/Train_20Percent_encoded.csv'
 
     print("All preprocessed data info is as follows :")
     print_data_info(test_data)
@@ -254,4 +257,3 @@ if __name__ == '__main__':
 
     # 查看数据文件的shape
     print_all_data_info()
-
