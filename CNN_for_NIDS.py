@@ -6,28 +6,46 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 
-class CNN_Net(nn.Module):
+class CNNNet(nn.Module):
     def __init__(self):
-        super(CNN_Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, kernel_size=5, padding=2)  # 输出尺寸: 11x11
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=5, padding=2)  # 输出尺寸: 11x11
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)  # 输出尺寸: 5x5
-        # 计算卷积层输出后的尺寸，用于全连接层的输入
-        self.fc1 = nn.Linear(64 * 5 * 5, 1024)  # 64个特征图，每个5x5大小
+        # 假设输入图像尺寸为 Cx11x11 (C是输入通道数，对于灰度图C=1)
+        super(CNNNet, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)  # 输出尺寸: 11x11
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)  # 输出尺寸: 11x11
+        self.pool = nn.MaxPool2d(2, stride=2, padding=0)  # 输出尺寸: 5x5 -> 2x2
+        self.fc1 = nn.Linear(64 * 4 * 4, 1024)  # 64个特征图，每个4x4大小
         self.fc2 = nn.Linear(1024, 128)
         self.fc3 = nn.Linear(128, 5)  # 输出层大小为5
         self.dropout = nn.Dropout(0.5)
 
+        # 初始化权重
+        self._initialize_weights()
+    # todo 尝试使用该函数来查看每层的输出的shape
+    # for layer in net:
+    #     X = layer(X)
+    # print(layer.__class__.__name__.,'output shape: ', X.shape)
+
+
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 64 * 5 * 5)  # 重新塑形为一维向量
+        x = x.view(-1, 64 * 4 * 4)  # 重新塑形为一维向量  # todo 尝试nn.Flatten() ?
         x = F.relu(self.fc1(x))
         x = self.dropout(x)
         x = F.relu(self.fc2(x))
         x = self.dropout(x)
         x = self.fc3(x)
         return x
+
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                nn.init.xavier_normal_(m.weight)
+                nn.init.constant_(m.bias, 0)
 
 
 def load_data(file_path):
@@ -51,7 +69,7 @@ def main():
     label_tensor = torch.Tensor(label)
 
     # 初始化模型、损失函数和优化器
-    model = CNN_Net()
+    model = CNNNet()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
@@ -71,7 +89,7 @@ def main():
 
             optimizer.zero_grad()
 
-            outputs = model(inputs)
+            outputs = model(inputs)# todo 存在问题
             loss = criterion(outputs, labels.max(1)[1])
             loss.backward()
             optimizer.step()

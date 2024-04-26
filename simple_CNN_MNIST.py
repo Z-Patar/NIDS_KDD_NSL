@@ -1,3 +1,5 @@
+#  Copyright (c) Patar my copyright message. 2024-2024. All rights reserved.
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -8,8 +10,8 @@ from sklearn.metrics import confusion_matrix
 from torch.utils.data import DataLoader, TensorDataset
 
 
-# 在这个例子中，我们假设你的数据集已经被处理为一个形状为 (batch_size, num_channels, height, width) 的张量，
-# 其中 num_channels 是你的特征数量，height 和 width 是你的数据的维度。
+# 数据集已经被处理为一个形状为 (batch_size, num_channels, height, width) 的张量，
+# 其中 num_channels 是特征数量，height 和 width 是数据的维度。
 # 这个网络是在MNIST数据集上训练的，你可能需要根据你的数据集调整网络的结构（例如卷积层的数量，全连接层的节点数等）和参数（例如学习率，优化器等）。
 # 如果你的数据集的类别数不是10，你需要改变最后一个全连接层的输出节点数。
 
@@ -22,7 +24,7 @@ class CNN(nn.Module):
         # 第二个卷积层，输入通道数为6，输出通道数为16，卷积核大小为5x5。
         self.conv2 = nn.Conv2d(6, 16, 5)  # 6 input image channel, 16 output channels, 5x5 square convolution
         # 池化层，使用最大池化，池化窗口大小为2x2。
-        self.pool = nn.MaxPool2d(2, 2)  # maxpooling
+        self.pool = nn.MaxPool2d(2, 2)  # max-pooling
         # 三个全连接层，分别将卷积层输出展平后连接到全连接层。
         self.fc1 = nn.Linear(16 * 4 * 4, 120)  # an affine operation: y = Wx + b
         self.fc2 = nn.Linear(120, 84)
