@@ -50,11 +50,11 @@ class CNNNet(nn.Module):
 
 def load_data(file_path):
     df = pd.read_csv(file_path, header=0)
-    df = df.drop(columns=['is_host_login'])    # 删除is_host_login列，该列值全为0，删除不影响结果
-    features = df.iloc[:, :-5].values   # 特征项为前121列
-    labels = df.iloc[:, -5:].values     # label项为后5列
+    df = df.drop(columns=['is_host_login'])  # 删除is_host_login列，该列值全为0，删除不影响结果
+    features = df.iloc[:, :-5].values  # 特征项为前121列
+    labels = df.iloc[:, -5:].values  # label项为后5列
     # 将特征项重塑特征为11x11方阵
-    features = features.reshape(-1, 1, 11, 11)      # 将特征reshape为一个四维向量，其中 batch_size 等于数据项数, channel = 1, 高，宽为11的特征矩阵
+    features = features.reshape(-1, 1, 11, 11)  # 将特征reshape为一个四维向量，其中 batch_size 等于数据项数, channel = 1, 高，宽为11的特征矩阵
     return features, labels
 
 
@@ -70,8 +70,8 @@ def train():
 
     # 初始化模型、损失函数和优化器
     model = CNNNet()
-    criterion = nn.CrossEntropyLoss()   # 损失函数为交叉熵损失函数
-    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)   # 优化器为SGD
+    criterion = nn.CrossEntropyLoss()  # 损失函数为交叉熵损失函数
+    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)  # 优化器为SGD
 
     # 划分数据集为训练集和测试集
     # 这里需要根据您的情况来划分，以下仅为示例
@@ -89,7 +89,7 @@ def train():
 
             optimizer.zero_grad()
 
-            outputs = model(inputs)  # todo 存在问题
+            outputs = model(inputs)
             loss = criterion(outputs, labels.max(1)[1])
             loss.backward()
             optimizer.step()
@@ -98,6 +98,7 @@ def train():
                 print(f'Epoch [{epoch + 1}/10], Iter [{i}/{train_feature.size(0)}] Loss: {loss.item():.4f}')
 
     print('Finished Training')
+# todo 尝试predict_ch3(...)，见d2l书3.6节
 
 
 if __name__ == '__main__':
