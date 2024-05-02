@@ -6,6 +6,16 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 
+# 检查CUDA是否可用
+if torch.cuda.is_available():
+    # 选择第一个CUDA设备
+    device = torch.device("cuda:0")
+    print(f"Using CUDA device: {torch.cuda.get_device_name(0)}")
+else:
+    device = torch.device("cpu")
+    print("CUDA is not available. Using CPU instead.")
+
+
 class CNNNet(nn.Module):
     def __init__(self):
         # 假设输入图像尺寸为 Cx11x11 (C是输入通道数，对于灰度图C=1)
