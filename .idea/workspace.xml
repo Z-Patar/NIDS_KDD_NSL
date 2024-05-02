@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="add some comment&#10;modified CNN_for_NIDS.py">
+      <change afterPath="$PROJECT_DIR$/various_CNN/CNN_based_Resnet+GoogLe_v3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CNN_for_NIDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/CNN_for_NIDS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build_simple_NN_pytroch.py" beforeDir="false" afterPath="$PROJECT_DIR$/build_simple_NN_pytroch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,44 +71,44 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.01Data_preProcess.executor": "Run",
-    "Python.CNN_for_NIDS.executor": "Run",
-    "Python.Data_Pre_process.executor": "Run",
-    "Python.Data_encoding.executor": "Run",
-    "Python.Data_preProcess.executor": "Run",
-    "Python.GoogLeNet.executor": "Run",
-    "Python.build_simple_NN_pytroch.executor": "Run",
-    "Python.cuda.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.main_pytroch_like_IDS.executor": "Run",
-    "Python.scratch.executor": "Run",
-    "Python.shape_of_AlexNet_based_CNN.executor": "Run",
-    "Python.simple_CNN_MNIST.executor": "Run",
-    "Python.txt_to_csv.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "ToolWindowPython 软件包.ShowToolbar": "false",
-    "git-widget-placeholder": "CNN-for-NIDS",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "E:/Git-Repository/NIDS_KDD_NSL/KDD_NSL",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python.01Data_preProcess.executor&quot;: &quot;Run&quot;,
+    &quot;Python.CNN_for_NIDS.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Data_Pre_process.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Data_encoding.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Data_preProcess.executor&quot;: &quot;Run&quot;,
+    &quot;Python.GoogLeNet.executor&quot;: &quot;Run&quot;,
+    &quot;Python.build_simple_NN_pytroch.executor&quot;: &quot;Run&quot;,
+    &quot;Python.cuda.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main_pytroch_like_IDS.executor&quot;: &quot;Run&quot;,
+    &quot;Python.scratch.executor&quot;: &quot;Run&quot;,
+    &quot;Python.shape_of_AlexNet_based_CNN.executor&quot;: &quot;Run&quot;,
+    &quot;Python.simple_CNN_MNIST.executor&quot;: &quot;Run&quot;,
+    &quot;Python.txt_to_csv.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ToolWindowPython 软件包.ShowToolbar&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;CNN-for-NIDS&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Git-Repository/NIDS_KDD_NSL/KDD_NSL&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/新建临时文件": [
-      "Python"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/新建临时文件&quot;: [
+      &quot;Python&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\Git-Repository\NIDS_KDD_NSL\KDD_NSL" />
@@ -170,7 +169,9 @@
       <workItem from="1713487586997" duration="32000" />
       <workItem from="1713487630394" duration="6363000" />
       <workItem from="1714091420922" duration="23637000" />
-      <workItem from="1714298237982" duration="13156000" />
+      <workItem from="1714298237982" duration="13214000" />
+      <workItem from="1714460704861" duration="1971000" />
+      <workItem from="1714613576788" duration="4747000" />
     </task>
     <task id="LOCAL-00001" summary="create NIDS project">
       <option name="closed" value="true" />
@@ -532,7 +533,15 @@
       <option name="project" value="LOCAL" />
       <updated>1714298140328</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="add some comment&#10;modified CNN_for_NIDS.py">
+      <option name="closed" value="true" />
+      <created>1714395013067</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1714395013067</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
