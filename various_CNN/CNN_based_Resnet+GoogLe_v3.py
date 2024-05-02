@@ -71,7 +71,7 @@ class Inception(nn.Module):
 #             self.conv3 = None
 #
 #     def forward(self, X):
-#         y = # todo定义Y的类型,应该是一个张量，但要根据Inception，forward函数的返回值确定
+#         y = # todo 定义Y的类型,应该是一个张量，但要根据Inception，forward函数的返回值确定
 #         if self.conv3:
 #             X = F.relu(self.conv3(X))
 #         Y += X
