@@ -241,6 +241,7 @@ def print_all_data_info():
     print_data_info(train_data)
     print_data_info(train_21_data)
 
+
 def exchange_normal_and_dos(file_path):
     # 读取CSV文件
     df = pd.read_csv(file_path)
@@ -269,6 +270,7 @@ def exchange_all_nad():
     exchange_normal_and_dos(train_20p_data)
     exchange_normal_and_dos(test_data)
     exchange_normal_and_dos(test_21_data)
+
 
 if __name__ == '__main__':
     # print("All data preprocess begin! ...\n")
