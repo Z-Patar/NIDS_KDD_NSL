@@ -256,7 +256,7 @@ def exchange_normal_and_dos(file_path):
     df.columns = col_names
 
     # 保存修改后的文件
-    df.to_csv('Data_encoded/Train_encoded.csv', index=False)
+    df.to_csv(file_path, index=False)
 
 
 def exchange_all_nad():

@@ -4,9 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="完成模型搭建">
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="添加KDDCup99数据集，压缩数据集，便于上传">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/01Data_preProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/01Data_preProcess.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data_encoded/Test_21_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/Test_21_encoded.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data_encoded/Test_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/Test_encoded.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data_encoded/Train_20Percent_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/Train_20Percent_encoded.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data_encoded/Train_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/Train_encoded.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,6 +78,7 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Python.00KDDCpu99_Data_preProcess.executor": "Run",
     "Python.01Data_preProcess.executor": "Run",
     "Python.CNN_based_Resnet+GoogLe_v3.executor": "Run",
     "Python.CNN_for_NIDS.executor": "Run",
@@ -97,11 +102,13 @@
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "E:/Git-Repository/NIDS_KDD_NSL/KDD_NSL",
     "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.standard": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.standard": "",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "settings.editor.selected.configurable": "preferences.keymap",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -112,12 +119,27 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Patar\AppData\Roaming\JetBrains\PyCharm2024.1\scratches" />
+      <recent name="E:\Git-Repository\NIDS_KDD_NSL" />
+      <recent name="E:\Git-Repository\NIDS_KDD_NSL\KDDCup99" />
       <recent name="E:\Git-Repository\NIDS_KDD_NSL\KDD_NSL" />
       <recent name="E:\Git-Repository\NIDS_KDD_NSL\Data_encoded" />
-      <recent name="E:\Git-Repository\NIDS_KDD_NSL" />
-      <recent name="E:\Git-Repository\NIDS_KDD_NSL\MNIST" />
-      <recent name="E:\Git-Repository\NIDS_KDD_NSL\Data" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <myKeys>
+      <visibility group="Grunt" flag="true" />
+      <visibility group="Gulp" flag="true" />
+      <visibility group="HTTP 请求" flag="true" />
+      <visibility group="Node.js" flag="true" />
+      <visibility group="Recent projects" flag="true" />
+      <visibility group="Run Python file" flag="true" />
+      <visibility group="Run conda command" flag="true" />
+      <visibility group="Run configurations" flag="true" />
+      <visibility group="Run pip command" flag="true" />
+      <visibility group="npm" flag="true" />
+      <visibility group="yarn" flag="true" />
+    </myKeys>
   </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
@@ -172,95 +194,7 @@
       <workItem from="1714091420922" duration="23637000" />
       <workItem from="1714298237982" duration="13214000" />
       <workItem from="1714460704861" duration="1971000" />
-      <workItem from="1714613576788" duration="34672000" />
-    </task>
-    <task id="LOCAL-00005" summary="add Data directory and txt_to_csv.py">
-      <option name="closed" value="true" />
-      <created>1712678375922</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1712678375922</updated>
-    </task>
-    <task id="LOCAL-00006" summary="create Data directory and txt_to_csv.py">
-      <option name="closed" value="true" />
-      <created>1712678491947</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1712678491947</updated>
-    </task>
-    <task id="LOCAL-00007" summary="make .txt file from KDD-NSL to .csv file in Data">
-      <option name="closed" value="true" />
-      <created>1712678632145</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1712678632145</updated>
-    </task>
-    <task id="LOCAL-00008" summary="top 140 items in KDDTrain+_20Percent.csv">
-      <option name="closed" value="true" />
-      <created>1712681729986</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1712681729986</updated>
-    </task>
-    <task id="LOCAL-00009" summary="delete temp file data.csv">
-      <option name="closed" value="true" />
-      <created>1712681911956</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1712681911956</updated>
-    </task>
-    <task id="LOCAL-00010" summary="add data preprocess file">
-      <option name="closed" value="true" />
-      <created>1712682424179</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1712682424179</updated>
-    </task>
-    <task id="LOCAL-00011" summary="finish one-hot encoding">
-      <option name="closed" value="true" />
-      <created>1712744179538</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1712744179538</updated>
-    </task>
-    <task id="LOCAL-00012" summary="finish one-hot encoding">
-      <option name="closed" value="true" />
-      <created>1712749291711</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1712749291711</updated>
-    </task>
-    <task id="LOCAL-00013" summary="finish one-hot encoding">
-      <option name="closed" value="true" />
-      <created>1712749316129</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1712749316129</updated>
-    </task>
-    <task id="LOCAL-00014" summary="add two file for data preprocess">
-      <option name="closed" value="true" />
-      <created>1712760141642</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1712760141642</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Finish Data_preProcess.py">
-      <option name="closed" value="true" />
-      <created>1712761761544</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1712761761544</updated>
+      <workItem from="1714613576788" duration="58365000" />
     </task>
     <task id="LOCAL-00016" summary="delete Data_Pre_process.py">
       <option name="closed" value="true" />
@@ -566,7 +500,95 @@
       <option name="project" value="LOCAL" />
       <updated>1714738193018</updated>
     </task>
-    <option name="localTasksCounter" value="54" />
+    <task id="LOCAL-00054" summary="reformated">
+      <option name="closed" value="true" />
+      <created>1714738301103</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1714738301103</updated>
+    </task>
+    <task id="LOCAL-00055" summary="delete todo">
+      <option name="closed" value="true" />
+      <created>1714815880354</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1714815880354</updated>
+    </task>
+    <task id="LOCAL-00056" summary="modified net structure">
+      <option name="closed" value="true" />
+      <created>1714815950108</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1714815950108</updated>
+    </task>
+    <task id="LOCAL-00057" summary="添加KDDCup99数据集">
+      <option name="closed" value="true" />
+      <created>1714839975738</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1714839975738</updated>
+    </task>
+    <task id="LOCAL-00058" summary="优化网络结构">
+      <option name="closed" value="true" />
+      <created>1714840016393</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1714840016393</updated>
+    </task>
+    <task id="LOCAL-00059" summary="压缩数据集，便于上传">
+      <option name="closed" value="true" />
+      <created>1714841174795</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1714841174795</updated>
+    </task>
+    <task id="LOCAL-00060" summary="添加KDDCup99数据集，压缩数据集，便于上传">
+      <option name="closed" value="true" />
+      <created>1714841625045</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1714841625045</updated>
+    </task>
+    <task id="LOCAL-00061" summary="优化网络结构">
+      <option name="closed" value="true" />
+      <created>1714841631535</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1714841631535</updated>
+    </task>
+    <task id="LOCAL-00062" summary="添加KDDCup99数据集，压缩数据集，便于上传">
+      <option name="closed" value="true" />
+      <created>1714845465340</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1714845465340</updated>
+    </task>
+    <task id="LOCAL-00063" summary="优化网络结构">
+      <option name="closed" value="true" />
+      <created>1714845547160</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1714845547160</updated>
+    </task>
+    <task id="LOCAL-00064" summary="添加KDDCup99数据集，压缩数据集，便于上传">
+      <option name="closed" value="true" />
+      <created>1714845567363</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1714845567363</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -636,13 +658,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="Iterate over the 01Data_preProcess.py file" />
-    <MESSAGE value="rename file" />
-    <MESSAGE value="preprocessed all data maybe in need" />
-    <MESSAGE value="commented the code in main_pytorch_like_IDS.py with the help of GPT，&#10;Reformat main_in_IDS.py" />
-    <MESSAGE value="write todo work next day" />
-    <MESSAGE value="modified main_pytroch_like_IDS.py" />
-    <MESSAGE value="test build a neural network finish" />
     <MESSAGE value="add MNIST dataset" />
     <MESSAGE value="Implemented a simple CNN for handwritten digit recognition" />
     <MESSAGE value="modified batch_size" />
@@ -661,7 +676,14 @@
     <MESSAGE value="继续搭建基于Resnet+GoogLeNet_v3的CNN网络" />
     <MESSAGE value="交换normal列和dos列,将normal列放到前面(123列)" />
     <MESSAGE value="完成模型搭建" />
-    <option name="LAST_COMMIT_MESSAGE" value="完成模型搭建" />
+    <MESSAGE value="reformated" />
+    <MESSAGE value="delete todo" />
+    <MESSAGE value="modified net structure" />
+    <MESSAGE value="添加KDDCup99数据集" />
+    <MESSAGE value="压缩数据集，便于上传" />
+    <MESSAGE value="优化网络结构" />
+    <MESSAGE value="添加KDDCup99数据集，压缩数据集，便于上传" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加KDDCup99数据集，压缩数据集，便于上传" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main_pytroch_like_IDS.coverage" NAME="main_pytroch_like_IDS 覆盖结果" MODIFIED="1713018155292" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -672,13 +694,14 @@
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$simple_CNN_MNIST.coverage" NAME="simple_CNN_MNIST 覆盖结果" MODIFIED="1714735388557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$scratch.coverage" NAME="scratch 覆盖结果" MODIFIED="1714299031790" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$cuda.coverage" NAME="cuda 覆盖结果" MODIFIED="1714356826714" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$00KDDCpu99_Data_preProcess.coverage" NAME="00KDDCpu99_Data_preProcess 覆盖结果" MODIFIED="1714843618378" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$txt_to_csv.coverage" NAME="txt_to_csv 覆盖结果" MODIFIED="1712678018648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$structure_CNN.coverage" NAME="structure_CNN 覆盖结果" MODIFIED="1714642884127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_for_NIDS.coverage" NAME="CNN_for_NIDS 覆盖结果" MODIFIED="1714103325177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$shape_of_AlexNet_based_CNN.coverage" NAME="shape_of_AlexNet_based_CNN 覆盖结果" MODIFIED="1714306428624" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$build_simple_NN_pytroch.coverage" NAME="build_simple_NN_pytroch 覆盖结果" MODIFIED="1714356905229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01Data_preProcess.coverage" NAME="01Data_preProcess 覆盖结果" MODIFIED="1714737719375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_based_Resnet_GoogLe_v3.coverage" NAME="CNN_based_Resnet+GoogLe_v3 覆盖结果" MODIFIED="1714736671171" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/various_CNN" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01Data_preProcess.coverage" NAME="01Data_preProcess 覆盖结果" MODIFIED="1714845814819" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_based_Resnet_GoogLe_v3.coverage" NAME="CNN_based_Resnet+GoogLe_v3 覆盖结果" MODIFIED="1714844370970" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/various_CNN" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_encoding.coverage" NAME="Data_encoding 覆盖结果" MODIFIED="1712676493403" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/KDD_NSL" />
   </component>
 </project>
