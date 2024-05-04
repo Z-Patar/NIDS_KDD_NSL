@@ -83,54 +83,65 @@ class Residual(nn.Module):
         return F.relu(y)
 
 
-# 定义Resnet前的网络部分, out.shape = (batch_size, 32, 11, 11)
-before_resnet_block = nn.Sequential(
-    nn.Conv2d(1, 16, kernel_size=1),  # 1*1卷积
-    nn.BatchNorm2d(16), nn.ReLU(),  # BN+ReLU
-    nn.Conv2d(16, 32, kernel_size=3, padding=1),  # 3*3卷积，padding=1
-    # nn.MaxPool2d(kernel_size=3, padding=1)
-)
 # todo 当前所有resnet_inception块都没有改变通道数，稍后尝试在resnet_inception中改变通道数，
-# Resnet 1:Residual*2+一个3x3conv,
+# 定义Resnet前的网络部分,
+before_resnet_block = nn.Sequential(
+    nn.Conv2d(1, 8, kernel_size=1),  # 1*1卷积
+    nn.BatchNorm2d(8), nn.ReLU(),  # BN+ReLU
+    # nn.Conv2d(4, 8, kernel_size=3, padding=1),  # 3*3卷积，padding=1
+)  # out.shape = (batch_size, 8, 11, 11)
+
+# Resnet 1:Residual*2+一个3x3conv,in.shape = (-1, 8, 11, 11)
 resnet_block1 = nn.Sequential(
     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-    Residual(32, (2, 4, 4), (8, 16), 4, 8, ),
-    Residual(32, (2, 4, 4), (8, 16), 4, 8, ),
-    nn.Conv2d(32, 48, kernel_size=3, stride=1, padding=0),  # 32,11x11 -> 48,9x9
-    nn.BatchNorm2d(48), nn.ReLU(),  # 注意通道数
-)  # out.shape = (batch_size, 48, 9, 9)
+    Residual(8, (4, 1, 1), (2, 4), 1, 2, ),
+    Residual(8, (4, 1, 1), (2, 4), 1, 2, ),
+    nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=0),  # 8,11x11 -> 16,9x9
+    nn.BatchNorm2d(16), nn.ReLU(),  # 注意通道数
+)  # out.shape = (batch_size, 16, 9, 9)
 
 # Resnet 2:Residual*2 + 一个3x3conv,
 resnet_block2 = nn.Sequential(
     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-    Residual(48, (2, 4, 6), (12, 24), 6, 12, ),
-    Residual(48, (2, 4, 6), (12, 24), 6, 12, ),
-    nn.Conv2d(48, 64, kernel_size=3, stride=1, padding=0),  # 48,9x9 -> 64,7x7
-    nn.BatchNorm2d(64), nn.ReLU(),  # 注意通道数
-)  # out.shape = (batch_size, 64, 7, 7)
+    Residual(16, (2, 2, 2), (4, 8), 2, 4, ),
+    Residual(16, (2, 2, 2), (4, 8), 2, 4, ),
+    nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=0),  # 16,9x9 -> 32,7x7
+    nn.BatchNorm2d(32), nn.ReLU(),  # 注意通道数
+)  # out.shape = (batch_size, 32, 7, 7)
 
-# Resnet 3: Residual*2+一个3x3conv,
 resnet_block3 = nn.Sequential(
     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-    Residual(64, (2, 4, 8), (16, 32), 8, 16, ),
-    Residual(64, (2, 4, 8), (16, 32), 8, 16, ),
-    nn.Conv2d(64, 96, kernel_size=3, stride=1, padding=0),  # 64,7x7 -> 96,5x5
-    nn.BatchNorm2d(96), nn.ReLU(),
-)  # out.shape = (batch_size, 96, 5, 5)
+    Residual(32, (2, 2, 4), (8, 16), 4, 8, ),
+    Residual(32, (2, 2, 4), (8, 16), 4, 8, ),
+    # nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=0),  # 64,7x7 -> 64,3x3
+    Residual(32, (2, 4, 6), (12, 24), 6, 12, use_1x1conv=True),
+    Residual(48, (2, 4, 8), (16, 32), 8, 16, use_1x1conv=True),
+    nn.BatchNorm2d(64), nn.ReLU(),
+)  # out.shape = (batch_size, 64, 3, 3)
 
-# Resnet 4:Residual*2+一个3x3conv,
-resnet_block4 = nn.Sequential(
-    # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-    Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
-    Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
-    nn.Conv2d(96, 128, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(128), nn.ReLU(),
-)  # out.shape = (batch_size, 128, 3, 3)
+# # Resnet 3: Residual*2+一个3x3conv,
+# resnet_block3 = nn.Sequential(
+#     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
+#     Residual(64, (2, 4, 8), (16, 32), 8, 16, ),
+#     Residual(64, (2, 4, 8), (16, 32), 8, 16, ),
+#     nn.Conv2d(64, 96, kernel_size=3, stride=1, padding=0),  # 64,7x7 -> 96,5x5
+#     nn.BatchNorm2d(96), nn.ReLU(),
+# )  # out.shape = (batch_size, 96, 5, 5)
+#
+# # Resnet 4:Residual*2+一个3x3conv,
+# resnet_block4 = nn.Sequential(
+#     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
+#     Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
+#     Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
+#     nn.Conv2d(96, 128, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(128), nn.ReLU(),
+# )  # out.shape = (batch_size, 128, 3, 3)
+# todo 模型过拟合严重,需要修改网络架构
 
 net = nn.Sequential(
-    before_resnet_block, resnet_block1, resnet_block2, resnet_block3, resnet_block4,
-    nn.MaxPool2d(kernel_size=3),  # 对3x3大小的窗口池化，out.shape=(batch_size, 128, 1, 1)
+    before_resnet_block, resnet_block1, resnet_block2, resnet_block3,
+    nn.MaxPool2d(kernel_size=4),  # 对3x3大小的窗口池化，out.shape=(batch_size, 64, 1, 1)
     nn.Flatten(),
-    nn.Linear(128, 5),  # 五分类问题
+    nn.Linear(64, 5),  # 五分类问题
 )
 
 
@@ -206,6 +217,7 @@ def train_ch6(net, train_loader, test_loader, num_epochs, lr, device):
     train_accuracies = []
     test_accuracies = []
 
+    # 训练模型
     for epoch in range(num_epochs):
         net.train()
         train_loss = 0.0
@@ -239,13 +251,13 @@ def train_ch6(net, train_loader, test_loader, num_epochs, lr, device):
             f'Epoch {epoch + 1}/{num_epochs}, Train Loss: {train_loss:.4f}, Train Acc: {train_accuracy:.4f}, Test Acc: {test_accuracy:.4f}')
 
     # 绘制学习曲线
-    plot_learning_curve(train_losses, train_accuracies, test_accuracies)
+    plot_learning_curve(train_losses, train_accuracies, test_accuracies, num_epochs)
     # 绘制混淆矩阵
     class_labels = ['DOS 0', 'Normal 1', 'Probe', 'R2L', 'U2R']
     plot_confusion_matrix(net, test_loader, device, class_labels)
 
 
-def plot_learning_curve(train_losses, train_accuracies, test_accuracies):
+def plot_learning_curve(train_losses, train_accuracies, test_accuracies, num_epochs):
     plt.figure(figsize=(12, 6))
     plt.plot(range(1, num_epochs + 1), train_losses, label='Train Loss')
     plt.plot(range(1, num_epochs + 1), train_accuracies, label='Train Accuracy')
@@ -302,20 +314,21 @@ def plot_confusion_matrix(net, data_loader, device, class_names):
 
 if __name__ == "__main__":
     # 查看模型每一层的输出
-    # X = torch.rand(size=(1, 1, 11, 11))
-    # for layer in net:
-    #     X = layer(X)
-    #     print(layer.__class__.__name__, 'output shape:\t', X.shape)
+    X = torch.rand(size=(1, 1, 11, 11))
+    for layer in net:
+        X = layer(X)
+        print(layer.__class__.__name__, 'output shape:\t', X.shape)
 
     # 设定超参数
     learning_rate = 0.01
-    num_epochs = 10
-    batch_size = 128
+    numb_epochs = 10
+    batch_size = 256
     train_file_path = '../Data_encoded/Train_encoded.csv'
     test_file_path = '../Data_encoded/Test_encoded.csv'
     # 加载数据
     train_dataset, test_dataset = load_data(train_file_path, test_file_path)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size)
+    train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test__data_loader = DataLoader(test_dataset, batch_size=batch_size)
     model = net
-    train_ch6(model, train_loader, test_loader, num_epochs=num_epochs, lr=learning_rate, device=try_device())
+    train_ch6(model, train_data_loader, test__data_loader,
+              num_epochs=numb_epochs, lr=learning_rate, device=try_device())
