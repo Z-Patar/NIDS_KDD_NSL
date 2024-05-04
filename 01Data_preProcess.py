@@ -60,9 +60,7 @@ def preProcess(source_data_path, preprocessed_data_path):
 # KDDTrain+_20Percent中只有66种service类型
 # KDDTrain+_20Percent_top200items中只有31种service类型
 # 用全集编码后再编码子集
-# todo 输入特征项共 １２２维，舍弃其中 ｉｓ＿ｈｏｔ＿ｌｏｇｉｎ特征项，此项特征的值都为 ０，对入侵检测分类结果作用为零。
-#   将其转换为 １１×１１维的二维的“图像数据”，全连接层采用 Ｓｏｆｔｍａｘ进行分类。
-#  已在模型前处理
+
 def oneHot_encoding(data_file_path):
     # print(data_file_path + ' One-hot encoding...')
 
