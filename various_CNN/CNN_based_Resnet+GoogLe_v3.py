@@ -88,7 +88,8 @@ class Residual(nn.Module):
 before_resnet_block = nn.Sequential(
     nn.Conv2d(1, 8, kernel_size=1),  # 1*1卷积
     nn.BatchNorm2d(8), nn.ReLU(),  # BN+ReLU
-    # nn.Conv2d(4, 8, kernel_size=3, padding=1),  # 3*3卷积，padding=1
+    # nn.Conv2d(1, 8, kernel_size=3, padding=1),  # 3*3卷积，padding=1
+    # nn.BatchNorm2d(8), nn.ReLU(),  # BN+ReLU
 )  # out.shape = (batch_size, 8, 11, 11)
 
 # Resnet 1:Residual*2+一个3x3conv,in.shape = (-1, 8, 11, 11)
@@ -302,6 +303,7 @@ def plot_confusion_matrix(net, data_loader, device, class_names):
             all_labels.extend(y.cpu().numpy())
 
     cm = confusion_matrix(all_labels, all_preds)
+    print(cm)
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
     plt.xticks(np.arange(len(class_names)) + 0.5, class_names, rotation=45)
@@ -323,7 +325,8 @@ if __name__ == "__main__":
     learning_rate = 0.01
     numb_epochs = 10
     batch_size = 256
-    train_file_path = '../Data_encoded/Train_encoded.csv'
+    # train_file_path = '../Data_encoded/Train_encoded.csv'   # KDD_NSL的训练集
+    train_file_path = '../KDDCup99/data_encoded/Train_encoded.csv'  # KDD Cup99的训练集
     test_file_path = '../Data_encoded/Test_encoded.csv'
     # 加载数据
     train_dataset, test_dataset = load_data(train_file_path, test_file_path)
