@@ -82,12 +82,11 @@ class Residual(nn.Module):
         y += x
         return F.relu(y)
 
-
-# todo 当前所有resnet_inception块都没有改变通道数，稍后尝试在resnet_inception中改变通道数，
+# todo 优化模型过拟合现象
 # 定义Resnet前的网络部分,
 before_resnet_block = nn.Sequential(
-    # nn.Conv2d(1, 8, kernel_size=1),  # 1*1卷积
-    # # nn.BatchNorm2d(8), nn.ReLU(),  # BN+ReLU
+    nn.Conv2d(1, 8, kernel_size=1),  # 1*1卷积
+    nn.BatchNorm2d(8), nn.ReLU(),  # BN+ReLU
     # nn.Conv2d(1, 8, kernel_size=3, padding=1),  # 3*3卷积，padding=1
     # nn.BatchNorm2d(8), nn.ReLU(),  # BN+ReLU
 )  # out.shape = (batch_size, 8, 11, 11)
@@ -95,7 +94,7 @@ before_resnet_block = nn.Sequential(
 # Resnet 1:Residual*2+一个3x3conv,in.shape = (-1, 8, 11, 11)
 resnet_block1 = nn.Sequential(
     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-    Residual(1, (4, 1, 1), (2, 4), 1, 2, True),
+    Residual(8, (4, 1, 1), (2, 4), 1, 2, ),
     Residual(8, (4, 1, 1), (2, 4), 1, 2, ),
     nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=0),  # 8,11x11 -> 16,9x9
     nn.BatchNorm2d(16), nn.ReLU(),  # 注意通道数
@@ -106,15 +105,12 @@ resnet_block2 = nn.Sequential(
     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
     Residual(16, (2, 2, 2), (4, 8), 2, 4, ),
     Residual(16, (2, 2, 2), (4, 8), 2, 4, ),
-    nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=0),  # 16,9x9 -> 32,7x7
+    nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=0),  # 16,9x9 -> 32,4x4
     nn.BatchNorm2d(32), nn.ReLU(),  # 注意通道数
-)  # out.shape = (batch_size, 32, 7, 7)
+)  # out.shape = (batch_size, 32, 4, 4)
 
 resnet_block3 = nn.Sequential(
     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-    Residual(32, (2, 2, 4), (8, 16), 4, 8, ),
-    Residual(32, (2, 2, 4), (8, 16), 4, 8, ),
-    # nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=0),  # 64,7x7 -> 64,3x3
     Residual(32, (2, 4, 6), (12, 24), 6, 12, use_1x1conv=True),
     Residual(48, (2, 4, 8), (16, 32), 8, 16, use_1x1conv=True),
     nn.BatchNorm2d(64), nn.ReLU(),
@@ -136,13 +132,19 @@ resnet_block3 = nn.Sequential(
 #     Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
 #     nn.Conv2d(96, 128, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(128), nn.ReLU(),
 # )  # out.shape = (batch_size, 128, 3, 3)
-# todo 模型过拟合严重,需要修改网络架构
 
-net = nn.Sequential(
+CNNNet_Resnet_Inception = nn.Sequential(
     before_resnet_block, resnet_block1, resnet_block2, resnet_block3,
     nn.MaxPool2d(kernel_size=4),  # 对3x3大小的窗口池化，out.shape=(batch_size, 64, 1, 1)
     nn.Flatten(),
     nn.Linear(64, 5),  # 五分类问题
+)
+CNNNet_simple = nn.Sequential(
+    nn.Conv2d(1, 8, kernel_size=1), nn.BatchNorm2d(8), nn.ReLU(),   # 11x11
+    nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(16), nn.ReLU(),     # 9x9
+    nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=0), nn.BatchNorm2d(32), nn.ReLU(),   # 4x4
+    nn.MaxPool2d(kernel_size=4), nn.Flatten(),
+    nn.Linear(32, 5),  # 五分类问题
 )
 
 
@@ -157,10 +159,31 @@ class CustomDataset(Dataset):
     def __len__(self):
         return len(self.features)
 
+    # def __getitem__(self, idx):
+    #     feature = torch.tensor(self.features[idx], dtype=torch.float32)
+    #     # label = torch.tensor(self.labels[idx], dtype=torch.long)
+    #     label = self.labels[idx]
+    #     return feature, label
     def __getitem__(self, idx):
-        feature = torch.tensor(self.features[idx], dtype=torch.float32)
-        # label = torch.tensor(self.labels[idx], dtype=torch.long)
+        feature = self.features[idx]
         label = self.labels[idx]
+
+        # 确保 feature 是一个数值型数组
+        if isinstance(feature, np.ndarray):
+            if feature.dtype.type is np.str_ or feature.dtype.type is np.object_:
+                raise ValueError("Features must be numeric")
+
+        # 如果 feature 不是一个 ndarray，或者它的 dtype 不是浮点数，尝试将其转换
+        if not isinstance(feature, np.ndarray) or feature.dtype != 'float32':
+            feature = np.array(feature, dtype=np.float32)
+
+        # 转换为 PyTorch 张量
+        feature = torch.tensor(feature, dtype=torch.float32)
+
+        # 如果标签不是一个张量，转换它
+        if not torch.is_tensor(label):
+            label = torch.tensor(label, dtype=torch.long)
+
         return feature, label
 
 
@@ -211,7 +234,7 @@ def train_ch6(net, train_loader, test_loader, num_epochs, lr, device):
     print('Training on', device)
     net.to(device)
 
-    optimizer = optim.Adam(net.parameters(), lr=lr)
+    optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=1)
     loss_fn = nn.CrossEntropyLoss()
 
     train_losses = []
@@ -254,8 +277,10 @@ def train_ch6(net, train_loader, test_loader, num_epochs, lr, device):
     # 绘制学习曲线
     plot_learning_curve(train_losses, train_accuracies, test_accuracies, num_epochs)
     # 绘制混淆矩阵
-    class_labels = ['DOS 0', 'Normal 1', 'Probe', 'R2L', 'U2R']
+    class_labels = ['DOS', 'Normal', 'Probe', 'R2L', 'U2R']
     plot_confusion_matrix(net, test_loader, device, class_labels)
+    # 计算precision，recall，F1—score
+    calculate_metrics(net, test_loader, device)
 
 
 def plot_learning_curve(train_losses, train_accuracies, test_accuracies, num_epochs):
@@ -288,7 +313,7 @@ def evaluate_accuracy(net, data_loader, device):
     return accuracy
 
 
-# todo 混淆矩阵的坐标轴从数字改为坐标
+# 混淆矩阵图的坐标轴label在PyCharm中看不见，但图片另存后就可以看见了
 def plot_confusion_matrix(net, data_loader, device, class_names):
     net.eval()
     all_preds = []
@@ -305,33 +330,65 @@ def plot_confusion_matrix(net, data_loader, device, class_names):
     cm = confusion_matrix(all_labels, all_preds)
     print(cm)
     plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-    plt.xticks(np.arange(len(class_names)) + 0.5, class_names, rotation=45)
-    plt.yticks(np.arange(len(class_names)) + 0.5, class_names, rotation=0)
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=class_names, yticklabels=class_names)
+    # plt.xticks(np.arange(len(class_names)) + 0.5, class_names, rotation=45)
+    # plt.yticks(np.arange(len(class_names)) + 0.5, class_names, rotation=0)
     plt.xlabel('Predicted labels')
     plt.ylabel('True labels')
     plt.title('Confusion Matrix')
     plt.show()
 
 
+def calculate_metrics(net, data_loader, device):
+    net.eval()
+    all_preds = []
+    all_labels = []
+
+    with torch.no_grad():
+        for X, y in data_loader:
+            X, y = X.to(device), y.to(device)
+            outputs = net(X)
+            _, predicted = torch.max(outputs, 1)
+            all_preds.extend(predicted.cpu().numpy())
+            all_labels.extend(y.cpu().numpy())
+
+    cm = confusion_matrix(all_labels, all_preds)
+    num_classes = cm.shape[0]
+    class_labels = ['DOS 0', 'Normal 1', 'Probe', 'R2L', 'U2R']
+    for i in range(num_classes):
+        TP = cm[i, i]
+        FP = np.sum(cm[:, i]) - TP
+        FN = np.sum(cm[i, :]) - TP
+
+        precision = TP / (TP + FP) if TP + FP > 0 else 0
+        recall = TP / (TP + FN) if TP + FN > 0 else 0
+        f1_score = 2 * (precision * recall) / (precision + recall) if precision + recall > 0 else 0
+
+        print(f'Class {i}: Precision={precision:.4f}, Recall={recall:.4f}, F1-Score={f1_score:.4f}')
+
+
 if __name__ == "__main__":
-    # 查看模型每一层的输出
-    X = torch.rand(size=(1, 1, 11, 11))
-    for layer in net:
-        X = layer(X)
-        print(layer.__class__.__name__, 'output shape:\t', X.shape)
+    # # 查看模型每一层的输出
+    # X = torch.rand(size=(1, 1, 11, 11))
+    # for layer in CNNNet_simple:
+    #     X = layer(X)
+    #     print(layer.__class__.__name__, 'output shape:\t', X.shape)
 
     # 设定超参数
     learning_rate = 0.01
     numb_epochs = 10
     batch_size = 256
-    train_file_path = '../Data_encoded/matrix_data/Train_encoded.csv'  # KDD_NSL的训练集
+    train_file_path = '../Data_encoded/matrix_data/Train_20Percent_encoded.csv'  # KDD_NSL的训练集
     # train_file_path = '../KDDCup99/data_encoded/Train_encoded.csv'  # KDD Cup99的训练集
     test_file_path = '../Data_encoded/matrix_data/Test_encoded.csv'
     # 加载数据
     train_dataset, test_dataset = load_data(train_file_path, test_file_path)
     train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test__data_loader = DataLoader(test_dataset, batch_size=batch_size)
-    model = net
-    train_ch6(model, train_data_loader, test__data_loader,
+    ResCNN = CNNNet_Resnet_Inception
+    train_ch6(ResCNN, train_data_loader, test__data_loader,
+              num_epochs=numb_epochs, lr=learning_rate, device=try_device())
+
+    Simple_CNN = CNNNet_simple
+    train_ch6(Simple_CNN, train_data_loader, test__data_loader,
               num_epochs=numb_epochs, lr=learning_rate, device=try_device())

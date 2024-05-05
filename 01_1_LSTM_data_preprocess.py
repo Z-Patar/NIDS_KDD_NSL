@@ -26,8 +26,8 @@ from sklearn.preprocessing import MinMaxScaler
 def preProcess(source_data_path, preprocessed_data_path):
     source_file = source_data_path
     processed_file = preprocessed_data_path
-    field_name_file = 'KDD_NSL/Temp_Data/field_name_file.csv'
-    attack_type_file = 'KDD_NSL/Temp_Data/attack_type_file.csv'
+    field_name_file = 'KDD_NSL/field_name_file.csv'
+    attack_type_file = 'KDD_NSL/attack_type_file.csv'
 
     # 定义dataframe ，并定义column name，方便索引
     df = pd.read_csv(field_name_file, header=None, names=['name', 'data_type'])
@@ -156,10 +156,10 @@ def scale_data(source_data_path):
 def preProcess_all():
     print('all data begin Preprocess ...\n')
     # 源文件路径
-    Train_file = 'KDD_NSL/Temp_Data/KDDTrain+.csv'
-    Train_20_file = 'KDD_NSL/Temp_Data/KDDTrain+_20Percent.csv'
-    Test_file = 'KDD_NSL/Temp_Data/KDDTest+.csv'
-    Test_21_file = 'KDD_NSL/Temp_Data/KDDTest-21.csv'  # Test去掉难度为21级(共21级)的子集
+    Train_file = 'KDD_NSL/KDDTrain+.csv'
+    Train_20_file = 'KDD_NSL/KDDTrain+_20Percent.csv'
+    Test_file = 'KDD_NSL/KDDTest+.csv'
+    Test_21_file = 'KDD_NSL/KDDTest-21.csv'  # Test去掉难度为21级(共21级)的子集
 
     # 加表头，去掉第43列的难度等级后的文件路径
     Processed_full_Train_file = 'KDD_NSL/Temp_Data/full_Train.csv'  # 作为全service类型文件独热编码，保证其他缺项文件独热编码一致

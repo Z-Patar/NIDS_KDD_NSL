@@ -5,7 +5,9 @@
 
 import os
 import pandas as pd
+from imblearn.over_sampling import ADASYN
 from sklearn.preprocessing import MinMaxScaler
+from collections import Counter
 
 
 # preProcess函数
@@ -26,8 +28,8 @@ from sklearn.preprocessing import MinMaxScaler
 def preProcess(source_data_path, preprocessed_data_path):
     source_file = source_data_path
     processed_file = preprocessed_data_path
-    field_name_file = 'KDD_NSL/Temp_Data/field_name_file.csv'
-    attack_type_file = 'KDD_NSL/Temp_Data/attack_type_file.csv'
+    field_name_file = 'KDD_NSL/field_name_file.csv'
+    attack_type_file = 'KDD_NSL/attack_type_file.csv'
 
     # 定义dataframe ，并定义column name，方便索引
     df = pd.read_csv(field_name_file, header=None, names=['name', 'data_type'])
@@ -50,9 +52,81 @@ def preProcess(source_data_path, preprocessed_data_path):
     # 将文件写入处理后文件
     df.to_csv(processed_file, index=False)
 
-    # print(df.info())
-    # df = pd.read_csv(processed_file)
-    # print(df)
+
+# 添加超采样函数
+def imbalance_preProcess(source_data_path, preprocessed_data_path):
+    source_file = source_data_path
+    processed_file = preprocessed_data_path
+    field_name_file = 'KDD_NSL/field_name_file.csv'
+    attack_type_file = 'KDD_NSL/attack_type_file.csv'
+
+    # 定义dataframe，并定义column name，方便索引
+    df = pd.read_csv(field_name_file, header=None, names=['name', 'data_type'])
+    filed_names = df['name'].tolist()
+
+    # 读取数据，带表头
+    df = pd.read_csv(source_file, header=None, names=filed_names)
+    # 删除第43列的'难度等级'
+    df.drop(['difficult_level'], axis=1, inplace=True)
+
+    # 从CSV文件中读取映射,定义22种攻击小类标签对应的攻击类型
+    attack_type_df = pd.read_csv(attack_type_file, header=None, names=['name', 'attack_type'])
+    # 定义5大类和22小类的映射字典，方便替代
+    mapping = attack_type_df.set_index('name').to_dict()['attack_type']
+
+    # 替换训练集label中22小类为5大类标签
+    df['label'] = df['label'].replace(mapping)
+
+    # 对数据进行超采样
+    # 首先，我们需要将非数值列转换为数值，因为SMOTE仅适用于数值数据
+    # 假设所有非数值列都已经是分类编码的，如果不是，需要先进行转换
+    categorical_columns = df.select_dtypes(include=['object']).columns
+    df[categorical_columns] = df[categorical_columns].astype('category')
+    for column in categorical_columns:
+        df[column] = df[column].cat.codes
+
+    # 定义我们的特征和标签
+    X = df.drop('label', axis=1)
+    y = df['label']
+
+    # 初始化ADASYN对象
+    adasyn = ADASYN(sampling_strategy='not majority')  # 这将对所有非多数类进行过采样
+
+    # 应用ADASYN
+    X_resampled, y_resampled = adasyn.fit_resample(X, y)
+
+    # 创建一个新的DataFrame，包含了超采样后的数据
+    df_resampled = pd.DataFrame(X_resampled, columns=X.columns)
+    df_resampled['label'] = y_resampled
+
+    # 将超采样后的文件写入处理后文件
+    df_resampled.to_csv(processed_file, index=False)
+
+
+# 初步处理所有源数据,以便后面进一步处理
+def preProcess_all():
+    print('all data begin Preprocess ...\n')
+    # 源文件路径
+    Train_file = 'KDD_NSL/KDDTrain+.csv'
+    Train_20_file = 'KDD_NSL/KDDTrain+_20Percent.csv'
+    Test_file = 'KDD_NSL/KDDTest+.csv'
+    Test_21_file = 'KDD_NSL/KDDTest-21.csv'  # Test去掉难度为21级(共21级)的子集
+
+    # 加表头，去掉第43列的难度等级后的文件路径
+    Processed_full_Train_file = 'KDD_NSL/Temp_Data/full_Train.csv'  # 作为全service类型文件独热编码，保证其他缺项文件独热编码一致
+    Processed_Train_file = 'KDD_NSL/Temp_Data/Train.csv'
+    Processed_Train_20_file = 'KDD_NSL/Temp_Data/Train_20Percent.csv'
+    Processed_Test_file = 'KDD_NSL/Temp_Data/Test.csv'
+    Processed_Test_21_file = 'KDD_NSL/Temp_Data/Test_21.csv'
+
+    # 为数据文件添加表头，去除difficult_level，以方便后面的子集使用该文件进行独热编码，运行一次就好
+    preProcess(Train_file, Processed_full_Train_file)
+    preProcess(Train_file, Processed_Train_file)  # 对训练集进行超采样
+    preProcess(Train_20_file, Processed_Train_20_file)    # 对训练集进行超采样
+    preProcess(Test_file, Processed_Test_file)
+    preProcess(Test_21_file, Processed_Test_21_file)
+
+    print("All data preprocess done!\n")
 
 
 # 独热编码字符型数据
@@ -60,7 +134,6 @@ def preProcess(source_data_path, preprocessed_data_path):
 # KDDTrain+_20Percent中只有66种service类型
 # KDDTrain+_20Percent_top200items中只有31种service类型
 # 用全集编码后再编码子集
-
 def oneHot_encoding(data_file_path):
     # print(data_file_path + ' One-hot encoding...')
 
@@ -152,33 +225,6 @@ def scale_data(source_data_path):
     print(source_file + ' Scaling done!\n')
 
 
-# 初步处理所有源数据,以便后面进一步处理
-def preProcess_all():
-    print('all data begin Preprocess ...\n')
-    # 源文件路径
-    Train_file = 'KDD_NSL/Temp_Data/KDDTrain+.csv'
-    Train_20_file = 'KDD_NSL/Temp_Data/KDDTrain+_20Percent.csv'
-    Test_file = 'KDD_NSL/Temp_Data/KDDTest+.csv'
-    Test_21_file = 'KDD_NSL/Temp_Data/KDDTest-21.csv'  # Test去掉难度为21级(共21级)的子集
-
-    # 加表头，去掉第43列的难度等级后的文件路径
-    Processed_full_Train_file = 'KDD_NSL/Temp_Data/full_Train.csv'  # 作为全service类型文件独热编码，保证其他缺项文件独热编码一致
-    Processed_Train_file = 'KDD_NSL/Temp_Data/Train.csv'
-    Processed_Train_20_file = 'KDD_NSL/Temp_Data/Train_20Percent.csv'
-    Processed_Test_file = 'KDD_NSL/Temp_Data/Test.csv'
-    Processed_Test_21_file = 'KDD_NSL/Temp_Data/Test_21.csv'
-
-    # 为数据文件添加表头，去除difficult_level，以方便后面的子集使用该文件进行独热编码，运行一次就好
-    preProcess(Train_file, Processed_full_Train_file)
-    preProcess(Train_file, Processed_Train_file)
-    preProcess(Train_20_file, Processed_Train_20_file)
-    # preProcess(Train_20_top200_file, Processed_Train_20_top200_file)
-    preProcess(Test_file, Processed_Test_file)
-    preProcess(Test_21_file, Processed_Test_21_file)
-
-    print("All data preprocess done!\n")
-
-
 # 独热编码所有数据
 def one_hot_all():
     print('all data begin One-hot encode ...\n')
@@ -267,21 +313,34 @@ def exchange_all_nad():
     exchange_normal_and_dos(test_21_data)
 
 
-if __name__ == '__main__':
-    # # print("All data preprocess begin! ...\n")
-    # # 为数据文件添加表头，去除'difficult_level'
-    # preProcess_all()
-    #
-    # # 独热编码
-    # one_hot_all()
-    #
-    # # 归一化
-    # scale_all()
-    #
-    # print("All data preprocess finish!\n")
-    #
-    # # 查看数据文件的shape
-    # print_all_data_info()
+# 简单定义一个print 函数
+def print_label_dist(label_col):
+    c = Counter(label_col)
+    print(f'label is {c}')
 
-    # 查看编码后的数据文件,如果dos在123列,normal在124列,则运行下面的数据,交换两列数据
-    exchange_all_nad()
+
+if __name__ == '__main__':
+    print("All data preprocess begin! ...\n")
+    # 为数据文件添加表头，去除'difficult_level'
+    preProcess_all()
+
+    # 独热编码
+    one_hot_all()
+
+    # 归一化
+    scale_all()
+
+    print("All data preprocess finish!\n")
+
+    # 查看数据文件的shape
+    print_all_data_info()
+
+    # # 查看编码后的数据文件,如果dos在123列,normal在124列,则运行下面的数据,交换两列数据
+    # exchange_all_nad()
+
+    # df_train = pd.read_csv('KDD_NSL/Temp_Data/Train.csv')
+    # df_train_20 = pd.read_csv('KDD_NSL/Temp_Data/Train_20Percent.csv')
+    # df_test = pd.read_csv('KDD_NSL/Temp_Data/Test.csv')
+    # print_label_dist(df_train['label'])
+    # print_label_dist(df_train_20['label'])
+    # print_label_dist(df_test['label'])
