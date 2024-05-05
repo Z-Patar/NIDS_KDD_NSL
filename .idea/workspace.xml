@@ -5,12 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="添加KDDCup99数据集，压缩数据集，便于上传">
+      <change afterPath="$PROJECT_DIR$/01_1_LSTM_data_preprocess.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/various_CNN/CNN_BiLSTM.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/01Data_preProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/01Data_preProcess.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data_encoded/Test_21_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/Test_21_encoded.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data_encoded/Test_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/Test_encoded.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data_encoded/Train_20Percent_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/Train_20Percent_encoded.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data_encoded/Train_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/Train_encoded.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01Data_preProcess.py" beforeDir="false" afterPath="$PROJECT_DIR$/01matrix_Data_preProcess.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CNN_for_NIDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/02CNN_for_NIDS.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data_encoded/Test_21_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/matrix_data/Test_21_encoded.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data_encoded/Test_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/matrix_data/Test_encoded.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data_encoded/Train_20Percent_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/matrix_data/Train_20Percent_encoded.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data_encoded/Train_encoded.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data_encoded/matrix_data/Train_encoded.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build_simple_NN_pytroch.py" beforeDir="false" afterPath="$PROJECT_DIR$/build_simple_NN_pytroch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/various_CNN/CNN_based_Resnet+GoogLe_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/various_CNN/CNN_based_Resnet+GoogLe_v3.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,6 +85,7 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Python.00KDDCpu99_Data_preProcess.executor": "Run",
     "Python.01Data_preProcess.executor": "Run",
+    "Python.01_1_LSTM_data_preprocess.executor": "Run",
     "Python.CNN_based_Resnet+GoogLe_v3.executor": "Run",
     "Python.CNN_for_NIDS.executor": "Run",
     "Python.Data_Pre_process.executor": "Run",
@@ -119,11 +125,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Git-Repository\NIDS_KDD_NSL\Data_encoded\matrix_data" />
+      <recent name="E:\Git-Repository\NIDS_KDD_NSL\Data_encoded" />
+      <recent name="E:\Git-Repository\NIDS_KDD_NSL\various_CNN" />
       <recent name="C:\Users\Patar\AppData\Roaming\JetBrains\PyCharm2024.1\scratches" />
       <recent name="E:\Git-Repository\NIDS_KDD_NSL" />
-      <recent name="E:\Git-Repository\NIDS_KDD_NSL\KDDCup99" />
-      <recent name="E:\Git-Repository\NIDS_KDD_NSL\KDD_NSL" />
-      <recent name="E:\Git-Repository\NIDS_KDD_NSL\Data_encoded" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -194,23 +200,8 @@
       <workItem from="1714091420922" duration="23637000" />
       <workItem from="1714298237982" duration="13214000" />
       <workItem from="1714460704861" duration="1971000" />
-      <workItem from="1714613576788" duration="58365000" />
-    </task>
-    <task id="LOCAL-00016" summary="delete Data_Pre_process.py">
-      <option name="closed" value="true" />
-      <created>1712762194980</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1712762194980</updated>
-    </task>
-    <task id="LOCAL-00017" summary="improve one_hot encoding">
-      <option name="closed" value="true" />
-      <created>1712767775574</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1712767775574</updated>
+      <workItem from="1714613576788" duration="58873000" />
+      <workItem from="1714893060118" duration="2885000" />
     </task>
     <task id="LOCAL-00018" summary="improve one_hot encoding">
       <option name="closed" value="true" />
@@ -588,7 +579,23 @@
       <option name="project" value="LOCAL" />
       <updated>1714845567363</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="添加KDDCup99数据集，压缩数据集，便于上传">
+      <option name="closed" value="true" />
+      <created>1714846174015</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1714846174015</updated>
+    </task>
+    <task id="LOCAL-00066" summary="添加KDDCup99数据集，压缩数据集，便于上传">
+      <option name="closed" value="true" />
+      <created>1714846201294</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1714846201294</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -689,19 +696,20 @@
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main_pytroch_like_IDS.coverage" NAME="main_pytroch_like_IDS 覆盖结果" MODIFIED="1713018155292" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_preProcess.coverage" NAME="Data_preProcess 覆盖结果" MODIFIED="1712845043606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$GoogLeNet.coverage" NAME="GoogLeNet 覆盖结果" MODIFIED="1714355355814" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main.coverage" NAME="main 覆盖结果" MODIFIED="1713015373631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main.coverage" NAME="main 覆盖结果" MODIFIED="1714893457525" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_Pre_process.coverage" NAME="Data_Pre_process 覆盖结果" MODIFIED="1712680263854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$simple_CNN_MNIST.coverage" NAME="simple_CNN_MNIST 覆盖结果" MODIFIED="1714735388557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$scratch.coverage" NAME="scratch 覆盖结果" MODIFIED="1714299031790" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$cuda.coverage" NAME="cuda 覆盖结果" MODIFIED="1714356826714" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01_1_LSTM_data_preprocess.coverage" NAME="01_1_LSTM_data_preprocess 覆盖结果" MODIFIED="1714901801102" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$00KDDCpu99_Data_preProcess.coverage" NAME="00KDDCpu99_Data_preProcess 覆盖结果" MODIFIED="1714843618378" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$txt_to_csv.coverage" NAME="txt_to_csv 覆盖结果" MODIFIED="1712678018648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$structure_CNN.coverage" NAME="structure_CNN 覆盖结果" MODIFIED="1714642884127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_for_NIDS.coverage" NAME="CNN_for_NIDS 覆盖结果" MODIFIED="1714103325177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$shape_of_AlexNet_based_CNN.coverage" NAME="shape_of_AlexNet_based_CNN 覆盖结果" MODIFIED="1714306428624" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$build_simple_NN_pytroch.coverage" NAME="build_simple_NN_pytroch 覆盖结果" MODIFIED="1714356905229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01Data_preProcess.coverage" NAME="01Data_preProcess 覆盖结果" MODIFIED="1714845814819" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_based_Resnet_GoogLe_v3.coverage" NAME="CNN_based_Resnet+GoogLe_v3 覆盖结果" MODIFIED="1714844370970" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/various_CNN" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01Data_preProcess.coverage" NAME="01Data_preProcess 覆盖结果" MODIFIED="1714894006315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_based_Resnet_GoogLe_v3.coverage" NAME="CNN_based_Resnet+GoogLe_v3 覆盖结果" MODIFIED="1714901589306" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/various_CNN" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_encoding.coverage" NAME="Data_encoding 覆盖结果" MODIFIED="1712676493403" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/KDD_NSL" />
   </component>
 </project>

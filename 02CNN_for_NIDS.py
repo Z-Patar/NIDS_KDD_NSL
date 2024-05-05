@@ -69,7 +69,7 @@ def load_data(file_path):
 
 
 def train():
-    file_path = 'Data_encoded/Train_encoded.csv'  # 数据集文件路径
+    file_path = 'Data_encoded/matrix_data/Train_encoded.csv'  # 数据集文件路径
 
     # 加载数据
     feature, label = load_data(file_path)

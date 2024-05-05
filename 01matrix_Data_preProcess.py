@@ -71,7 +71,7 @@ def oneHot_encoding(data_file_path):
     # 提取子集文件名，生成新的文件名
     subset_file_name = os.path.basename(data_file_path)  # 提取文件名，例如 "Your_Subset.csv"
     subset_file_name_without_ext = os.path.splitext(subset_file_name)[0]  # 去掉扩展名，例如 "Your_Subset"
-    new_file_name = f"Data_encoded/{subset_file_name_without_ext}_encoded.csv"  # 添加后缀，生成新的文件名，例如 "Data_encoded/Your_Subset_encoded.csv"
+    new_file_name = f"Data_encoded/matrix_data/{subset_file_name_without_ext}_encoded.csv"  # 添加后缀，生成新的文件名，例如 "Data_encoded/Your_Subset_encoded.csv"
 
     # 假设第2\3\4列是需要独热编码的列。如果要编码label，只需要将 "label" 添加到 columns_to_encode 列表中
     columns_to_encode = ['protocol_type', 'service', 'flag', 'label']
@@ -158,7 +158,6 @@ def preProcess_all():
     # 源文件路径
     Train_file = 'KDD_NSL/Temp_Data/KDDTrain+.csv'
     Train_20_file = 'KDD_NSL/Temp_Data/KDDTrain+_20Percent.csv'
-    # Train_20_top200_file = 'Temp_Data/KDDTrain+_20Percent_top200Item.csv'
     Test_file = 'KDD_NSL/Temp_Data/KDDTest+.csv'
     Test_21_file = 'KDD_NSL/Temp_Data/KDDTest-21.csv'  # Test去掉难度为21级(共21级)的子集
 
@@ -166,7 +165,6 @@ def preProcess_all():
     Processed_full_Train_file = 'KDD_NSL/Temp_Data/full_Train.csv'  # 作为全service类型文件独热编码，保证其他缺项文件独热编码一致
     Processed_Train_file = 'KDD_NSL/Temp_Data/Train.csv'
     Processed_Train_20_file = 'KDD_NSL/Temp_Data/Train_20Percent.csv'
-    # Processed_Train_20_top200_file = 'Temp_Data/Train_20Percent_top200.csv'
     Processed_Test_file = 'KDD_NSL/Temp_Data/Test.csv'
     Processed_Test_21_file = 'KDD_NSL/Temp_Data/Test_21.csv'
 
@@ -204,11 +202,10 @@ def one_hot_all():
 def scale_all():
     print("all data begin scale:")
 
-    Train_file = 'Data_encoded/Train_encoded.csv'
-    Train_20_file = 'Data_encoded/Train_20Percent_encoded.csv'
-    # Train_20_top200_file = 'Train_20Percent_top200_encoded.csv'
-    Test_file = 'Data_encoded/Test_encoded.csv'
-    Test_21_file = 'Data_encoded/Test_21_encoded.csv'
+    Train_file = 'Data_encoded/matrix_data/Train_encoded.csv'
+    Train_20_file = 'Data_encoded/matrix_data/Train_20Percent_encoded.csv'
+    Test_file = 'Data_encoded/matrix_data/Test_encoded.csv'
+    Test_21_file = 'Data_encoded/matrix_data/Test_21_encoded.csv'
     scale_data(Train_file)
     scale_data(Train_20_file)
     # scale_data(Train_20_top200_file)
@@ -228,10 +225,10 @@ def print_data_info(data_file_path):
 
 # 打印所有预处理完成的数据文件信息
 def print_all_data_info():
-    test_data = 'Data_encoded/Test_encoded.csv'
-    test_21_data = 'Data_encoded/Test_21_encoded.csv'
-    train_data = 'Data_encoded/Train_encoded.csv'
-    train_21_data = 'Data_encoded/Train_20Percent_encoded.csv'
+    test_data = 'Data_encoded/matrix_data/Test_encoded.csv'
+    test_21_data = 'Data_encoded/matrix_data/Test_21_encoded.csv'
+    train_data = 'Data_encoded/matrix_data/Train_encoded.csv'
+    train_21_data = 'Data_encoded/matrix_data/Train_20Percent_encoded.csv'
 
     print("All preprocessed data info is as follows :")
     print_data_info(test_data)
@@ -260,10 +257,10 @@ def exchange_normal_and_dos(file_path):
 
 
 def exchange_all_nad():
-    train_data = 'Data_encoded/Train_encoded.csv'
-    train_20p_data = 'Data_encoded/Train_20Percent_encoded.csv'
-    test_data = 'Data_encoded/Test_encoded.csv'
-    test_21_data = 'Data_encoded/Test_21_encoded.csv'
+    train_data = 'Data_encoded/matrix_data/Train_encoded.csv'
+    train_20p_data = 'Data_encoded/matrix_data/Train_20Percent_encoded.csv'
+    test_data = 'Data_encoded/matrix_data/Test_encoded.csv'
+    test_21_data = 'Data_encoded/matrix_data/Test_21_encoded.csv'
     exchange_normal_and_dos(train_data)
     exchange_normal_and_dos(train_20p_data)
     exchange_normal_and_dos(test_data)
@@ -271,7 +268,7 @@ def exchange_all_nad():
 
 
 if __name__ == '__main__':
-    # print("All data preprocess begin! ...\n")
+    # # print("All data preprocess begin! ...\n")
     # # 为数据文件添加表头，去除'difficult_level'
     # preProcess_all()
     #
@@ -282,9 +279,9 @@ if __name__ == '__main__':
     # scale_all()
     #
     # print("All data preprocess finish!\n")
-
-    # 查看数据文件的shape
-    print_all_data_info()
+    #
+    # # 查看数据文件的shape
+    # print_all_data_info()
 
     # 查看编码后的数据文件,如果dos在123列,normal在124列,则运行下面的数据,交换两列数据
-    # exchange_all_nad()
+    exchange_all_nad()

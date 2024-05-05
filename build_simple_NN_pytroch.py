@@ -139,7 +139,7 @@ def test_NN_main(data):
 
 
 if __name__ == '__main__':
-    data_file = 'Data_encoded/Train_encoded.csv'
+    data_file = 'Data_encoded/matrix_data/Train_encoded.csv'
     test_NN_main(data_file)
     # print(torch.cuda.is_available())
     # # 获取可用的CUDA设备数量
