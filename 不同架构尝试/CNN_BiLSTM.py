@@ -17,18 +17,94 @@ from sklearn.model_selection import StratifiedKFold
 import seaborn as sns
 
 
-net = nn.Sequential(
-    nn.Conv1d(in_channels=1, out_channels=64, kernel_size=122, padding=61), nn.ReLU(),
-    nn.MaxPool1d(kernel_size=5),
-    nn.BatchNorm1d(64),
-    nn.LSTM(64, 64, bidirectional=True, batch_first=True),
-    nn.Flatten(),
-    nn.Linear(128, 5),  # 五分类问题
-    nn.Softmax(dim=1),
-)
+# 定义一个自定义的LSTM模块
+class BiLSTMLayer(nn.Module):
+    def __init__(self, input_dim, hidden_dim, num_layers=1):
+        super(BiLSTMLayer, self).__init__()
+        self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers, batch_first=True, bidirectional=True)
+
+    def forward(self, x):
+        # LSTM的输出包括所有隐藏状态、最后的隐藏状态和最后的细胞状态
+        output, _ = self.lstm(x)
+        # 只返回输出张量，不返回隐藏状态和细胞状态
+        return output[:, -1, :]  # 只返回最后一个时间步的输出
+
+
+# 以下是模型的构建过程
+class MyModel(nn.Module):
+    def __init__(self):
+        super(MyModel, self).__init__()
+        self.conv1d = nn.Conv1d(in_channels=1, out_channels=64, kernel_size=122, padding=61)  # 保持输出尺寸不变
+        self.maxpool1 = nn.MaxPool1d(kernel_size=5)
+        self.batchnorm1 = nn.BatchNorm1d(64)
+
+        self.bilstm1 = BiLSTMLayer(input_dim=64, hidden_dim=64)
+        self.maxpool1d2 = nn.MaxPool1d(kernel_size=5)
+        self.batchnorm2 = nn.BatchNorm1d(1)  # BiLSTM只取了最后一个时间步的输出
+
+        self.bilstm2 = BiLSTMLayer(input_dim=128, hidden_dim=128)
+        self.dropout = nn.Dropout(0.5)
+        self.fc = nn.Linear(256, 5)  # 除以5是因为池化层
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, x):
+        x = self.conv1d(x)
+        x = F.relu(x)
+        x = self.maxpool1(x)
+        x = self.batchnorm1(x)
+        x = x.permute(0, 2, 1)  # 重排维度以适配LSTM输入
+
+        # 第一个BiLSTM
+        x = self.bilstm1(x)
+        x = x.unsqueeze(1)  # 增加一个维度以适配MaxPool1d
+        x = self.maxpool1d2(x)
+
+        x = self.batchnorm2(x)
+        # 第二个BiLSTM
+        x = self.bilstm2(x)
+        print("Shape after maxpool1d_lstm:", x.shape)
+
+        x = self.dropout(x)
+        x = torch.flatten(x, 1)  # 展平除batch_size外的所有维度
+        x = self.fc(x)
+        x = self.softmax(x)
+        return x
+
+
+# 打印每一层的输出形状
+def print_layer_shapes(model, input_tensor):
+    def hook(module, input, output):
+        print(f"{module.__class__.__name__}: {output.shape}")
+
+    # 注册hook
+    hooks = []
+    for layer in model.children():
+        hook_handle = layer.register_forward_hook(hook)
+        hooks.append(hook_handle)
+
+    # 前向传播
+    with torch.no_grad():
+        model(input_tensor)
+
+    # 移除hooks
+    for hook in hooks:
+        hook.remove()
+
+
+# Sequential定义网络，不完全体
+# net = nn.Sequential(
+#     nn.Conv1d(in_channels=1, out_channels=64, kernel_size=122, padding=61), nn.ReLU(),
+#     nn.MaxPool1d(kernel_size=5), nn.BatchNorm1d(64),
+#     BiLSTMLayer(64, 64),    # out = torch.Size([1, 64, 128])
+#     nn.Flatten(),
+#     。。。。。。。。。。
+#     nn.Linear(128, 5),  # 五分类问题
+#     # nn.Softmax(dim=1),
+# )
 
 
 # 以下是自定义的Dataset类
+
 class CustomDataset(Dataset):
     def __init__(self, features, labels):
         self.features = features
@@ -41,7 +117,8 @@ class CustomDataset(Dataset):
 
     def __getitem__(self, idx):
         feature = torch.tensor(self.features[idx], dtype=torch.float32)
-        # label = torch.tensor(self.labels[idx], dtype=torch.long)
+        # 增加一个通道维度
+        feature = feature.unsqueeze(0)  # 现在形状变为 [length] -> [1, length]
         label = self.labels[idx]
         return feature, label
 
@@ -80,7 +157,7 @@ def try_device():
 
 
 # 重写的train_ch6函数
-def train_ch6(net, train_loader, test_loader, num_epochs, lr, device):
+def train_CNN_LSTM(net, train_loader, test_loader, num_epochs, lr, device, w_decay = 1e-5,):
     def init_weights(m):
         if type(m) == nn.Linear or type(m) == nn.Conv2d:
             nn.init.xavier_uniform_(m.weight)
@@ -89,7 +166,7 @@ def train_ch6(net, train_loader, test_loader, num_epochs, lr, device):
     print('Training on', device)
     net.to(device)
 
-    optimizer = optim.Adam(net.parameters(), lr=lr)
+    optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=w_decay)
     loss_fn = nn.CrossEntropyLoss()
 
     train_losses = []
@@ -194,22 +271,21 @@ def plot_confusion_matrix(net, data_loader, device, class_names):
 
 if __name__ == "__main__":
     # 查看模型每一层的输出
-    print(net)
-    X = torch.rand(size=(1, 1, 122))
-    for layer in net:
-        X = layer(X)
-        print(layer.__class__.__name__, 'output shape:\t', X.shape)
+    CNN_LSTM_model = MyModel()
+    in_tensor = torch.randn(32, 1, 122)  # batch_size=32, in_channels=1, sequence_length=122
+    print_layer_shapes(CNN_LSTM_model, in_tensor)
 
     # 设定超参数
-    # learning_rate = 0.01
-    # numb_epochs = 10
-    # batch_size = 64
-    # train_file_path = '../Data_encoded/matrix_data/Train_encoded.csv'  # KDD_NSL的训练集
-    # test_file_path = '../Data_encoded/matrix_data/Test_encoded.csv'
-    # # 加载数据
-    # train_dataset, test_dataset = load_data(train_file_path, test_file_path)
-    # train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    # test__data_loader = DataLoader(test_dataset, batch_size=batch_size)
-    # model = net
-    # train_ch6(model, train_data_loader, test__data_loader,
-    #           num_epochs=numb_epochs, lr=learning_rate, device=try_device())
+    learning_rate = 0.01
+    numb_epochs = 10
+    batch_size = 64
+    weight_decay = 0.05
+    train_file_path = '../Data_encoded/LSTM_data/Train_encoded.csv'  # KDD_NSL的训练集
+    test_file_path = '../Data_encoded/LSTM_data/Test_encoded.csv'
+    # 加载数据
+    train_dataset, test_dataset = load_data(train_file_path, test_file_path)
+    train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test__data_loader = DataLoader(test_dataset, batch_size=batch_size)
+    myCNNLSTM = MyModel()
+    train_CNN_LSTM(myCNNLSTM, train_data_loader, test__data_loader,
+              num_epochs=numb_epochs, lr=learning_rate, device=try_device())

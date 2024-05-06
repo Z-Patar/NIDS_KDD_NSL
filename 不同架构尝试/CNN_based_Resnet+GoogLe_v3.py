@@ -82,67 +82,67 @@ class Residual(nn.Module):
         y += x
         return F.relu(y)
 
+
 # todo 优化模型过拟合现象
 # 定义Resnet前的网络部分,
 before_resnet_block = nn.Sequential(
     nn.Conv2d(1, 8, kernel_size=1),  # 1*1卷积
-    nn.BatchNorm2d(8), nn.ReLU(),  # BN+ReLU
-    # nn.Conv2d(1, 8, kernel_size=3, padding=1),  # 3*3卷积，padding=1
-    # nn.BatchNorm2d(8), nn.ReLU(),  # BN+ReLU
+    nn.Conv2d(8, 16, kernel_size=3, padding=1),  # 3*3卷积，padding=1
+    nn.BatchNorm2d(16), nn.ReLU(),  # BN+ReLU
 )  # out.shape = (batch_size, 8, 11, 11)
 
 # Resnet 1:Residual*2+一个3x3conv,in.shape = (-1, 8, 11, 11)
 resnet_block1 = nn.Sequential(
     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-    Residual(8, (4, 1, 1), (2, 4), 1, 2, ),
-    Residual(8, (4, 1, 1), (2, 4), 1, 2, ),
-    nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=0),  # 8,11x11 -> 16,9x9
-    nn.BatchNorm2d(16), nn.ReLU(),  # 注意通道数
+    Residual(16, (4, 1, 2), (4, 8), 2, 4, ),
+    Residual(16, (4, 1, 2), (4, 8), 2, 4, ),
+    nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=0),  # 8,11x11 -> 16,9x9
+    nn.BatchNorm2d(32), nn.ReLU(),  # 注意通道数
 )  # out.shape = (batch_size, 16, 9, 9)
 
 # Resnet 2:Residual*2 + 一个3x3conv,
 resnet_block2 = nn.Sequential(
     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-    Residual(16, (2, 2, 2), (4, 8), 2, 4, ),
-    Residual(16, (2, 2, 2), (4, 8), 2, 4, ),
-    nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=0),  # 16,9x9 -> 32,4x4
-    nn.BatchNorm2d(32), nn.ReLU(),  # 注意通道数
+    Residual(32, (2, 2, 4), (8, 16), 4, 8, ),
+    Residual(32, (2, 2, 4), (8, 16), 4, 8, ),
+    nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=0),  # 16,9x9 -> 32,7x7
+    nn.BatchNorm2d(64), nn.ReLU(),  # 注意通道数
 )  # out.shape = (batch_size, 32, 4, 4)
 
-resnet_block3 = nn.Sequential(
-    # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-    Residual(32, (2, 4, 6), (12, 24), 6, 12, use_1x1conv=True),
-    Residual(48, (2, 4, 8), (16, 32), 8, 16, use_1x1conv=True),
-    nn.BatchNorm2d(64), nn.ReLU(),
-)  # out.shape = (batch_size, 64, 3, 3)
-
-# # Resnet 3: Residual*2+一个3x3conv,
 # resnet_block3 = nn.Sequential(
 #     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-#     Residual(64, (2, 4, 8), (16, 32), 8, 16, ),
-#     Residual(64, (2, 4, 8), (16, 32), 8, 16, ),
-#     nn.Conv2d(64, 96, kernel_size=3, stride=1, padding=0),  # 64,7x7 -> 96,5x5
-#     nn.BatchNorm2d(96), nn.ReLU(),
-# )  # out.shape = (batch_size, 96, 5, 5)
-#
-# # Resnet 4:Residual*2+一个3x3conv,
-# resnet_block4 = nn.Sequential(
-#     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-#     Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
-#     Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
-#     nn.Conv2d(96, 128, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(128), nn.ReLU(),
-# )  # out.shape = (batch_size, 128, 3, 3)
+#     Residual(32, (2, 4, 6), (12, 24), 6, 12, use_1x1conv=True),
+#     Residual(48, (2, 4, 8), (16, 32), 8, 16, use_1x1conv=True),
+#     nn.BatchNorm2d(64), nn.ReLU(),
+# )  # out.shape = (batch_size, 64, 3, 3)
+
+# Resnet 3: Residual*2+一个3x3conv,
+resnet_block3 = nn.Sequential(
+    # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
+    Residual(64, (2, 4, 8), (16, 32), 8, 16, ),
+    Residual(64, (2, 4, 8), (16, 32), 8, 16, ),
+    nn.Conv2d(64, 96, kernel_size=3, stride=1, padding=0),  # 64,7x7 -> 96,5x5
+    nn.BatchNorm2d(96), nn.ReLU(),
+)  # out.shape = (batch_size, 96, 5, 5)
+
+# Resnet 4:Residual*2+一个3x3conv,
+resnet_block4 = nn.Sequential(
+    # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
+    Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
+    Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
+    nn.Conv2d(96, 128, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(128), nn.ReLU(),
+)  # out.shape = (batch_size, 128, 3, 3)
 
 CNNNet_Resnet_Inception = nn.Sequential(
-    before_resnet_block, resnet_block1, resnet_block2, resnet_block3,
-    nn.MaxPool2d(kernel_size=4),  # 对3x3大小的窗口池化，out.shape=(batch_size, 64, 1, 1)
+    before_resnet_block, resnet_block1, resnet_block2, resnet_block3, resnet_block4,
+    nn.MaxPool2d(kernel_size=3),  # 对3x3大小的窗口池化，out.shape=(batch_size, 64, 1, 1)
     nn.Flatten(),
-    nn.Linear(64, 5),  # 五分类问题
+    nn.Linear(128, 5),  # 五分类问题
 )
 CNNNet_simple = nn.Sequential(
-    nn.Conv2d(1, 8, kernel_size=1), nn.BatchNorm2d(8), nn.ReLU(),   # 11x11
-    nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(16), nn.ReLU(),     # 9x9
-    nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=0), nn.BatchNorm2d(32), nn.ReLU(),   # 4x4
+    nn.Conv2d(1, 8, kernel_size=1), nn.BatchNorm2d(8), nn.ReLU(),  # 11x11
+    nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(16), nn.ReLU(),  # 9x9
+    nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=0), nn.BatchNorm2d(32), nn.ReLU(),  # 4x4
     nn.MaxPool2d(kernel_size=4), nn.Flatten(),
     nn.Linear(32, 5),  # 五分类问题
 )
@@ -368,15 +368,15 @@ def calculate_metrics(net, data_loader, device):
 
 
 if __name__ == "__main__":
-    # # 查看模型每一层的输出
-    # X = torch.rand(size=(1, 1, 11, 11))
-    # for layer in CNNNet_simple:
-    #     X = layer(X)
-    #     print(layer.__class__.__name__, 'output shape:\t', X.shape)
+    # 查看模型每一层的输出
+    X = torch.rand(size=(1, 1, 11, 11))
+    for layer in CNNNet_Resnet_Inception:
+        X = layer(X)
+        print(layer.__class__.__name__, 'output shape:\t', X.shape)
 
     # 设定超参数
     learning_rate = 0.01
-    numb_epochs = 10
+    numb_epochs = 50
     batch_size = 256
     train_file_path = '../Data_encoded/matrix_data/Train_20Percent_encoded.csv'  # KDD_NSL的训练集
     # train_file_path = '../KDDCup99/data_encoded/Train_encoded.csv'  # KDD Cup99的训练集
@@ -389,6 +389,11 @@ if __name__ == "__main__":
     train_ch6(ResCNN, train_data_loader, test__data_loader,
               num_epochs=numb_epochs, lr=learning_rate, device=try_device())
 
+    # # 查看baseline模型每一层的输出
+    # X = torch.rand(size=(1, 1, 11, 11))
+    # for layer in CNNNet_simple:
+    #     X = layer(X)
+    #     print(layer.__class__.__name__, 'output shape:\t', X.shape)
     Simple_CNN = CNNNet_simple
     train_ch6(Simple_CNN, train_data_loader, test__data_loader,
               num_epochs=numb_epochs, lr=learning_rate, device=try_device())
