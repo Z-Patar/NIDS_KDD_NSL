@@ -73,19 +73,6 @@ def load_data(file_path):
     return features, labels
 
 
-# def load_data(data_file):
-#     features=[]
-#     labels=[]
-#     file_path = data_file
-#     with (open(file_path,'r')) as data_from:
-#         csv_reader=csv.reader(data_from)
-#         for i in csv_reader:
-#             features.append(i[:41])
-#             label_list=[0 for i in range(23)]
-#             label_list[i[41]]=1
-#             labels.append(label_list)
-#     return features, labels
-
 # 在main函数中，首先加载训练集和测试集，并分割成训练集和测试集。
 # 然后，创建数据加载器，神经网络模型，损失函数和优化器。
 # 最后，进行训练和评估，每50个epoch打印一次训练损失和测试集上的准确率

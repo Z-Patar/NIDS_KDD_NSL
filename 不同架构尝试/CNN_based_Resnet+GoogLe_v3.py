@@ -379,7 +379,6 @@ if __name__ == "__main__":
     numb_epochs = 50
     batch_size = 256
     train_file_path = '../Data_encoded/matrix_data/Train_20Percent_encoded.csv'  # KDD_NSL的训练集
-    # train_file_path = '../KDDCup99/data_encoded/Train_encoded.csv'  # KDD Cup99的训练集
     test_file_path = '../Data_encoded/matrix_data/Test_encoded.csv'
     # 加载数据
     train_dataset, test_dataset = load_data(train_file_path, test_file_path)

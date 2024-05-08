@@ -19,6 +19,44 @@ from sklearn.model_selection import StratifiedKFold
 import seaborn as sns
 
 
+# 定义了一个自定义的数据集类CustomDataset，这个类继承了PyTorch的Dataset类，可以用于加载数据。
+class CustomDataset(Dataset):
+    # 类的构造函数。它接受两个参数features和labels，分别表示数据集的特征和标签。
+    # 在初始化过程中，将这些特征和标签存储在类的实例变量中。
+    def __init__(self, features, labels):
+        self.features = features
+        self.labels = labels
+
+    # 这是一个特殊方法，用于返回数据集的长度（即数据样本的数量）。
+    # 在这个方法中，它返回了存储在features中的样本数量，即数据集的长度。
+    def __len__(self):
+        return len(self.features)
+
+    # 这也是一个特殊方法，用于根据给定索引idx来获取数据集中的样本。
+    # 在这个方法中，它根据索引idx从features和labels中获取对应索引的特征和标签，并将它们作为元组返回。
+    def __getitem__(self, idx):
+        feature = self.features[idx]
+        label = self.labels[idx]
+
+        # 确保 feature 是一个数值型数组
+        if isinstance(feature, np.ndarray):
+            if feature.dtype.type is np.str_ or feature.dtype.type is np.object_:
+                raise ValueError("Features must be numeric")
+
+        # 如果 feature 不是一个 ndarray，或者它的 dtype 不是浮点数，尝试将其转换
+        if not isinstance(feature, np.ndarray) or feature.dtype != 'float32':
+            feature = np.array(feature, dtype=np.float32)
+
+        # 转换为 PyTorch 张量
+        feature = torch.tensor(feature, dtype=torch.float32)
+
+        # 如果标签不是一个张量，转换它
+        if not torch.is_tensor(label):
+            label = torch.tensor(label, dtype=torch.long)
+
+        return feature, label
+
+
 # 定义一个BiLSTM模块
 class BiLSTMLayer(nn.Module):
     def __init__(self, input_dim, hidden_dim, num_layers=1):
@@ -45,7 +83,7 @@ class CNNBiLSTMModel(nn.Module):
         # input_dim = 就是nn.LSTM(input_size(x的特征维度),hidden_size,...)中的input_size,
         # 在该数据中,input_size恒为1
 
-        self.bilstm1 = BiLSTMLayer(input_dim=1, hidden_dim=64)   # hidden_size即为上一层的输出channel
+        self.bilstm1 = BiLSTMLayer(input_dim=1, hidden_dim=64)  # hidden_size即为上一层的输出channel
 
         # 此处需要将(128, ) reshape为(1,128), 因为要沿着128的方向做池化,# todo 为啥要沿128的方向没看懂
         self.maxpool1d2 = nn.MaxPool1d(kernel_size=5)
@@ -53,7 +91,7 @@ class CNNBiLSTMModel(nn.Module):
 
         # 第二个BiLSTM
         # input=(input_size=1, hidden_size=128, 其他默认) ,seq=25(根据上一层的输出判断的)
-        self.bilstm2 = BiLSTMLayer(input_dim=1, hidden_dim=128) # BiLSTM只取了最后一个时间步的输出
+        self.bilstm2 = BiLSTMLayer(input_dim=1, hidden_dim=128)  # BiLSTM只取了最后一个时间步的输出
         # out.shape = (batch=32, 1(啥意思暂不明白), 256(就是128池化后的数字))
 
         self.dropout = nn.Dropout(0.5)  # 将上一层随机丢弃一半传入下层
@@ -72,7 +110,7 @@ class CNNBiLSTMModel(nn.Module):
 
         # 第一个BiLSTM
         # BiLSTM.output.shape = (batch, seq, hidden_size*2) = (32, 24, 128)
-        x = self.bilstm1(x)     # 但此处只取了最后一个seq, 此时x.shape=(32,128)
+        x = self.bilstm1(x)  # 但此处只取了最后一个seq, 此时x.shape=(32,128)
         x = x.unsqueeze(1)  # 增加一个维度以适配MaxPool1d
         # shape=(32,1,128)
 
@@ -190,7 +228,7 @@ def plot_confusion_matrix(net, data_loader, device, class_names):
     plt.show()
 
 
-# todo 模型已搭建完毕,根据搭建好的模型写出训练函数,K折交叉验证
+# todo 模型已搭建完毕,根据搭建好的模型写出训练函数
 # def train_CNN_LSTM(net, train_loader, test_loader, num_epochs, lr, device, w_decay=1e-5,):
 #     def init_weights(m):
 #         if type(m) == nn.Linear or type(m) == nn.Conv2d:
@@ -245,33 +283,52 @@ def plot_confusion_matrix(net, data_loader, device, class_names):
 #     # 绘制混淆矩阵
 #     class_labels = ['DOS 0', 'Normal 1', 'Probe', 'R2L', 'U2R']
 #     plot_confusion_matrix(net, test_loader, device, class_labels)
-def train_CNN_LSTM_with_cross_validation(net, kfold, data, num_epochs, lr, device, w_decay=1e-5):
+def loop_data_loder(data_features, data_labels, batch_size):
+    # 设置features
+    x_columns = data_features.columns  # 取训练features的全部列名,
+    x_array = data_features[x_columns].values  # x_array即为本轮循环中,模型的train_features
+    # x_array.shape = (123764, 122), x_array.class=ndarray
+
+    # 重塑features.shape为(-1, c_in=1, seq=122),使其符合网络结构输入
+    x_features = np.reshape(x_array, (x_array.shape[0], 1, x_array.shape[1]))
+    # shape=(123764, 1, 122)
+
+    # 设置Class
+    dummies = pd.get_dummies(data_labels)  # 将训练集的Class独热编码,shape = [123764 rows x 5 columns]
+    y_labels = dummies.values
+    # train_labels = Index(['DOS', 'Probe', 'R2L', 'U2R', 'normal'], dtype='object')
+    # train_labels.shape = (-1,5)
+
+    # 创建数据集和数据加载器
+    dataset = CustomDataset(x_features, y_labels)
+    data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    return data_loader
+
+
+# 定义训练函数
+def train_CNN_LSTM_with_cross_validation(net, kfold, data, batch_size, num_epochs, lr, device, w_decay=1e-5):
+    def init_weights(m):
+        if type(m) == nn.Linear or type(m) == nn.Conv1d:
+            nn.init.xavier_uniform_(m.weight)
+
     oos_pred = []  # 用于存储每个验证集的准确率
-    combined_data = data.copy()
-    combined_data_X = pd.DataFrame(combined_data.iloc[:, :-1].values)  # 要求数据为dataframe形式
-    y_train = combined_data.iloc[:, -5:].values  # label项为后5列
+    train_data = data.copy()
+    train_labels = train_data.pop('Class')
+    train_features = train_data  # 要求数据为dataframe形式
 
-    for train_index, test_index in kfold.split(combined_data_X, y_train):
-        train_X, test_X = combined_data_X.iloc[train_index], combined_data_X.iloc[test_index]
-        train_y, test_y = y_train.iloc[train_index], y_train.iloc[test_index]
+    for train_index, test_index in kfold.split(train_features, train_labels):
+        train_X, test_X = train_features.iloc[train_index], train_features.iloc[test_index]
+        train_y, test_y = train_labels.iloc[train_index], train_labels.iloc[test_index]
 
-        x_columns_train = train_X.columns
-        x_train_array = train_X[x_columns_train].values
-        x_train_1 = np.reshape(x_train_array, (x_train_array.shape[0], x_train_array.shape[1], 1))
+        # 确定本轮循环中的data_loder
+        loop_train_loder = loop_data_loder(train_X, train_y, batch_size)
+        loop_test_loder = loop_data_loder(test_X, test_y, batch_size)
 
-        dummies = pd.get_dummies(train_y)
-        y_train_1 = dummies.values
-
-        x_columns_test = test_X.columns
-        x_test_array = test_X[x_columns_test].values
-        x_test_2 = np.reshape(x_test_array, (x_test_array.shape[0], x_test_array.shape[1], 1))
-
-        dummies_test = pd.get_dummies(test_y)
-        y_test_2 = dummies_test.values
-
-        net.apply(init_weights)
-        net.to(device)
-
+        net.apply(init_weights)  # 初始化参数
+        print('Training on', device)
+        net.to(device)  # 模型传入device
+        # 设置优化器和损失函数
         optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=w_decay)
         loss_fn = nn.CrossEntropyLoss()
 
@@ -309,28 +366,40 @@ if __name__ == "__main__":
     numb_epochs = 10
     batch_size = 64
     weight_decay = 0.05
+
+    # 分层K折
+    '''
+    Kfold = KFold(n_splits=splits, shuffle=False)
+    KFold（K - 折叠）
+    在KFold交叉验证中，原始数据集被分为K个子集。
+    每次，其中的一个子集被用作测试集，而其余的K - 1
+    个子集合并后被用作训练集。
+    这个过程重复进行K次，每次选择不同的子集作为测试集。
+    KFold不保证每个折叠的类分布与完整数据集中的分布相同。
+    stratKfold = StratifiedKFold(n_splits=splits, shuffle=False)
+    Stratified - KFold（分层K - 折叠）
+    Stratified - KFold是KFold的变体，它会返回分层的折叠：每个折叠中的标签分布都尽可能地与完整数据集中的标签分布相匹配。
+    这种方法特别适用于类分布不均衡的情况，确保每个折叠都有代表性的类比例。
+    就像KFold一样，每个折叠轮流被用作测试集，其他折叠用作训练集。
+    '''
     num_folds = 6
-    k_fold = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=42)   # 随机种子固定,保证每次生成的都一样
+    k_fold = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=42)  # 随机种子固定,保证每次生成的都一样
 
     # 加载数据
     combined_data = load_combined_data()
-    labels = combined_data['Class']  # 先分离Class
-    combined_data_features = combined_data.drop(columns='Class')
-
-    print(f'combined_data.shape = {combined_data.shape}')
+    combined_data_labels = combined_data['Class']  # 先分离Class
+    combined_data_features = combined_data.drop(columns='Class', inplace=False)
 
     # myModel = CNNBiLSTMModel()
-    # train_CNN_LSTM_with_cross_validation(myModel, k_fold, combined_data, num_epochs=numb_epochs, lr=learning_rate, device=try_device(), w_decay=weight_decay)
+    # train_CNN_LSTM_with_cross_validation(myModel, k_fold, data, num_epochs=numb_epochs, lr=learning_rate, device=try_device(), w_decay=weight_decay)
 
     # 查看随机划分后的数据样式
-    for train_index, test_index in k_fold.split(combined_data_features, labels):
+    for train_index, test_index in k_fold.split(combined_data_features, combined_data_labels):
         train_X, test_X = combined_data_features.iloc[train_index], combined_data_features.iloc[test_index]
-        print(f'train_X.shape = {train_X.shape}, test_X.shape = {test_X.shape}\n')
-        train_y, test_y = labels.iloc[train_index], labels.iloc[test_index]
-        print(f'train_y.shape = {train_y.shape}, test_y.shape = {test_y.shape}\n')
+        train_y, test_y = combined_data_labels.iloc[train_index], combined_data_labels.iloc[test_index]
 
-        # todo 继续修改train函数
-        # x_columns_train = new_train_df.columns.drop('Class')
-        # x_train_array = train_X[x_columns_train].values
-        # x_train_1 = np.reshape(x_train_array, (x_train_array.shape[0], x_train_array.shape[1], 1))
+        # 设置本轮loop的训练数据
+        train_features, train_labels = load_loop_data(train_X, train_y)
 
+        # 设置本轮loop的测试数据
+        test_features, test_labels = load_loop_data(test_X, test_y)
