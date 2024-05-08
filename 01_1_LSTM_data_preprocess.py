@@ -265,21 +265,93 @@ def exchange_all_nad():
     exchange_normal_and_dos(test_21_data)
 
 
-if __name__ == '__main__':
-    print("All data preprocess begin! ...\n")
-    # # 为数据文件添加表头，去除'difficult_level'，运行一次就好
-    # preProcess_all()
+def simple_preProcess():
+    train_file = 'KDD_NSL/KDDTrain+.csv'
+    test_file = 'KDD_NSL/KDDTest+.csv'
+    field_name_file = 'KDD_NSL/field_name_file.csv'
+    attack_type_file = 'KDD_NSL/attack_type_file.csv'
 
-    # 独热编码
-    one_hot_all()
+    # 定义dataframe ，并定义column name，方便索引
+    column_name_file = pd.read_csv(field_name_file, header=None, names=['name', 'data_type'])
+    column_names = column_name_file['name'].tolist()
 
+    # 读取数据，同时加表头name = filed_name
+    train_data = pd.read_csv(train_file, header=None, names=column_names)
+    test_data = pd.read_csv(test_file, header=None, names=column_names)
+
+    # 将两个数据集合并
+    combined_data = pd.concat([train_data, test_data])
+
+    # 删除第43列的'难度等级'
+    combined_data = combined_data.drop(columns='difficult_level')
+
+    # 从CSV文件中读取映射,定义22种攻击小类标签对应的攻击类型
+    attack_type_df = pd.read_csv(attack_type_file, header=None, names=['name', 'attack_type'])
+    # 定义5大类和22小类的映射字典，方便替代
+    mapping = attack_type_df.set_index('name').to_dict()['attack_type']
+    # 替换训练集label中22小类为5大类标签
+    combined_data['label'] = combined_data['label'].replace(mapping)
+    combined_data.rename(columns={'label': 'Class'}, inplace=True)
+
+    # 确定需要独热编码的列，然后编码
+    encode_cols = ['protocol_type', 'service', 'flag']
+    combined_data = one_hot(combined_data, encode_cols)
     # 归一化
-    scale_all()
+    combined_data = normalize(combined_data)
 
-    print("All data preprocess finish!\n")
+    # 检查是否存在空值
+    print(f"检查是否存在空值：{combined_data.isnull().values.any()}")
+    print("处理完毕,保存中...")
+    combined_data.to_csv('Data_encoded/LSTM_data/combined_data_processed.csv', index=False)
+    print("保存完毕")
 
-    # 查看数据文件的shape
-    print_all_data_info()
 
-    # 查看编码后的数据文件,如果dos在123列,normal在124列,则运行下面的数据,交换两列数据
-    exchange_all_nad()
+def one_hot(data, encode_cols):
+    df = pd.DataFrame()  # 创建一个空的dataframe，用来存储编码后的数据
+    # 编码的列是连续的，所以直接将两段的数据分离出来，然后将label分离，对encode_cols编码后拼接回去
+    before_encode_cols = data.columns[0]
+    df = pd.concat([df, data[before_encode_cols]], axis=1)  # 先将编码列前面的列数据插入df
+
+    end_encode_cols = data.columns[len(encode_cols)+1:]
+
+    for col in encode_cols:
+        dummies = pd.get_dummies(data[col], prefix=col, drop_first=False)  # 对选定数据列独热编码
+        df = pd.concat([df, dummies], axis=1)   # 将编码后生成的列插入到df后面
+
+    df = pd.concat([df, data[end_encode_cols]], axis=1)  # 最后将编码列后面的列数据插到df后
+    return df
+
+
+def normalize(data):
+    label = data.pop('Class')  # 分离label
+    result = data.copy()  # 不要改变原始df
+    normal_columns = data.columns   # 全部归一化
+
+    scaler = MinMaxScaler()
+    for col in normal_columns:
+        result[col] = scaler.fit_transform(result[[col]])
+
+    result = pd.concat([result, label], axis=1)  # 还原label
+
+    return result
+
+
+if __name__ == '__main__':
+    simple_preProcess()
+    # print("All data preprocess begin! ...\n")
+    # # # 为数据文件添加表头，去除'difficult_level'，运行一次就好
+    # # preProcess_all()
+    #
+    # # 独热编码
+    # one_hot_all()
+    #
+    # # 归一化
+    # scale_all()
+    #
+    # print("All data preprocess finish!\n")
+    #
+    # # 查看数据文件的shape
+    # print_all_data_info()
+    #
+    # # 查看编码后的数据文件,如果dos在123列,normal在124列,则运行下面的数据,交换两列数据
+    # exchange_all_nad()
