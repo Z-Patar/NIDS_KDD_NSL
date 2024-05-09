@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="rename 01_0data_preprocess_for_resnet.py">
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="learning_rate = 0.01&#10;numb_epochs = 10&#10;batch_size = 32&#10;weight_decay = 0.1 #上一次为w_decay=0.1，过拟合，train_loss=0.5+, test_loss=2.1+&#10;num_folds = 6">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/02CNN_for_NIDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/02CNN_for_NIDS.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/train_with_Kfoldcross.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/train_with_Kfoldcross.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -204,31 +203,7 @@
       <workItem from="1714954455718" duration="58000" />
       <workItem from="1714958282134" duration="10906000" />
       <workItem from="1714979140689" duration="76941000" />
-      <workItem from="1715214136475" duration="48277000" />
-    </task>
-    <task id="LOCAL-00033" summary="Implemented a simple CNN for handwritten digit recognition">
-      <option name="closed" value="true" />
-      <created>1713120863097</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1713120863097</updated>
-    </task>
-    <task id="LOCAL-00034" summary="add MNIST dataset">
-      <option name="closed" value="true" />
-      <created>1713121803198</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1713121803198</updated>
-    </task>
-    <task id="LOCAL-00035" summary="Implemented a simple CNN for handwritten digit recognition">
-      <option name="closed" value="true" />
-      <created>1713121813023</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1713121813023</updated>
+      <workItem from="1715214136475" duration="55171000" />
     </task>
     <task id="LOCAL-00036" summary="update workspace.xml">
       <option name="closed" value="true" />
@@ -598,7 +573,31 @@
       <option name="project" value="LOCAL" />
       <updated>1715238553476</updated>
     </task>
-    <option name="localTasksCounter" value="82" />
+    <task id="LOCAL-00082" summary="优化网络结构">
+      <option name="closed" value="true" />
+      <created>1715275047347</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1715275047347</updated>
+    </task>
+    <task id="LOCAL-00083" summary="learning_rate = 0.01&#10;numb_epochs = 10&#10;batch_size = 32&#10;weight_decay = 0.1 #上一次为w_decay=0.1，过拟合，train_loss=0.5+, test_loss=2.1+&#10;num_folds = 6">
+      <option name="closed" value="true" />
+      <created>1715275232095</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1715275232095</updated>
+    </task>
+    <task id="LOCAL-00084" summary="learning_rate = 0.01&#10;numb_epochs = 10&#10;batch_size = 32&#10;weight_decay = 0.1 #上一次为w_decay=0.1，过拟合，train_loss=0.5+, test_loss=2.1+&#10;num_folds = 6">
+      <option name="closed" value="true" />
+      <created>1715277357902</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1715277357902</updated>
+    </task>
+    <option name="localTasksCounter" value="85" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -668,7 +667,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="优化import" />
     <MESSAGE value="change data path" />
     <MESSAGE value="add some todo" />
     <MESSAGE value="add some comment&#10;modified CNN_for_NIDS.py" />
@@ -688,19 +686,20 @@
     <MESSAGE value="尝试使用LSTM" />
     <MESSAGE value="对训练集数据进行超采样" />
     <MESSAGE value="超采样效果不好" />
-    <MESSAGE value="优化网络结构" />
     <MESSAGE value="Class改为大写了，好看" />
     <MESSAGE value="模型跑通" />
     <MESSAGE value="重构数据处理函数" />
     <MESSAGE value="rename 01_0data_preprocess_for_resnet.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="rename 01_0data_preprocess_for_resnet.py" />
+    <MESSAGE value="优化网络结构" />
+    <MESSAGE value="learning_rate = 0.01&#10;numb_epochs = 10&#10;batch_size = 32&#10;weight_decay = 0.1 #上一次为w_decay=0.1，过拟合，train_loss=0.5+, test_loss=2.1+&#10;num_folds = 6" />
+    <option name="LAST_COMMIT_MESSAGE" value="learning_rate = 0.01&#10;numb_epochs = 10&#10;batch_size = 32&#10;weight_decay = 0.1 #上一次为w_decay=0.1，过拟合，train_loss=0.5+, test_loss=2.1+&#10;num_folds = 6" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01matrix_Data_preProcess.coverage" NAME="01matrix_Data_preProcess 覆盖结果" MODIFIED="1714926874402" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main_pytroch_like_IDS.coverage" NAME="main_pytroch_like_IDS 覆盖结果" MODIFIED="1713018155292" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_preProcess.coverage" NAME="Data_preProcess 覆盖结果" MODIFIED="1712845043606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$GoogLeNet.coverage" NAME="GoogLeNet 覆盖结果" MODIFIED="1714355355814" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main.coverage" NAME="main 覆盖结果" MODIFIED="1715266650955" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main.coverage" NAME="main 覆盖结果" MODIFIED="1715322988301" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_Pre_process.coverage" NAME="Data_Pre_process 覆盖结果" MODIFIED="1712680263854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$simple_CNN_MNIST.coverage" NAME="simple_CNN_MNIST 覆盖结果" MODIFIED="1714735388557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$scratch.coverage" NAME="scratch 覆盖结果" MODIFIED="1714299031790" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
