@@ -142,6 +142,26 @@ class CNNBiLSTMModel(nn.Module):
         return x
 
 
+# [调试用]打印每一层的输出形状
+def print_layer_shapes(model, input_tensor):
+    def hook(module, input, output):
+        print(f"{module.__class__.__name__}: {output.shape}")
+
+    # 注册hook
+    hooks = []
+    for layer in model.children():
+        hook_handle = layer.register_forward_hook(hook)
+        hooks.append(hook_handle)
+
+    # 前向传播
+    with torch.no_grad():
+        model(input_tensor)
+
+    # 移除hooks
+    for hook in hooks:
+        hook.remove()
+
+
 # 定义数据加载器
 def loop_data_loder(data_features, data_labels, batch_size):
     # 设置features
@@ -181,34 +201,169 @@ def init_weights(m):
 
             elif 'weight_hh' in name:  # 隐藏层到隐藏层的权重weight_hh，
                 # 随机正态分布初始化后的结果优于正交初始化
-                nn.init.xavier_uniform_(param.data)     # 随机正态分布初始化
+                nn.init.xavier_uniform_(param.data)  # 随机正态分布初始化
 
             elif 'bias' in name:  # 对于LSTM层的偏置项，
                 param.data.fill_(0)  # 先所有偏置项初始化为0
-                # todo 测试偏置全为0的结果好，还是遗忘门偏置为1的结果好
-                n = param.size(0)
-                start, end = n // 4, n // 2
-                param.data[start:end].fill_(1.)  # 然后将遗忘门偏置初始化为1，这在某些情况下可以帮助模型记忆顺序，提高学习能力。
+                # 偏置全为0的结果和遗忘门偏置为1的结果差不多
+                # n = param.size(0)
+                # start, end = n // 4, n // 2
+                # param.data[start:end].fill_(1.)  # 然后将遗忘门偏置初始化为1，这在某些情况下可以帮助模型记忆顺序，提高学习能力。
     elif isinstance(m, nn.Linear):  # 线性层使用了Xavier均匀初始化
         nn.init.xavier_uniform_(m.weight)
         nn.init.constant_(m.bias, 0)
 
-    # 第一张图：每个fold的train_accuracy和模型总体的train_accuracy随epoch变化的曲线
+
+def train(model, data, batch_size, lr, w_decay, numb_epochs, device):
+    # 初始化模型参数
+    model.apply(init_weights)
+
+    # 设置优化器和损失函数
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=w_decay)
+    loss_fn = nn.CrossEntropyLoss()
+
+    # 模型传入device
+    print('Training on', device)
+    model.to(device)
+
+    # 训练数据加载
+    train_data = data.copy()  # 不改变源数据
+    # 下面两项操作都不会改变train_data数据,在模型中不需要改变
+    labels = train_data['Class']
+    features = train_data.drop(['Class'], axis=1, inplace=False)
+
+    # 初始化存储结构，每个fold的每个epoch的数据都会被存储
+    fold_metrics = {
+        'train_loss': [[] for _ in range(numb_epochs)],
+        'train_accuracy': [[] for _ in range(numb_epochs)],
+        'val_loss': [[] for _ in range(numb_epochs)],
+        'val_accuracy': [[] for _ in range(numb_epochs)],
+        'train_precision': [[] for _ in range(numb_epochs)],
+        'train_recall': [[] for _ in range(numb_epochs)],
+        'train_f1': [[] for _ in range(numb_epochs)],
+        'val_precision': [[] for _ in range(numb_epochs)],
+        'val_recall': [[] for _ in range(numb_epochs)],
+        'val_f1': [[] for _ in range(numb_epochs)]
+    }
+
+    # 完整训练
+    for epoch in range(numb_epochs):
+        print(f'Epoch {epoch + 1}/{numb_epochs}')
+        # 全部K折完算一次epoch, 共需要经历numb_epochs次epoch
+
+        # K折训练
+        fold = 0  # fold计数器
+        for (train_index, val_index) in k_fold.split(features, labels):
+            fold += 1
+            print(f'Fold {fold}/{num_folds}')  # 当前为第fold次K折
+
+            # 根据K折设置训练集和验证集
+            train_data, val_data = features.iloc[train_index], features.iloc[val_index]
+            train_labels, val_labels = labels.iloc[train_index], labels.iloc[val_index]
+
+            # 设置Data_Loder
+            train_loader = loop_data_loder(train_data, train_labels, batch_size)
+            val_loader = loop_data_loder(val_data, val_labels, batch_size)
+
+            # 初始化fold统计数据
+            fold_train_loss = 0.0
+            fold_train_correct = 0
+            fold_train_total = 0
+            fold_val_loss = 0.0
+            fold_val_correct = 0
+            fold_val_total = 0
+            fold_train_preds = []
+            fold_train_targets = []
+            fold_val_preds = []
+            fold_val_targets = []
+
+            # 在当前训练集上训练模型
+            model.train()
+            for train_batch, train_label_batch in train_loader:
+                optimizer.zero_grad()
+                train_batch, train_label_batch = train_batch.to(device), train_label_batch.to(device)
+                train_batch = train_batch.float()  # 确保输入数据类型为FloatTensor
+                train_label_batch = train_label_batch.long()  # 将目标张量转换为长整型
+
+                outputs = model(train_batch)
+                loss = loss_fn(outputs, train_label_batch)
+                loss.backward()
+                optimizer.step()
+
+                fold_train_loss += loss.item()
+                _, predicted = torch.max(outputs.data, 1)
+                fold_train_total += train_label_batch.size(0)
+                fold_train_correct += (predicted == train_label_batch).sum().item()
+                fold_train_preds.extend(predicted.view(-1).cpu().numpy())
+                fold_train_targets.extend(train_label_batch.cpu().numpy())
+
+            # 计算训练集上的统计数据
+            train_loss = fold_train_loss / len(train_loader)
+            train_accuracy = fold_train_correct / fold_train_total
+            train_precision = precision_score(fold_train_targets, fold_train_preds, average='weighted', zero_division=0)
+            train_recall = recall_score(fold_train_targets, fold_train_preds, average='weighted', zero_division=0)
+            train_f1 = f1_score(fold_train_targets, fold_train_preds, average='weighted', zero_division=0)
+
+            # 在验证集上评估模型
+            model.eval()
+            with torch.no_grad():
+                for val_batch, val_label_batch in val_loader:
+                    val_batch, val_label_batch = val_batch.to(device), val_label_batch.to(device)
+                    outputs = model(val_batch)
+                    loss = loss_fn(outputs, val_label_batch)
+
+                    fold_val_loss += loss.item()
+                    _, predicted = torch.max(outputs.data, 1)
+                    fold_val_total += val_label_batch.size(0)
+                    fold_val_correct += (predicted == val_label_batch).sum().item()
+                    fold_val_preds.extend(predicted.view(-1).cpu().numpy())
+                    fold_val_targets.extend(val_label_batch.cpu().numpy())
+
+            # 计算验证集上的统计数据
+            val_loss = fold_val_loss / len(val_loader)
+            val_accuracy = fold_val_correct / fold_val_total
+            val_precision = precision_score(fold_val_targets, fold_val_preds, average='weighted', zero_division=0)
+            val_recall = recall_score(fold_val_targets, fold_val_preds, average='weighted', zero_division=0)
+            val_f1 = f1_score(fold_val_targets, fold_val_preds, average='weighted', zero_division=0)
+
+            # 将当前fold的统计数据添加到fold_metrics中
+            fold_metrics['train_loss'][epoch].append(train_loss)
+            fold_metrics['train_accuracy'][epoch].append(train_accuracy)
+            fold_metrics['val_loss'][epoch].append(val_loss)
+            fold_metrics['val_accuracy'][epoch].append(val_accuracy)
+            fold_metrics['train_precision'][epoch].append(train_precision)
+            fold_metrics['train_recall'][epoch].append(train_recall)
+            fold_metrics['train_f1'][epoch].append(train_f1)
+            fold_metrics['val_precision'][epoch].append(val_precision)
+            fold_metrics['val_recall'][epoch].append(val_recall)
+            fold_metrics['val_f1'][epoch].append(val_f1)
+
+        # 打印epoch的平均统计数据（如果需要）
+        print(f'Epoch {epoch + 1}: '
+              f'Average Training Loss: {np.mean(fold_metrics["train_loss"][epoch]):.4f}, '
+              f'Average Training Accuracy: {np.mean(fold_metrics["train_accuracy"][epoch]):.4f}, '
+              f'Average Validation Loss: {np.mean(fold_metrics["val_loss"][epoch]):.4f}, '
+              f'Average Validation Accuracy: {np.mean(fold_metrics["val_accuracy"][epoch]):.4f}')
+        print('--------------------------------------')
+
+    print('Training Finished')
 
 
-def objective(trial):
-    # 定义超参数搜索空间
-    learning_rate = trial.suggest_float('learning_rate', 1e-3, 1e-1, log=True)
-    weight_decay = trial.suggest_float('weight_decay', 1e-10, 0.1, log=True)
-    batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 128])
-    numb_epochs = 30
+if __name__ == '__main__':
+    # [调试用]查看模型每一层的输出
+    CNN_LSTM_model = CNNBiLSTMModel()
+    in_tensor = torch.randn(64, 1, 122)  # batch_size=32, in_channels=1, sequence_length=122
+    print_layer_shapes(CNN_LSTM_model, in_tensor)
+    # [调试结果]输出正常
 
-    data_file = '../Data_encoded/LSTM_data/Train_20P_processed.csv'
+    data_file = '../Data_encoded/LSTM_data/Train_processed.csv'
     train_data_f = pd.read_csv(data_file)
-    print(f'Train data is {data_file}, \n'
-          f'Train data shape: {train_data_f.shape}')
 
     # 设定超参数
+    learning_rate = 0.01
+    numb_epochs = 30
+    batch_size = 128
+    weight_decay = 0.005
     device = try_device()
 
     # 分层K折交叉验证
@@ -221,6 +376,7 @@ def objective(trial):
     model.apply(init_weights)
 
     # 模型传入device
+    print('Training on', device)
     model.to(device)
 
     # 设置优化器和损失函数
@@ -244,17 +400,18 @@ def objective(trial):
         'val_loss': [[] for _ in range(numb_epochs)],
         'val_accuracy': [[] for _ in range(numb_epochs)],  # accuracy两种方法没用区别
     }
+
     start_time = time.time()
     # 完整训练
     for epoch in range(numb_epochs):
         print(f'Epoch {epoch + 1}/{numb_epochs}')
         # 全部K折完算一次epoch, 共需要经历numb_epochs次迭代
+
         for (train_index, val_index) in k_fold.split(features, labels):
 
             # 根据K折设置训练集和验证集
             train_data, val_data = features.iloc[train_index], features.iloc[val_index]
             train_labels, val_labels = labels.iloc[train_index], labels.iloc[val_index]
-
             # 设置Data_Loder
             train_loader = loop_data_loder(train_data, train_labels, batch_size)
             val_loader = loop_data_loder(val_data, val_labels, batch_size)
@@ -328,52 +485,10 @@ def objective(trial):
         # 打印epoch的平均统计数据（如果需要）
         # 循环没用，单纯想折叠大段代码
         for i in range(1):
-            print(f'Train Loss: {np.mean(fold_metrics["train_loss"][epoch]):.4f}, '
-                  f'Val Loss: {np.mean(fold_metrics["val_loss"][epoch]):.4f}, '
-                  f'Val Acc: {np.mean(fold_metrics["val_accuracy"][epoch]):.4f}, ')
+            print(f'Average Training Loss: {np.mean(fold_metrics["train_loss"][epoch]):.4f}, '
+                  f'Average Validation Loss: {np.mean(fold_metrics["val_loss"][epoch]):.4f}, '
+                  f'Average Validation Accuracy: {np.mean(fold_metrics["val_accuracy"][epoch]):.4f}, ')
 
     end_time = time.time()
-    print(f'Total training time: {(end_time - start_time):.2f} s')
-
-    # 在这里，我们使用验证集的平均准确率作为目标指标
-    # val_accuracy_avg = np.mean(fold_metrics['val_accuracy'][-1])
-    # return val_accuracy_avg
-    # 将目标指标切换为loss
-    val_loss = np.mean(fold_metrics['val_loss'][-1])
-    return val_loss
-
-
-
-if __name__ == '__main__':
-    # 创建一个早停的pruner对象
-    pruner = optuna.pruners.EarlyStoppingPruner(
-        patience=5,  # 不改善的试验次数
-        grace_period=5,  # 允许试验不改善的最小轮数
-        min_delta=0.01  # 不改善的最小幅度
-    )
-
-    study = optuna.create_study(direction='minimize', pruner=pruner)
-    study.optimize(objective, n_trials=100)
-
-    # 输出最优的超参数
-    print(study.best_params)
-
-    # 最佳超参数
-    best_params = study.best_params
-    best_value = study.best_value
-
-    # 保存最佳超参数到txt文件
-    with open('best_params.txt', 'w') as f:
-        f.write(f"Best trial:\n")
-        f.write(f"  Value: {best_value}\n")
-        for key, value in best_params.items():
-            f.write(f"  {key}: {value}\n")
-
-    # 保存所有试验的详细结果到txt文件
-    with open('all_trials.txt', 'w') as f:
-        for trial in study.trials:
-            f.write(f"Trial {trial.number}:\n")
-            f.write(f"  Value: {trial.value}\n")
-            f.write(f"  Params: \n")
-            for key, value in trial.params.items():
-                f.write(f"    {key}: {value}\n")
+    all_time = end_time - start_time
+    print(f'All {numb_epochs} epochs  took {all_time:.2f} seconds')
