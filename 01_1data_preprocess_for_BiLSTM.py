@@ -4,6 +4,7 @@
 # coding:utf-8
 
 import os
+import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
@@ -70,19 +71,28 @@ def normalize(data):
 
 
 def data_preProcess(data_indicator):
+    """
     # 读取数据，同时加表头name = filed_name, 去难度等级, 换label
     # data = preprocess(data_file)
-    # one_hot
+    # one_hot编码
     # data = one_hot(data, encode_cols)
-    # normal
+    # normal最大最小法归一化
     # data = normalize(data)
+    """
 
     # 根据data_indicator确定处理流程
     if data_indicator == 'Train':   # 只处理训练集
         data_file = 'KDD_NSL/KDDTrain+.csv'
         save_path = 'Data_encoded/LSTM_data/Train_processed.csv'
-        # 数据处理
         data = preprocess(data_file)
+
+    # Train_20Percent中，数据类型不足，
+    # KDDTrain+.csv中有70种service类型
+    # KDDTrain+_20Percent中只有66种service类型
+    # elif data_indicator == 'Train-20P':
+    #     data_file = 'KDD_NSL/KDDTrain+_20Percent.csv'
+    #     save_path = 'Data_encoded/LSTM_data/Train_20P_processed.csv'
+    #     data = preprocess(data_file)
 
     elif data_indicator == 'Test':  # 只处理测试集
         data_file = 'KDD_NSL/KDDTest+.csv'
@@ -116,6 +126,36 @@ def data_preProcess(data_indicator):
     print(f"{data_indicator} data processed.csv 保存完毕!")
 
 
+# 用resnet预处理函数处理好的数据生成Train_20Precent
+def Train_20precent_preProcess():
+    # 将子集按照全集的方式进行独热编码后的数据
+    data = pd.read_csv('Data_encoded/matrix_data/Train_20Percent_encoded.csv')
+    # 分离label列,即后五列
+    labels = data.iloc[:, -5:]
+    print(labels)
+    print(data)
+    labels = labels.to_numpy()
+    print(labels)
+    # labels还原
+    indices = np.argmax(labels, axis=1)
+    print(indices)
+    # 如果有一个类别列表对应于独热编码的列
+    categories = ['Dos', 'Normal', 'Probe', 'R2L', 'U2L']
+    # label转为Class
+    original_labels = [categories[index] for index in indices]
+    print(original_labels)
+    # list 转为Dataframe类型
+    Class = pd.DataFrame(original_labels, columns=['Class'])
+    print(Class)
+
+    # 将Class拼接到data后
+    data_class = data.iloc[:, :-5]
+    print(data_class)
+    data_processed = pd.concat([data_class, Class], axis=1)
+    print(data_processed)
+    data_processed.to_csv('Data_encoded/LSTM_data/Train_20P_processed.csv', index=False)
+
+
 if __name__ == '__main__':
     data_preProcess('combine')
     data_preProcess('combine-21')
@@ -123,3 +163,4 @@ if __name__ == '__main__':
     data_preProcess('Test')
     data_preProcess('Test-21')
     data_preProcess('21')
+    Train_20precent_preProcess()

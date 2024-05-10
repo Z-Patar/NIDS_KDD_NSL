@@ -1,25 +1,40 @@
 #  Copyright (c) Patar my copyright message. 2024-2024. All rights reserved.
-
-# python3.10
-# -*- coding:utf-8 -*-
-# @Time    :2024/5/2 上午11:38
-# @Author  :Z_Patar
+import time
 import torch
+from torch.profiler import profile, record_function, ProfilerActivity
 import pandas as pd
 from torch import nn
 from torch.nn import functional as F
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, TensorDataset
 import torch.optim as optim
 import matplotlib.pyplot as plt
 import numpy as np
+import random
+import optuna
 from sklearn import metrics
-from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import KFold
-from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.model_selection import StratifiedKFold, train_test_split
 import seaborn as sns
+from collections import OrderedDict
+import warnings
+
+warnings.filterwarnings("ignore")
 
 
-# 定义了一个自定义的数据集类CustomDataset，这个类继承了PyTorch的Dataset类，可以用于加载数据。
+# 检查CUDA是否可用
+def try_device():
+    if torch.cuda.is_available():
+        # 选择第一个CUDA设备
+        device = torch.device("cuda:0")
+        print(f"Using CUDA device: {torch.cuda.get_device_name(0)}")
+    else:
+        device = torch.device("cpu")
+        print("CUDA is not available. Using CPU instead.")
+    return device
+
+
+# 类定义
+# 自定义数据集类
 class CustomDataset(Dataset):
     # 类的构造函数。它接受两个参数features和labels，分别表示数据集的特征和标签。
     # 在初始化过程中，将这些特征和标签存储在类的实例变量中。
@@ -35,6 +50,7 @@ class CustomDataset(Dataset):
     # 这也是一个特殊方法，用于根据给定索引idx来获取数据集中的样本。
     # 在这个方法中，它根据索引idx从features和labels中获取对应索引的特征和标签，并将它们作为元组返回。
     def __getitem__(self, idx):
+        # return self.features[idx], self.labels[idx]
         feature = self.features[idx]
         label = self.labels[idx]
 
@@ -57,7 +73,7 @@ class CustomDataset(Dataset):
         return feature, label
 
 
-# 定义一个BiLSTM模块
+# 定义BiLSTMLayer层模型
 class BiLSTMLayer(nn.Module):
     def __init__(self, input_dim, hidden_dim, num_layers=1):
         super(BiLSTMLayer, self).__init__()
@@ -67,11 +83,10 @@ class BiLSTMLayer(nn.Module):
         # LSTM的输出包括所有隐藏状态、最后的隐藏状态和最后的细胞状态
         output, _ = self.lstm(x)
         # 只返回输出张量，不返回隐藏状态和细胞状态
-        # return output
         return output[:, -1, :]  # 只返回最后一个时间步的输出
 
 
-# CNN_BiLSTM_Model构建
+# 定义网络结构
 class CNNBiLSTMModel(nn.Module):
     def __init__(self):
         super(CNNBiLSTMModel, self).__init__()
@@ -79,13 +94,10 @@ class CNNBiLSTMModel(nn.Module):
         self.maxpool1 = nn.MaxPool1d(kernel_size=5)
         self.batchnorm1 = nn.BatchNorm1d(64)
         # out.shape=(batch=32, channel = 64, seq=24(122池化后的数字))
+        # channel = 64,此处channel就是embedding，即input_size
+        self.bilstm1 = BiLSTMLayer(input_dim=64, hidden_dim=64)  # hidden_size即为上一层的输出channel
 
-        # input_dim = 就是nn.LSTM(input_size(x的特征维度),hidden_size,...)中的input_size,
-        # 在该数据中,input_size恒为1
-
-        self.bilstm1 = BiLSTMLayer(input_dim=1, hidden_dim=64)  # hidden_size即为上一层的输出channel
-
-        # 此处需要将(128, ) reshape为(1,128), 因为要沿着128的方向做池化,# todo 为啥要沿128的方向没看懂
+        # 此处需要将(128, ) reshape为(1,128), 因为要沿着128的方向做池化,
         self.maxpool1d2 = nn.MaxPool1d(kernel_size=5)
         self.batchnorm2 = nn.BatchNorm1d(1)
 
@@ -96,7 +108,7 @@ class CNNBiLSTMModel(nn.Module):
 
         self.dropout = nn.Dropout(0.5)  # 将上一层随机丢弃一半传入下层
         self.fc = nn.Linear(256, 5)
-        self.softmax = nn.Softmax(dim=1)
+        # self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
         x = self.conv1d(x)
@@ -114,190 +126,40 @@ class CNNBiLSTMModel(nn.Module):
         x = x.unsqueeze(1)  # 增加一个维度以适配MaxPool1d
         # shape=(32,1,128)
 
-        x = self.maxpool1d2(x)  # shape=(32, 1, 24)
+        x = self.maxpool1d2(x)  # shape=(32, 1, 25)
         x = self.batchnorm2(x)
-        # out.shape=(32, 1, 24)
+        # out.shape=(32, 1, 25)
 
         x = x.permute(0, 2, 1)  # 重排维度以适配LSTM输入
-        # out.shape=(32, 24, 1)
+        # out.shape=(32, 25, 1)
 
         # 第二个BiLSTM
         x = self.bilstm2(x)
         # out.shape=(batch=32, 256)
 
         x = self.dropout(x)
-        # x = torch.flatten(x, 1)  # 展平除batch_size外的所有维度, 但是维度已经是(batch, 256)了,没得展了
         x = self.fc(x)
-        x = self.softmax(x)
         return x
 
 
-# [调试用]打印每一层的输出形状
-def print_layer_shapes(model, input_tensor):
-    def hook(module, input, output):
-        print(f"{module.__class__.__name__}: {output.shape}")
-
-    # 注册hook
-    hooks = []
-    for layer in model.children():
-        hook_handle = layer.register_forward_hook(hook)
-        hooks.append(hook_handle)
-
-    # 前向传播
-    with torch.no_grad():
-        model(input_tensor)
-
-    # 移除hooks
-    for hook in hooks:
-        hook.remove()
-
-
-# 加载数据
-def load_combined_data():
-    # 读取数据文件
-    data = pd.read_csv('../Data_encoded/LSTM_data/combined_data_processed.csv')
-
-    return data
-
-
-# 检查CUDA是否可用
-def try_device():
-    if torch.cuda.is_available():
-        # 选择第一个CUDA设备
-        device = torch.device("cuda:0")
-        print(f"Using CUDA device: {torch.cuda.get_device_name(0)}")
-    else:
-        device = torch.device("cpu")
-        print("CUDA is not available. Using CPU instead.")
-    return device
-
-
-def plot_learning_curve(train_losses, train_accuracies, test_accuracies, num_epochs):
-    plt.figure(figsize=(12, 6))
-    plt.plot(range(1, num_epochs + 1), train_losses, label='Train Loss')
-    plt.plot(range(1, num_epochs + 1), train_accuracies, label='Train Accuracy')
-    plt.plot(range(1, num_epochs + 1), test_accuracies, label='Test Accuracy')
-    plt.xlabel('Epoch')
-    plt.ylabel('Metrics')
-    plt.title('Training Curves')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-
-
-def evaluate_accuracy(net, data_loader, device):
-    net.eval()
-    correct = 0
-    total = 0
-
-    with torch.no_grad():
-        for X, y in data_loader:
-            X, y = X.to(device), y.to(device)
-            outputs = net(X)
-            _, predicted = torch.max(outputs, 1)
-            total += y.size(0)
-            correct += (predicted == y).sum().item()
-
-    accuracy = correct / total
-    return accuracy
-
-
-# 混淆矩阵的坐标轴label在PyCharm里看不见,但另存图片后可见
-def plot_confusion_matrix(net, data_loader, device, class_names):
-    net.eval()
-    all_preds = []
-    all_labels = []
-
-    with torch.no_grad():
-        for X, y in data_loader:
-            X, y = X.to(device), y.to(device)
-            outputs = net(X)
-            _, predicted = torch.max(outputs, 1)
-            all_preds.extend(predicted.cpu().numpy())
-            all_labels.extend(y.cpu().numpy())
-
-    cm = confusion_matrix(all_labels, all_preds)
-    print(cm)
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-    plt.xticks(np.arange(len(class_names)) + 0.5, class_names, rotation=45)
-    plt.yticks(np.arange(len(class_names)) + 0.5, class_names, rotation=0)
-    plt.xlabel('Predicted labels')
-    plt.ylabel('True labels')
-    plt.title('Confusion Matrix')
-    plt.show()
-
-
-# todo 模型已搭建完毕,根据搭建好的模型写出训练函数
-# def train_CNN_LSTM(net, train_loader, test_loader, num_epochs, lr, device, w_decay=1e-5,):
-#     def init_weights(m):
-#         if type(m) == nn.Linear or type(m) == nn.Conv2d:
-#             nn.init.xavier_uniform_(m.weight)
-#
-#     net.apply(init_weights)
-#     print('Training on', device)
-#     net.to(device)
-#
-#     optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=w_decay)
-#     loss_fn = nn.CrossEntropyLoss()
-#
-#     train_losses = []
-#     train_accuracies = []
-#     test_accuracies = []
-#
-#     # 训练模型
-#     for epoch in range(num_epochs):
-#         net.train()
-#         train_loss = 0.0
-#         correct = 0
-#         total = 0
-#
-#         for X, y in train_loader:
-#             X, y = X.to(device), y.to(device)
-#             optimizer.zero_grad()
-#             y_hat = net(X)
-#             loss = loss_fn(y_hat, y)
-#             loss.backward()
-#             optimizer.step()
-#
-#             train_loss += loss.item()
-#             _, predicted = torch.max(y_hat, 1)
-#             total += y.size(0)
-#             correct += (predicted == y).sum().item()
-#
-#         train_accuracy = correct / total
-#         train_loss /= len(train_loader)
-#
-#         # Evaluate test set accuracy
-#         test_accuracy = evaluate_accuracy(net, test_loader, device)
-#
-#         train_losses.append(train_loss)
-#         train_accuracies.append(train_accuracy)
-#         test_accuracies.append(test_accuracy)
-#
-#         print(
-#             f'Epoch {epoch + 1}/{num_epochs}, Train Loss: {train_loss:.4f}, Train Acc: {train_accuracy:.4f}, Test Acc: {test_accuracy:.4f}')
-#
-#     # 绘制学习曲线
-#     plot_learning_curve(train_losses, train_accuracies, test_accuracies, num_epochs)
-#     # 绘制混淆矩阵
-#     class_labels = ['DOS 0', 'Normal 1', 'Probe', 'R2L', 'U2R']
-#     plot_confusion_matrix(net, test_loader, device, class_labels)
+# 定义数据加载器
 def loop_data_loder(data_features, data_labels, batch_size):
     # 设置features
     x_columns = data_features.columns  # 取训练features的全部列名,
     x_array = data_features[x_columns].values  # x_array即为本轮循环中,模型的train_features
-    # x_array.shape = (123764, 122), x_array.class=ndarray
+    # x_array.shape = (-1, 122), x_array.class=ndarray
 
     # 重塑features.shape为(-1, c_in=1, seq=122),使其符合网络结构输入
     x_features = np.reshape(x_array, (x_array.shape[0], 1, x_array.shape[1]))
-    # shape=(123764, 1, 122)
+    # shape=(-1, 1, 122)
 
     # 设置Class
-    dummies = pd.get_dummies(data_labels)  # 将训练集的Class独热编码,shape = [123764 rows x 5 columns]
-    y_labels = dummies.values
-    # train_labels = Index(['DOS', 'Probe', 'R2L', 'U2R', 'normal'], dtype='object')
-    # train_labels.shape = (-1,5)
+    # 如果data_labels已经是一个包含类别名称的Series或者列，你可以这样获取类别索引:
+    # 假设data_labels是类别名称的Series，你需要将这些名称映射到索引
+    # 首先获取类别名称到索引的映射字典
+    label_to_idx = {label: idx for idx, label in enumerate(data_labels.unique())}
+    # 然后将类别名称转换为索引
+    y_labels = data_labels.replace(label_to_idx).values
 
     # 创建数据集和数据加载器
     dataset = CustomDataset(x_features, y_labels)
@@ -306,100 +168,199 @@ def loop_data_loder(data_features, data_labels, batch_size):
     return data_loader
 
 
-# 定义训练函数
-def train_CNN_LSTM_with_cross_validation(net, kfold, data, batch_size, num_epochs, lr, device, w_decay=1e-5):
-    def init_weights(m):
-        if type(m) == nn.Linear or type(m) == nn.Conv1d:
-            nn.init.xavier_uniform_(m.weight)
+# 模型参数初始化函数
+def init_weights(m):
+    if isinstance(m, nn.Conv1d):  # 一维卷积层
+        nn.init.xavier_uniform_(m.weight)  # weight用了Xavier均匀初始化
+        if m.bias is not None:  # bias存在时，初始化为0
+            nn.init.constant_(m.bias, 0)
+    elif isinstance(m, nn.LSTM):  # 对于LSTM层
+        for name, param in m.named_parameters():
+            if 'weight_ih' in name:  # 输入到隐藏层的权重weight_ih
+                nn.init.xavier_uniform_(param.data)  # 使用了Xavier均匀初始化
 
-    oos_pred = []  # 用于存储每个验证集的准确率
-    train_data = data.copy()
-    train_labels = train_data.pop('Class')
-    train_features = train_data  # 要求数据为dataframe形式
+            elif 'weight_hh' in name:  # 隐藏层到隐藏层的权重weight_hh，
+                # 正交初始化通常用于循环神经网络的隐藏层权重，因为它可以帮助维持梯度的规模，从而在训练过程中防止梯度消失或爆炸。
+                # todo 测试随机正态分布初始化后的结果是否优于正交初始化
+                nn.init.orthogonal_(param.data)  # 正交初始化
+                # nn.init.xavier_uniform_(param.data)     # 随机正态分布初始化
 
-    for train_index, test_index in kfold.split(train_features, train_labels):
-        train_X, test_X = train_features.iloc[train_index], train_features.iloc[test_index]
-        train_y, test_y = train_labels.iloc[train_index], train_labels.iloc[test_index]
+            elif 'bias' in name:  # 对于LSTM层的偏置项，
+                param.data.fill_(0)  # 先所有偏置项初始化为0
+                # todo 测试偏置全为0的结果好，还是遗忘门偏置为1的结果好
+                n = param.size(0)
+                start, end = n // 4, n // 2
+                param.data[start:end].fill_(1.)  # 然后将遗忘门偏置初始化为1，这在某些情况下可以帮助模型记忆顺序，提高学习能力。
+    elif isinstance(m, nn.Linear):  # 线性层使用了Xavier均匀初始化
+        nn.init.xavier_uniform_(m.weight)
+        nn.init.constant_(m.bias, 0)
 
-        # 确定本轮循环中的data_loder
-        loop_train_loder = loop_data_loder(train_X, train_y, batch_size)
-        loop_test_loder = loop_data_loder(test_X, test_y, batch_size)
-
-        net.apply(init_weights)  # 初始化参数
-        print('Training on', device)
-        net.to(device)  # 模型传入device
-        # 设置优化器和损失函数
-        optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=w_decay)
-        loss_fn = nn.CrossEntropyLoss()
-
-        for epoch in range(num_epochs):
-            net.train()
-            optimizer.zero_grad()
-            y_hat = net(torch.Tensor(x_train_1).to(device))
-            loss = loss_fn(y_hat, torch.LongTensor(np.argmax(y_train_1, axis=1)).to(device))
-            loss.backward()
-            optimizer.step()
-
-        net.eval()
-        pred = net(torch.Tensor(x_test_2).to(device))
-        pred = np.argmax(pred.cpu().detach().numpy(), axis=1)
-        y_eval = np.argmax(y_test_2, axis=1)
-        score = metrics.accuracy_score(y_eval, pred)
-        oos_pred.append(score)
-        print("Validation score: {}".format(score))
-
-    return oos_pred
+    # 第一张图：每个fold的train_accuracy和模型总体的train_accuracy随epoch变化的曲线
 
 
-if __name__ == "__main__":
-    # # 查看模型每一层的输出
-    # CNN_LSTM_model = CNNBiLSTMModel()
-    # in_tensor = torch.randn(32, 1, 122)  # batch_size=32, in_channels=1, sequence_length=122
-    # print_layer_shapes(CNN_LSTM_model, in_tensor)
-    #
-    # # 数据文件路径
-    # train_file = '../Data_encoded/LSTM_data/Train_encoded.csv'  # KDD_NSL的训练集
-    # test_file = '../Data_encoded/LSTM_data/Test_encoded.csv'
+def objective(trial):
+    # 定义超参数搜索空间
+    learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-1, log=True)
+    weight_decay = trial.suggest_float('weight_decay', 1e-10, 0.01, log=True)
+    batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 128])
+    numb_epochs = 30
+
+    data_file = '../Data_encoded/LSTM_data/Train_20P_processed.csv'
+    train_data_f = pd.read_csv(data_file)
+    print(f'Train data is {data_file}, \n'
+          f'Train data shape: {train_data_f.shape}')
 
     # 设定超参数
-    learning_rate = 0.01
-    numb_epochs = 10
-    batch_size = 64
-    weight_decay = 0.05
+    device = try_device()
 
-    # 分层K折
-    '''
-    Kfold = KFold(n_splits=splits, shuffle=False)
-    KFold（K - 折叠）
-    在KFold交叉验证中，原始数据集被分为K个子集。
-    每次，其中的一个子集被用作测试集，而其余的K - 1
-    个子集合并后被用作训练集。
-    这个过程重复进行K次，每次选择不同的子集作为测试集。
-    KFold不保证每个折叠的类分布与完整数据集中的分布相同。
-    stratKfold = StratifiedKFold(n_splits=splits, shuffle=False)
-    Stratified - KFold（分层K - 折叠）
-    Stratified - KFold是KFold的变体，它会返回分层的折叠：每个折叠中的标签分布都尽可能地与完整数据集中的标签分布相匹配。
-    这种方法特别适用于类分布不均衡的情况，确保每个折叠都有代表性的类比例。
-    就像KFold一样，每个折叠轮流被用作测试集，其他折叠用作训练集。
-    '''
-    num_folds = 6
+    # 分层K折交叉验证
+    num_folds = 10
     k_fold = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=42)  # 随机种子固定,保证每次生成的都一样
 
-    # 加载数据
-    combined_data = load_combined_data()
-    combined_data_labels = combined_data['Class']  # 先分离Class
-    combined_data_features = combined_data.drop(columns='Class', inplace=False)
+    # 实例化模型
+    model = CNNBiLSTMModel()
+    # 初始化模型参数
+    model.apply(init_weights)
 
-    # myModel = CNNBiLSTMModel()
-    # train_CNN_LSTM_with_cross_validation(myModel, k_fold, data, num_epochs=numb_epochs, lr=learning_rate, device=try_device(), w_decay=weight_decay)
+    # 模型传入device
+    model.to(device)
 
-    # 查看随机划分后的数据样式
-    for train_index, test_index in k_fold.split(combined_data_features, combined_data_labels):
-        train_X, test_X = combined_data_features.iloc[train_index], combined_data_features.iloc[test_index]
-        train_y, test_y = combined_data_labels.iloc[train_index], combined_data_labels.iloc[test_index]
+    # 设置优化器和损失函数
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    loss_fn = nn.CrossEntropyLoss()
 
-        # 设置本轮loop的训练数据
-        train_features, train_labels = load_loop_data(train_X, train_y)
+    # 训练数据加载
+    train_data = train_data_f.copy()  # 不改变源数据
+    # 下面两项操作都不会改变train_data数据,在模型中不需要改变
+    labels = train_data['Class']
+    features = train_data.drop(['Class'], axis=1, inplace=False)
 
-        # 设置本轮loop的测试数据
-        test_features, test_labels = load_loop_data(test_X, test_y)
+    # 初始化存储结构，每个fold的每个epoch的数据都会被存储
+    fold_metrics = {
+        # train
+        'train_loss': [[] for _ in range(numb_epochs)],
+        'train_accuracy': [[] for _ in range(numb_epochs)],  # accuracy两种方法没用区别
+
+        # val
+        'val_loss': [[] for _ in range(numb_epochs)],
+        'val_accuracy': [[] for _ in range(numb_epochs)],  # accuracy两种方法没用区别
+    }
+    start_time = time.time()
+    # 完整训练
+    for epoch in range(numb_epochs):
+        print(f'Epoch {epoch + 1}/{numb_epochs}')
+        # 全部K折完算一次epoch, 共需要经历numb_epochs次迭代
+        for (train_index, val_index) in k_fold.split(features, labels):
+
+            # 根据K折设置训练集和验证集
+            train_data, val_data = features.iloc[train_index], features.iloc[val_index]
+            train_labels, val_labels = labels.iloc[train_index], labels.iloc[val_index]
+
+            # 设置Data_Loder
+            train_loader = loop_data_loder(train_data, train_labels, batch_size)
+            val_loader = loop_data_loder(val_data, val_labels, batch_size)
+
+            # 初始化fold统计数据
+            fold_train_loss = 0.0
+            fold_train_correct = 0
+            fold_train_total = 0
+            fold_val_loss = 0.0
+            fold_val_correct = 0
+            fold_val_total = 0
+            fold_train_preds = []
+            fold_train_targets = []
+            fold_val_preds = []
+            fold_val_targets = []
+
+            '''在当前fold训练集上训练模型'''
+            model.train()
+            for train_batch, train_label_batch in train_loader:
+                optimizer.zero_grad()
+                train_batch, train_label_batch = train_batch.to(device), train_label_batch.to(device)
+
+                outputs = model(train_batch)
+                loss = loss_fn(outputs, train_label_batch)
+                loss.backward()
+                optimizer.step()
+
+                fold_train_loss += loss.item()
+                _, predicted = torch.max(outputs.data, 1)
+                fold_train_total += train_label_batch.size(0)
+                fold_train_correct += (predicted == train_label_batch).sum().item()
+                fold_train_preds.extend(predicted.view(-1).cpu().numpy())
+                fold_train_targets.extend(train_label_batch.cpu().numpy())
+
+            # 计算训练集上的统计数据
+            train_loss = fold_train_loss / len(train_loader)
+            train_accuracy = fold_train_correct / fold_train_total
+
+            '''在当前fold验证集上评估模型'''
+            model.eval()
+            with torch.no_grad():
+                for val_batch, val_label_batch in val_loader:
+                    val_batch, val_label_batch = val_batch.to(device), val_label_batch.to(device)
+                    outputs = model(val_batch)
+                    loss = loss_fn(outputs, val_label_batch)
+
+                    fold_val_loss += loss.item()
+                    _, predicted = torch.max(outputs.data, 1)
+                    fold_val_total += val_label_batch.size(0)
+                    fold_val_correct += (predicted == val_label_batch).sum().item()
+                    fold_val_preds.extend(predicted.view(-1).cpu().numpy())
+                    fold_val_targets.extend(val_label_batch.cpu().numpy())
+
+            # 计算验证集上的统计数据
+            val_loss = fold_val_loss / len(val_loader)
+            val_accuracy = fold_val_correct / fold_val_total
+
+            # 将当前fold的统计数据添加到fold_metrics中
+            for i in range(1):  # 循环没用，单纯想折叠大段代码
+                # train
+                fold_metrics['train_loss'][epoch].append(train_loss)
+                fold_metrics['train_accuracy'][epoch].append(train_accuracy)
+
+                # val
+                fold_metrics['val_loss'][epoch].append(val_loss)
+                fold_metrics['val_accuracy'][epoch].append(val_accuracy)
+
+        # 打印epoch的平均统计数据（如果需要）
+        # 循环没用，单纯想折叠大段代码
+        for i in range(1):
+            print(f'Train Loss: {np.mean(fold_metrics["train_loss"][epoch]):.4f}, '
+                  f'Val Loss: {np.mean(fold_metrics["val_loss"][epoch]):.4f}, '
+                  f'Val Acc: {np.mean(fold_metrics["val_accuracy"][epoch]):.4f}, ')
+
+    end_time = time.time()
+    print(f'Total training time: {(end_time - start_time):.2f} s')
+
+    # 在这里，我们使用验证集的平均准确率作为目标指标
+    val_accuracy_avg = np.mean(fold_metrics['val_accuracy'][-1])
+    return val_accuracy_avg
+
+
+if __name__ == '__main__':
+    study = optuna.create_study(direction='maximize')
+    study.optimize(objective, n_trials=100)
+
+    # 输出最优的超参数
+    print(study.best_params)
+
+    # 最佳超参数
+    best_params = study.best_params
+    best_value = study.best_value
+
+    # 保存最佳超参数到txt文件
+    with open('best_params.txt', 'w') as f:
+        f.write(f"Best trial:\n")
+        f.write(f"  Value: {best_value}\n")
+        for key, value in best_params.items():
+            f.write(f"  {key}: {value}\n")
+
+    # 保存所有试验的详细结果到txt文件
+    with open('all_trials.txt', 'w') as f:
+        for trial in study.trials:
+            f.write(f"Trial {trial.number}:\n")
+            f.write(f"  Value: {trial.value}\n")
+            f.write(f"  Params: \n")
+            for key, value in trial.params.items():
+                f.write(f"    {key}: {value}\n")

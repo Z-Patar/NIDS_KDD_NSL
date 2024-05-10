@@ -1,16 +1,23 @@
 #  Copyright (c) Patar my copyright message. 2024-2024. All rights reserved.
+import time
 import torch
+from torch.profiler import profile, record_function, ProfilerActivity
 import pandas as pd
 from torch import nn
 from torch.nn import functional as F
-from torch.utils.data import Dataset, DataLoader, TensorDataset
+from torch.utils.data import Dataset, DataLoader,TensorDataset
 import torch.optim as optim
 import matplotlib.pyplot as plt
 import numpy as np
+import random
+import optuna
 from sklearn import metrics
-from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
-from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import accuracy_score, precision_score,recall_score,f1_score, confusion_matrix
+from sklearn.model_selection import StratifiedKFold, train_test_split
 import seaborn as sns
+from collections import OrderedDict
+import warnings
+warnings.filterwarnings("ignore")
 
 
 # 检查CUDA是否可用
@@ -75,7 +82,6 @@ class BiLSTMLayer(nn.Module):
         # LSTM的输出包括所有隐藏状态、最后的隐藏状态和最后的细胞状态
         output, _ = self.lstm(x)
         # 只返回输出张量，不返回隐藏状态和细胞状态
-        # return output
         return output[:, -1, :]  # 只返回最后一个时间步的输出
 
 
@@ -86,31 +92,32 @@ class CNNBiLSTMModel(nn.Module):
         self.conv1d = nn.Conv1d(in_channels=1, out_channels=64, kernel_size=122, padding='same')  # 保持输出尺寸不变
         self.maxpool1 = nn.MaxPool1d(kernel_size=5)
         self.batchnorm1 = nn.BatchNorm1d(64)
-
-        # input_dim = 就是nn.LSTM(input_size(x的特征维度),hidden_size,...)中的input_size
+        # out.shape=(batch=32, channel = 64, seq=24(122池化后的数字))
+        # channel = 64,此处channel就是embedding，即input_size
         self.bilstm1 = BiLSTMLayer(input_dim=64, hidden_dim=64)  # hidden_size即为上一层的输出channel
 
         # 此处需要将(128, ) reshape为(1,128), 因为要沿着128的方向做池化,
-        # 为啥要沿128的方向,个人理解128为预测出来的特征,故继续提取特征
         self.maxpool1d2 = nn.MaxPool1d(kernel_size=5)
         self.batchnorm2 = nn.BatchNorm1d(1)
 
         # 第二个BiLSTM
-        # input=(batch_size, input_size=1, hidden_size=128, 其他默认) ,seq=25(根据上一层的输出判断的)
+        # input=(input_size=1, hidden_size=128, 其他默认) ,seq=25(根据上一层的输出判断的)
         self.bilstm2 = BiLSTMLayer(input_dim=1, hidden_dim=128)  # BiLSTM只取了最后一个时间步的输出
+        # out.shape = (batch=32, 1(啥意思暂不明白), 256(就是128池化后的数字))
 
         self.dropout = nn.Dropout(0.5)  # 将上一层随机丢弃一半传入下层
         self.fc = nn.Linear(256, 5)
+        # self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
         x = self.conv1d(x)
         x = F.relu(x)
         x = self.maxpool1(x)
         x = self.batchnorm1(x)
-
         # shape=(32, 64, 24)
+
         x = x.permute(0, 2, 1)  # 重排维度以适配LSTM输入
-        # shape=(32, 24, 64) 所以下方bilstm的in_size=64
+        # shape=(32, 24, 64)
 
         # 第一个BiLSTM
         # BiLSTM.output.shape = (batch, seq, hidden_size*2) = (32, 24, 128)
@@ -130,9 +137,7 @@ class CNNBiLSTMModel(nn.Module):
         # out.shape=(batch=32, 256)
 
         x = self.dropout(x)
-        # x = torch.flatten(x, 1)  # 展平除batch_size外的所有维度, 但是维度已经是(batch, 256)了,没得展了
         x = self.fc(x)
-        # x = self.softmax(x)
         return x
 
 
@@ -174,10 +179,6 @@ def loop_data_loder(data_features, data_labels, batch_size):
     label_to_idx = {label: idx for idx, label in enumerate(data_labels.unique())}
     # 然后将类别名称转换为索引
     y_labels = data_labels.replace(label_to_idx).values
-    # print(y_labels)
-    # print(y_labels.dtype)
-    # train_labels = Index(['DOS', 'Probe', 'R2L', 'U2R', 'normal'], dtype='object')
-    # train_labels.shape = (-1,5)
 
     # 创建数据集和数据加载器
     dataset = CustomDataset(x_features, y_labels)
@@ -186,13 +187,37 @@ def loop_data_loder(data_features, data_labels, batch_size):
     return data_loader
 
 
-# 模型参数初始化
+# 模型参数初始化函数
 def init_weights(m):
-    if type(m) == nn.Linear or type(m) == nn.Conv2d:
+    if isinstance(m, nn.Conv1d):  # 一维卷积层
+        nn.init.xavier_uniform_(m.weight)  # weight用了Xavier均匀初始化
+        if m.bias is not None:  # bias存在时，初始化为0
+            nn.init.constant_(m.bias, 0)
+    elif isinstance(m, nn.LSTM):  # 对于LSTM层
+        for name, param in m.named_parameters():
+            if 'weight_ih' in name:  # 输入到隐藏层的权重weight_ih
+                nn.init.xavier_uniform_(param.data)  # 使用了Xavier均匀初始化
+
+            elif 'weight_hh' in name:  # 隐藏层到隐藏层的权重weight_hh，
+                # 正交初始化通常用于循环神经网络的隐藏层权重，因为它可以帮助维持梯度的规模，从而在训练过程中防止梯度消失或爆炸。
+                # todo 测试随机正态分布初始化后的结果是否优于正交初始化
+                nn.init.orthogonal_(param.data)  # 正交初始化
+                # nn.init.xavier_uniform_(param.data)     # 随机正态分布初始化
+
+            elif 'bias' in name:  # 对于LSTM层的偏置项，
+                param.data.fill_(0)  # 先所有偏置项初始化为0
+                # todo 测试偏置全为0的结果好，还是遗忘门偏置为1的结果好
+                n = param.size(0)
+                start, end = n // 4, n // 2
+                param.data[start:end].fill_(1.)  # 然后将遗忘门偏置初始化为1，这在某些情况下可以帮助模型记忆顺序，提高学习能力。
+    elif isinstance(m, nn.Linear):  # 线性层使用了Xavier均匀初始化
         nn.init.xavier_uniform_(m.weight)
+        nn.init.constant_(m.bias, 0)
 
 
-# 第一张图：每个fold的train_accuracy和模型总体的train_accuracy随epoch变化的曲线
+    # 第一张图：每个fold的train_accuracy和模型总体的train_accuracy随epoch变化的曲线
+
+
 def plot_fold_train_accuracies(fold_metrics, numb_epochs):
     epochs = range(1, numb_epochs + 1)
     plt.figure(figsize=(10, 6))
@@ -404,12 +429,12 @@ if __name__ == '__main__':
     # [调试结果]输出正常
 
     data_file = 'Data_encoded/LSTM_data/Train_processed.csv'
-    train_data = pd.read_csv(data_file)
+    train_data_f = pd.read_csv(data_file)
 
     # 设定超参数
     learning_rate = 0.01
-    num_epochs = 100
-    batch_size_ = 64
+    numb_epochs = 100
+    batch_size = 32
     weight_decay = 0.005
     device = try_device()
 
@@ -417,6 +442,224 @@ if __name__ == '__main__':
     num_folds = 6
     k_fold = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=42)  # 随机种子固定,保证每次生成的都一样
 
-    # 模型实例化
-    model = CNN_LSTM_model()
-    train(model, train_data, batch_size_, learning_rate, weight_decay, num_epochs,try_device())
+    # 实例化模型
+    model = CNNBiLSTMModel()
+    # 初始化模型参数
+    model.apply(init_weights)
+
+    # 模型传入device
+    print('Training on', device)
+    model.to(device)
+
+    # 设置优化器和损失函数
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, min_lr=1e-5, factor=0.9, patience=5, verbose=True)
+    loss_fn = nn.CrossEntropyLoss()
+
+    # 训练数据加载
+    train_data = train_data_f.copy()  # 不改变源数据
+    # 下面两项操作都不会改变train_data数据,在模型中不需要改变
+    labels = train_data['Class']
+    class_names = list(OrderedDict.fromkeys(labels.to_list()))  # 获取列名
+    print(class_names)
+    print(f'labels.shape = {labels.shape}')
+    print(f'labels.dtype = {labels.dtype}')
+    print(f'train_data.shape = {train_data.shape}')
+    features = train_data.drop(['Class'], axis=1, inplace=False)
+    print(f'features.shape = {features.shape}')
+
+    # 初始化存储结构，每个fold的每个epoch的数据都会被存储
+    fold_metrics = {
+        # train
+        'train_loss': [[] for _ in range(numb_epochs)],
+        'train_accuracy': [[] for _ in range(numb_epochs)],  # accuracy两种方法没用区别
+        # 加权平均指标
+        'train_precision_weighted': [[] for _ in range(numb_epochs)],
+        'train_recall_weighted': [[] for _ in range(numb_epochs)],
+        'train_f1_weighted': [[] for _ in range(numb_epochs)],
+        # 微平均法指标
+        'train_precision_micro': [[] for _ in range(numb_epochs)],
+        'train_recall_micro': [[] for _ in range(numb_epochs)],
+        'train_f1_micro': [[] for _ in range(numb_epochs)],
+
+        # val
+        'val_loss': [[] for _ in range(numb_epochs)],
+        'val_accuracy': [[] for _ in range(numb_epochs)],  # accuracy两种方法没用区别
+        # 加权平均指标
+        'val_precision_weighted': [[] for _ in range(numb_epochs)],
+        'val_recall_weighted': [[] for _ in range(numb_epochs)],
+        'val_f1_weighted': [[] for _ in range(numb_epochs)],
+        # 微平均法指标
+        'val_precision_micro': [[] for _ in range(numb_epochs)],
+        'val_recall_micro': [[] for _ in range(numb_epochs)],
+        'val_f1_micro': [[] for _ in range(numb_epochs)],
+    }
+    # 初始化用于存储所有混淆矩阵的列表
+    all_conf_matrices = []
+
+    print("train start")
+    # 完整训练
+    for epoch in range(numb_epochs):
+        start_time = time.time()
+        print(f'Epoch {epoch + 1}/{numb_epochs}')
+        # 全部K折完算一次epoch, 共需要经历numb_epochs次迭代
+
+        fold = 0  # fold计数器
+        for (train_index, val_index) in k_fold.split(features, labels):
+            fold_start_time = time.time()
+            fold += 1
+            print(f'Fold {fold}/{num_folds}')  # 当前为第fold次K折
+
+            # 根据K折设置训练集和验证集
+            train_data, val_data = features.iloc[train_index], features.iloc[val_index]
+            train_labels, val_labels = labels.iloc[train_index], labels.iloc[val_index]
+            # 只在第一次fold中打印shape
+            if fold == 1:
+                print(f'train_data.shape = {train_data.shape}, val_data.shape = {val_data.shape}')
+
+            # 设置Data_Loder
+            train_loader = loop_data_loder(train_data, train_labels, batch_size)
+            val_loader = loop_data_loder(val_data, val_labels, batch_size)
+
+            # 初始化fold统计数据
+            fold_train_loss = 0.0
+            fold_train_correct = 0
+            fold_train_total = 0
+            fold_val_loss = 0.0
+            fold_val_correct = 0
+            fold_val_total = 0
+            fold_train_preds = []
+            fold_train_targets = []
+            fold_val_preds = []
+            fold_val_targets = []
+
+            '''在当前fold训练集上训练模型'''
+            model.train()
+            for train_batch, train_label_batch in train_loader:
+                optimizer.zero_grad()
+                train_batch, train_label_batch = train_batch.to(device), train_label_batch.to(device)
+
+                outputs = model(train_batch)
+                loss = loss_fn(outputs, train_label_batch)
+                loss.backward()
+                optimizer.step()
+
+                fold_train_loss += loss.item()
+                _, predicted = torch.max(outputs.data, 1)
+                fold_train_total += train_label_batch.size(0)
+                fold_train_correct += (predicted == train_label_batch).sum().item()
+                fold_train_preds.extend(predicted.view(-1).cpu().numpy())
+                fold_train_targets.extend(train_label_batch.cpu().numpy())
+
+            # 计算训练集上的统计数据
+            train_loss = fold_train_loss / len(train_loader)
+            train_accuracy = fold_train_correct / fold_train_total
+            # 加权平均法计算precision，recall，F1-score
+            train_precision_weighted = precision_score(fold_train_targets, fold_train_preds, average='weighted',
+                                                       zero_division=0)
+            train_recall_weighted = recall_score(fold_train_targets, fold_train_preds, average='weighted',
+                                                 zero_division=0)
+            train_f1_weighted = f1_score(fold_train_targets, fold_train_preds, average='weighted', zero_division=0)
+            # 微平均法计算precision，recall，F1-score
+            train_precision_micro = precision_score(fold_val_targets, fold_val_preds, average='micro',
+                                                    zero_division=0)
+            train_recall_micro = recall_score(fold_val_targets, fold_val_preds, average='micro', zero_division=0)
+            train_f1_micro = f1_score(fold_val_targets, fold_val_preds, average='micro', zero_division=0)
+
+            '''在当前fold验证集上评估模型'''
+            model.eval()
+            with torch.no_grad():
+                for val_batch, val_label_batch in val_loader:
+                    val_batch, val_label_batch = val_batch.to(device), val_label_batch.to(device)
+                    outputs = model(val_batch)
+                    loss = loss_fn(outputs, val_label_batch)
+
+                    fold_val_loss += loss.item()
+                    _, predicted = torch.max(outputs.data, 1)
+                    fold_val_total += val_label_batch.size(0)
+                    fold_val_correct += (predicted == val_label_batch).sum().item()
+                    fold_val_preds.extend(predicted.view(-1).cpu().numpy())
+                    fold_val_targets.extend(val_label_batch.cpu().numpy())
+
+            '''
+            # 在每个fold后更新学习率, 如果你想更频繁地调整学习率，可以在每个fold后调整。
+            scheduler.step(fold_val_loss) # 已在全部fold结束后添加
+            '''
+
+            # 计算并存储当前fold的混淆矩阵
+            fold_conf_matrix = confusion_matrix(fold_val_targets, fold_val_preds)
+            all_conf_matrices.append(fold_conf_matrix)
+
+            # 计算验证集上的统计数据
+            '''
+            # accuracy，pre，recall，F1-score使用微平均法计算
+            # 对于每次的交叉验证，累积每个类别的真正例（TP）、假正例（FP）和假负例（FN）。
+            # 使用累积的TP、FP和FN来计算整体的precision、recall和F1分数：
+            '''
+            val_loss = fold_val_loss / len(val_loader)
+            val_accuracy = fold_val_correct / fold_val_total
+            # 加权平均法计算precision，recall，F1-score
+            val_precision_weighted = precision_score(fold_val_targets, fold_val_preds, average='weighted',
+                                                     zero_division=0)
+            val_recall_weighted = recall_score(fold_val_targets, fold_val_preds, average='weighted',
+                                               zero_division=0)
+            val_f1_weighted = f1_score(fold_val_targets, fold_val_preds, average='weighted', zero_division=0)
+            # 微平均法计算precision，recall，F1-score
+            val_precision_micro = precision_score(fold_val_targets, fold_val_preds, average='micro',
+                                                  zero_division=0)
+            val_recall_micro = recall_score(fold_val_targets, fold_val_preds, average='micro', zero_division=0)
+            val_f1_micro = f1_score(fold_val_targets, fold_val_preds, average='micro', zero_division=0)
+
+            # 将当前fold的统计数据添加到fold_metrics中
+            for i in range(1):  # 循环没用，单纯想折叠大段代码
+                # train
+                fold_metrics['train_loss'][epoch].append(train_loss)
+                fold_metrics['train_accuracy'][epoch].append(train_accuracy)
+                # 添加加权平均数据
+                fold_metrics['train_precision_weighted'][epoch].append(train_precision_weighted)
+                fold_metrics['train_recall_weighted'][epoch].append(train_recall_weighted)
+                fold_metrics['train_f1_weighted'][epoch].append(train_f1_weighted)
+                # 添加微平均法数据
+                fold_metrics['train_precision_micro'][epoch].append(train_precision_micro)
+                fold_metrics['train_recall_micro'][epoch].append(train_recall_micro)
+                fold_metrics['train_f1_micro'][epoch].append(train_f1_micro)
+
+                # val
+                fold_metrics['val_loss'][epoch].append(val_loss)
+                fold_metrics['val_accuracy'][epoch].append(val_accuracy)
+                # 加权平均指标
+                fold_metrics['val_precision_weighted'][epoch].append(val_precision_weighted)
+                fold_metrics['val_recall_weighted'][epoch].append(val_recall_weighted)
+                fold_metrics['val_f1_weighted'][epoch].append(val_f1_weighted)
+                # 微平均法指标
+                fold_metrics['val_precision_micro'][epoch].append(val_precision_micro)
+                fold_metrics['val_recall_micro'][epoch].append(val_recall_micro)
+                fold_metrics['val_f1_micro'][epoch].append(val_f1_micro)
+
+            fold_end_time = time.time()
+            fold_time = fold_end_time - fold_start_time
+            print(f'Fold {fold}/{num_folds} took {fold_time:.2f} seconds')
+
+        '''如果你的模型在不同的folds上表现差异很大，使用所有folds的平均损失可能更合适。'''
+        # 在所有folds完成后，更新learning_rate
+        val_loss_avg = sum(fold_metrics['val_loss'][epoch]) / num_folds
+        scheduler.step(val_loss_avg)
+
+        # 打印epoch的平均统计数据（如果需要）
+        # 循环没用，单纯想折叠大段代码
+        for i in range(1):
+            print(f'Epoch {epoch + 1} : ')
+            print(f'Average Training Loss: {np.mean(fold_metrics["train_loss"][epoch]):.4f}, ')
+            print(f'Average Training Accuracy: {np.mean(fold_metrics["train_accuracy"][epoch]):.4f}, ')
+            print(f'Average Validation Loss: {np.mean(fold_metrics["val_loss"][epoch]):.4f}, ')
+            print(f'Average Validation Accuracy: {np.mean(fold_metrics["val_accuracy"][epoch]):.4f}, ')
+
+        # print(prof.key_averages().table(sort_by='cpu_time_total', row_limit=10))
+
+        end_time = time.time()
+        epoch_time = end_time - start_time
+        print(f'Epoch {epoch+1}/{numb_epochs} took {epoch_time:.2f} seconds')
+        print('--------------------------------------\n')
+
+    # 所有epoch和fold完成后，合并混淆矩阵
+    combined_conf_matrix = np.sum(all_conf_matrices, axis=0)
