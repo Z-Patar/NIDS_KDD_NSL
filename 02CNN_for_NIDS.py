@@ -13,6 +13,7 @@ import random
 import optuna
 from sklearn import metrics
 from sklearn.metrics import accuracy_score, precision_score,recall_score,f1_score, confusion_matrix
+from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
 from sklearn.model_selection import StratifiedKFold, train_test_split
 import seaborn as sns
 from collections import OrderedDict
@@ -218,20 +219,25 @@ def init_weights(m):
     # 第一张图：每个fold的train_accuracy和模型总体的train_accuracy随epoch变化的曲线
 
 
-def plot_fold_train_accuracies(fold_metrics, numb_epochs):
+def plot_accuracies(fold_metrics, numb_epochs):
     epochs = range(1, numb_epochs + 1)
     plt.figure(figsize=(10, 6))
 
-    for fold in range(num_folds):
-        plt.plot(epochs, [fold_metrics['train_accuracy'][epoch][fold] for epoch in range(numb_epochs)],
-                 label=f'Fold {fold + 1}')
+    # for fold in range(num_folds):
+    #     plt.plot(epochs, [fold_metrics['train_accuracy'][epoch][fold] for epoch in range(numb_epochs)],
+    #              label=f'Fold {fold + 1}')
 
     # 计算并绘制模型总体的train_accuracy
     overall_train_accuracy = [np.mean([fold_metrics['train_accuracy'][epoch][fold] for fold in range(num_folds)]) for
                               epoch in range(numb_epochs)]
-    plt.plot(epochs, overall_train_accuracy, label='Overall Train Accuracy', color='black', linewidth=2, linestyle='--')
+    plt.plot(epochs, overall_train_accuracy, label='Overall Train Accuracy', color='black', linewidth=2, linestyle='-')
 
-    plt.title('Train Accuracy per Fold over Epochs')
+    # 计算并绘制模型总体的val_accuracy
+    overall_train_accuracy = [np.mean([fold_metrics['val_accuracy'][epoch][fold] for fold in range(num_folds)]) for
+                              epoch in range(numb_epochs)]
+    plt.plot(epochs, overall_train_accuracy, label='Overall val Accuracy', color='red', linewidth=2, linestyle='-')
+
+    plt.title('Accuracy over Epochs')
     plt.xlabel('Epochs')
     plt.ylabel('Train Accuracy')
     plt.legend()
@@ -251,9 +257,9 @@ def plot_overall_metrics(fold_metrics, numb_epochs):
 
     # 绘制模型总体的train_loss和val_loss
     overall_train_loss = [np.mean(fold_metrics['train_loss'][epoch]) for epoch in range(numb_epochs)]
-    overall_val_loss = [np.mean(fold_metrics['val_loss'][epoch]) for epoch in range(numb_epochs)]
+    # overall_val_loss = [np.mean(fold_metrics['val_loss'][epoch]) for epoch in range(numb_epochs)]
     plt.plot(epochs, overall_train_loss, label='Overall Train Loss', marker='s')
-    plt.plot(epochs, overall_val_loss, label='Overall Val Loss', marker='*')
+    # plt.plot(epochs, overall_val_loss, label='Overall Val Loss', marker='*')
 
     plt.title('Overall Training/Validation Metrics over Epochs')
     plt.xlabel('Epochs')
@@ -269,9 +275,9 @@ def plot_performance_metrics(fold_metrics, numb_epochs):
 
     # 计算模型总体的performance metrics
     overall_accuracy = [np.mean(fold_metrics['val_accuracy'][epoch]) for epoch in range(numb_epochs)]
-    overall_recall = [np.mean(fold_metrics['val_recall'][epoch]) for epoch in range(numb_epochs)]
-    overall_precision = [np.mean(fold_metrics['val_precision'][epoch]) for epoch in range(numb_epochs)]
-    overall_f1 = [np.mean(fold_metrics['val_f1'][epoch]) for epoch in range(numb_epochs)]
+    overall_recall = [np.mean(fold_metrics['val_recall_weighted'][epoch]) for epoch in range(numb_epochs)]
+    overall_precision = [np.mean(fold_metrics['val_precision_weighted'][epoch]) for epoch in range(numb_epochs)]
+    overall_f1 = [np.mean(fold_metrics['val_f1_weighted'][epoch]) for epoch in range(numb_epochs)]
 
     # 绘制曲线
     plt.plot(epochs, overall_accuracy, label='Accuracy', marker='o')
@@ -283,6 +289,102 @@ def plot_performance_metrics(fold_metrics, numb_epochs):
     plt.xlabel('Epochs')
     plt.ylabel('Metrics')
     plt.legend()
+    plt.show()
+
+
+def plot_confusion_matrix(conf_matrix, class_names, figsize=(10, 8)):
+    """
+    绘制混淆矩阵的函数。
+
+    参数:
+    conf_matrix (array-like): 混淆矩阵的数组。
+    class_names (list): 类别名称的列表。
+    figsize (tuple): 图的大小，默认为(10, 8)。
+    title (str): 图的标题，默认为'Confusion Matrix'。
+    """
+    plt.figure(figsize=figsize)
+    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=class_names, yticklabels=class_names)
+    plt.title('Confusion Matrix')
+    plt.ylabel('True Label')
+    plt.xlabel('Predicted Label')
+    plt.tight_layout()  # 调整布局以防止边缘被切割
+    plt.show()
+
+
+# DR曲线函数
+def plot_dr_curve(fold_metrics, class_names):
+    val_probabilities = fold_metrics['val_probabilities']
+    val_targets = fold_metrics['val_targets']
+
+    # 将"Normal"设置为一类，其他攻击类型设置为另一类
+    normal_class_index = class_names.index("Normal")
+    y_true = [1 if label == normal_class_index else 0 for label in val_targets]
+
+    # 计算precision和recall
+    precision, recall, _ = precision_recall_curve(y_true, val_probabilities)
+    average_precision = average_precision_score(y_true, val_probabilities)
+
+    # 绘制DR曲线
+    plt.figure()
+    plt.step(recall, precision, color='b', alpha=0.2, where='post')
+    plt.fill_between(recall, precision, step='post', alpha=0.2, color='b')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.ylim([0.0, 1.05])
+    plt.xlim([0.0, 1.0])
+    plt.title('DR Curve: AUC={0:0.2f}'.format(average_precision))
+    plt.show()
+
+
+# FPR曲线函数
+def plot_fpr_curve(fold_metrics, class_names):
+    val_probabilities = fold_metrics['val_probabilities']
+    val_targets = fold_metrics['val_targets']
+
+    # 将"Normal"设置为一类，其他攻击类型设置为另一类
+    normal_class_index = class_names.index("Normal")
+    y_true = [1 if label == normal_class_index else 0 for label in val_targets]
+
+    # 计算FPR和TPR
+    fpr, tpr, _ = roc_curve(y_true, val_probabilities)
+    roc_auc = auc(fpr, tpr)
+
+    # 绘制FPR曲线
+    plt.figure()
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('FPR Curve')
+    plt.legend(loc="lower right")
+    plt.show()
+
+
+# ROC-AUC曲线函数
+def plot_roc_auc_curve(fold_metrics, class_names):
+    val_probabilities = fold_metrics['val_probabilities']
+    val_targets = fold_metrics['val_targets']
+
+    # 将"Normal"设置为一类，其他攻击类型设置为另一类
+    normal_class_index = class_names.index("Normal")
+    y_true = [1 if label == normal_class_index else 0 for label in val_targets]
+
+    # 计算FPR和TPR
+    fpr, tpr, _ = roc_curve(y_true, val_probabilities)
+    roc_auc = auc(fpr, tpr)
+
+    # 绘制ROC-AUC曲线
+    plt.figure()
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC-AUC Curve')
+    plt.legend(loc="lower right")
     plt.show()
 
 
@@ -428,13 +530,15 @@ if __name__ == '__main__':
     print_layer_shapes(CNN_LSTM_model, in_tensor)
     # [调试结果]输出正常
 
-    data_file = 'Data_encoded/LSTM_data/Train_processed.csv'
+    data_file = 'Data_encoded/LSTM_data/combined_data_processed.csv'
     train_data_f = pd.read_csv(data_file)
 
     # 设定超参数
-    learning_rate = 0.01
+    learning_rate = 0.0799
+    beat1 = 0.8062
+    momentum = 0.983785954155676
     numb_epochs = 100
-    batch_size = 32
+    batch_size = 128
     weight_decay = 0.005
     device = try_device()
 
@@ -448,11 +552,11 @@ if __name__ == '__main__':
     model.apply(init_weights)
 
     # 模型传入device
-    print('Training on', device)
     model.to(device)
 
     # 设置优化器和损失函数
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay, betas=(beat1, 0.999))
+    # optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, min_lr=1e-5, factor=0.9, patience=5, verbose=True)
     loss_fn = nn.CrossEntropyLoss()
 
@@ -461,18 +565,14 @@ if __name__ == '__main__':
     # 下面两项操作都不会改变train_data数据,在模型中不需要改变
     labels = train_data['Class']
     class_names = list(OrderedDict.fromkeys(labels.to_list()))  # 获取列名
-    print(class_names)
-    print(f'labels.shape = {labels.shape}')
-    print(f'labels.dtype = {labels.dtype}')
-    print(f'train_data.shape = {train_data.shape}')
     features = train_data.drop(['Class'], axis=1, inplace=False)
-    print(f'features.shape = {features.shape}')
 
     # 初始化存储结构，每个fold的每个epoch的数据都会被存储
     fold_metrics = {
         # train
         'train_loss': [[] for _ in range(numb_epochs)],
         'train_accuracy': [[] for _ in range(numb_epochs)],  # accuracy两种方法没用区别
+        'train_probabilities': [[] for _ in range(numb_epochs)],
         # 加权平均指标
         'train_precision_weighted': [[] for _ in range(numb_epochs)],
         'train_recall_weighted': [[] for _ in range(numb_epochs)],
@@ -485,6 +585,7 @@ if __name__ == '__main__':
         # val
         'val_loss': [[] for _ in range(numb_epochs)],
         'val_accuracy': [[] for _ in range(numb_epochs)],  # accuracy两种方法没用区别
+        'val_probabilities': [[] for _ in range(num_folds)],
         # 加权平均指标
         'val_precision_weighted': [[] for _ in range(numb_epochs)],
         'val_recall_weighted': [[] for _ in range(numb_epochs)],
@@ -530,8 +631,10 @@ if __name__ == '__main__':
             fold_val_total = 0
             fold_train_preds = []
             fold_train_targets = []
+            fold_train_probabilities=[]
             fold_val_preds = []
             fold_val_targets = []
+            fold_val_probabilities = []
 
             '''在当前fold训练集上训练模型'''
             model.train()
@@ -540,6 +643,7 @@ if __name__ == '__main__':
                 train_batch, train_label_batch = train_batch.to(device), train_label_batch.to(device)
 
                 outputs = model(train_batch)
+                probabilities = torch.nn.functional.softmax(outputs, dim=1)  # 获取预测的概率
                 loss = loss_fn(outputs, train_label_batch)
                 loss.backward()
                 optimizer.step()
@@ -550,19 +654,17 @@ if __name__ == '__main__':
                 fold_train_correct += (predicted == train_label_batch).sum().item()
                 fold_train_preds.extend(predicted.view(-1).cpu().numpy())
                 fold_train_targets.extend(train_label_batch.cpu().numpy())
+                fold_train_probabilities.extend(probabilities[:, -1].detach().cpu().numpy())
 
             # 计算训练集上的统计数据
             train_loss = fold_train_loss / len(train_loader)
             train_accuracy = fold_train_correct / fold_train_total
             # 加权平均法计算precision，recall，F1-score
-            train_precision_weighted = precision_score(fold_train_targets, fold_train_preds, average='weighted',
-                                                       zero_division=0)
-            train_recall_weighted = recall_score(fold_train_targets, fold_train_preds, average='weighted',
-                                                 zero_division=0)
+            train_precision_weighted = precision_score(fold_train_targets, fold_train_preds, average='weighted', zero_division=0)
+            train_recall_weighted = recall_score(fold_train_targets, fold_train_preds, average='weighted', zero_division=0)
             train_f1_weighted = f1_score(fold_train_targets, fold_train_preds, average='weighted', zero_division=0)
             # 微平均法计算precision，recall，F1-score
-            train_precision_micro = precision_score(fold_val_targets, fold_val_preds, average='micro',
-                                                    zero_division=0)
+            train_precision_micro = precision_score(fold_val_targets, fold_val_preds, average='micro', zero_division=0)
             train_recall_micro = recall_score(fold_val_targets, fold_val_preds, average='micro', zero_division=0)
             train_f1_micro = f1_score(fold_val_targets, fold_val_preds, average='micro', zero_division=0)
 
@@ -572,6 +674,7 @@ if __name__ == '__main__':
                 for val_batch, val_label_batch in val_loader:
                     val_batch, val_label_batch = val_batch.to(device), val_label_batch.to(device)
                     outputs = model(val_batch)
+                    probabilities = torch.nn.functional.softmax(outputs, dim=1)  # 获取预测的概率
                     loss = loss_fn(outputs, val_label_batch)
 
                     fold_val_loss += loss.item()
@@ -580,7 +683,7 @@ if __name__ == '__main__':
                     fold_val_correct += (predicted == val_label_batch).sum().item()
                     fold_val_preds.extend(predicted.view(-1).cpu().numpy())
                     fold_val_targets.extend(val_label_batch.cpu().numpy())
-
+                    fold_val_probabilities.extend(probabilities[:, -1].detach().cpu().numpy())
             '''
             # 在每个fold后更新学习率, 如果你想更频繁地调整学习率，可以在每个fold后调整。
             scheduler.step(fold_val_loss) # 已在全部fold结束后添加
@@ -599,14 +702,11 @@ if __name__ == '__main__':
             val_loss = fold_val_loss / len(val_loader)
             val_accuracy = fold_val_correct / fold_val_total
             # 加权平均法计算precision，recall，F1-score
-            val_precision_weighted = precision_score(fold_val_targets, fold_val_preds, average='weighted',
-                                                     zero_division=0)
-            val_recall_weighted = recall_score(fold_val_targets, fold_val_preds, average='weighted',
-                                               zero_division=0)
+            val_precision_weighted = precision_score(fold_val_targets, fold_val_preds, average='weighted', zero_division=0)
+            val_recall_weighted = recall_score(fold_val_targets, fold_val_preds, average='weighted', zero_division=0)
             val_f1_weighted = f1_score(fold_val_targets, fold_val_preds, average='weighted', zero_division=0)
             # 微平均法计算precision，recall，F1-score
-            val_precision_micro = precision_score(fold_val_targets, fold_val_preds, average='micro',
-                                                  zero_division=0)
+            val_precision_micro = precision_score(fold_val_targets, fold_val_preds, average='micro', zero_division=0)
             val_recall_micro = recall_score(fold_val_targets, fold_val_preds, average='micro', zero_division=0)
             val_f1_micro = f1_score(fold_val_targets, fold_val_preds, average='micro', zero_division=0)
 
@@ -615,6 +715,7 @@ if __name__ == '__main__':
                 # train
                 fold_metrics['train_loss'][epoch].append(train_loss)
                 fold_metrics['train_accuracy'][epoch].append(train_accuracy)
+                fold_metrics['val_probabilities'].append(fold_train_probabilities)
                 # 添加加权平均数据
                 fold_metrics['train_precision_weighted'][epoch].append(train_precision_weighted)
                 fold_metrics['train_recall_weighted'][epoch].append(train_recall_weighted)
@@ -627,6 +728,7 @@ if __name__ == '__main__':
                 # val
                 fold_metrics['val_loss'][epoch].append(val_loss)
                 fold_metrics['val_accuracy'][epoch].append(val_accuracy)
+                fold_metrics['val_probabilities'].append(fold_val_probabilities)
                 # 加权平均指标
                 fold_metrics['val_precision_weighted'][epoch].append(val_precision_weighted)
                 fold_metrics['val_recall_weighted'][epoch].append(val_recall_weighted)
@@ -654,8 +756,6 @@ if __name__ == '__main__':
             print(f'Average Validation Loss: {np.mean(fold_metrics["val_loss"][epoch]):.4f}, ')
             print(f'Average Validation Accuracy: {np.mean(fold_metrics["val_accuracy"][epoch]):.4f}, ')
 
-        # print(prof.key_averages().table(sort_by='cpu_time_total', row_limit=10))
-
         end_time = time.time()
         epoch_time = end_time - start_time
         print(f'Epoch {epoch+1}/{numb_epochs} took {epoch_time:.2f} seconds')
@@ -663,3 +763,13 @@ if __name__ == '__main__':
 
     # 所有epoch和fold完成后，合并混淆矩阵
     combined_conf_matrix = np.sum(all_conf_matrices, axis=0)
+
+    plot_confusion_matrix(combined_conf_matrix, class_names, )
+
+    plot_overall_metrics(fold_metrics, numb_epochs)
+    plot_performance_metrics(fold_metrics, numb_epochs)
+
+    # plot_dr_curve(fold_metrics, class_names)
+    # plot_fpr_curve(fold_metrics, class_names)
+    # plot_roc_auc_curve(fold_metrics, class_names)
+

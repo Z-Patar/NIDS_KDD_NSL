@@ -1,7 +1,6 @@
 #  Copyright (c) Patar my copyright message. 2024-2024. All rights reserved.
 import time
 import torch
-from torch.profiler import profile, record_function, ProfilerActivity
 import pandas as pd
 from torch import nn
 from torch.nn import functional as F
@@ -11,11 +10,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 import optuna
+import optuna.visualization as vis
 from sklearn import metrics
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.model_selection import StratifiedKFold, train_test_split
 import seaborn as sns
 from collections import OrderedDict
+import plotly
+import kaleido
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -181,11 +183,11 @@ def init_weights(m):
 
             elif 'weight_hh' in name:  # 隐藏层到隐藏层的权重weight_hh，
                 # 随机正态分布初始化后的结果优于正交初始化
-                nn.init.xavier_uniform_(param.data)     # 随机正态分布初始化
+                nn.init.xavier_uniform_(param.data)  # 随机正态分布初始化
 
             elif 'bias' in name:  # 对于LSTM层的偏置项，
                 param.data.fill_(0)  # 先所有偏置项初始化为0
-                # todo 测试偏置全为0的结果好，还是遗忘门偏置为1的结果好
+                # 偏置全为0的结果和遗忘门偏置为1的结果差不多
                 n = param.size(0)
                 start, end = n // 4, n // 2
                 param.data[start:end].fill_(1.)  # 然后将遗忘门偏置初始化为1，这在某些情况下可以帮助模型记忆顺序，提高学习能力。
@@ -197,15 +199,40 @@ def init_weights(m):
 
 
 def objective(trial):
-    # 定义超参数搜索空间
-    learning_rate = trial.suggest_float('learning_rate', 1e-3, 1e-1, log=True)
-    weight_decay = trial.suggest_float('weight_decay', 1e-10, 0.1, log=True)
-    batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 128])
-    numb_epochs = 30
+    # QMCSampler法探索参数空间
+    learning_rate = trial.suggest_float('learning_rate', 0.01, 0.5, log=True)
+    weight_decay = 1e-6
+    beat1 = trial.suggest_float('beat1', 0.8, 0.999,)
 
-    data_file = '../Data_encoded/LSTM_data/Train_20P_processed.csv'
-    train_data_f = pd.read_csv(data_file)
-    print(f'Train data is {data_file}, \n'
+    # 贝叶斯法定义超参数搜索空间
+    # lr在0.09+附近，0.065附近
+    # learning_rate = trial.suggest_float('learning_rate', 0.001, 0.01, log=True)
+    # weight_decay = trial.suggest_float('weight_decay', 1e-10, 1e-5, log=True)
+    # beat1 = trial.suggest_float('beat1', 0.8, 0.999,)
+    # eps = trial.suggest_float('eps', 1e-9, 1e-7)
+    # momentum = trial.suggest_float('momentum', 0.94, 0.9999)
+    batch_size = 128
+    numb_epochs = 30
+    """
+    去掉了学习率衰减
+    53次测试中，'learning_rate'(0.001, 0.1), 'momentum'(0.9, 0.99),最优结果如下
+    Trial 38 finished with value: 0.4619097254100284 and parameters: {'learning_rate': 0.0024131048184518476, 'momentum': 0.9799346347439084}
+    """
+
+    """初始化epoch早停逻辑参数"""
+    patience = 15
+    # best_acc = 0.0
+    best_loss = float('inf')
+    patience_counter = 0
+
+    data_file = '../Data_encoded/LSTM_data/combined_data_processed.csv'
+    data = pd.read_csv(data_file)
+    X = data.iloc[:, :-1]
+    y = data.iloc[:, -1]
+    X_train, X_sub, y_train, y_sub = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+    train_data_f = pd.concat([X_sub, y_sub], axis=1)
+    print(f'\nTrain data is 20% subdata of {data_file}, \n'
           f'Train data shape: {train_data_f.shape}')
 
     # 设定超参数
@@ -224,8 +251,11 @@ def objective(trial):
     model.to(device)
 
     # 设置优化器和损失函数
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, min_lr=1e-5, factor=0.9, patience=5, verbose=True)
+    # optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum)
+    optimizer = optim.Adam(model.parameters(),
+                           lr=learning_rate, weight_decay=weight_decay,
+                           betas=(beat1, 0.999))
+    # scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, min_lr=1e-6, factor=0.8, patience=2, verbose=True)
     loss_fn = nn.CrossEntropyLoss()
 
     # 训练数据加载
@@ -248,7 +278,8 @@ def objective(trial):
     # 完整训练
     for epoch in range(numb_epochs):
         print(f'Epoch {epoch + 1}/{numb_epochs}')
-        # 全部K折完算一次epoch, 共需要经历numb_epochs次迭代
+
+        # K折交叉验证
         for (train_index, val_index) in k_fold.split(features, labels):
 
             # 根据K折设置训练集和验证集
@@ -322,37 +353,58 @@ def objective(trial):
                 fold_metrics['val_loss'][epoch].append(val_loss)
                 fold_metrics['val_accuracy'][epoch].append(val_accuracy)
 
-        val_loss_avg = sum(fold_metrics['val_loss'][epoch]) / num_folds
-        scheduler.step(val_loss_avg)
+        # 使用平均val_loss进行学习率衰减
+        # val_loss_avg = sum(fold_metrics['val_loss'][epoch]) / num_folds
+        # scheduler.step(val_loss_avg)
 
-        # 打印epoch的平均统计数据（如果需要）
+        # 打印epoch的平均统计数据
         # 循环没用，单纯想折叠大段代码
         for i in range(1):
             print(f'Train Loss: {np.mean(fold_metrics["train_loss"][epoch]):.4f}, '
                   f'Val Loss: {np.mean(fold_metrics["val_loss"][epoch]):.4f}, '
                   f'Val Acc: {np.mean(fold_metrics["val_accuracy"][epoch]):.4f}, ')
 
+        # 查看当前epoch的平均loss，根据val_loss决定是否epoch早停
+        val_loss = np.mean(fold_metrics["val_loss"][epoch])  # mean为平均
+        if val_loss < best_loss:
+            best_loss = val_loss
+            patience_counter = 0
+        else:
+            patience_counter += 1
+        # 早停判定
+        if patience_counter >= patience:
+            print(f'Early stopping triggered after epoch {epoch + 1}')
+            break
+
     end_time = time.time()
-    print(f'Total training time: {(end_time - start_time):.2f} s')
+    print(f'Total training time: {(end_time - start_time):.2f} s  ')
 
-    # 在这里，我们使用验证集的平均准确率作为目标指标
-    # val_accuracy_avg = np.mean(fold_metrics['val_accuracy'][-1])
-    # return val_accuracy_avg
-    # 将目标指标切换为loss
-    val_loss = np.mean(fold_metrics['val_loss'][-1])
-    return val_loss
-
+    # 目标指标为平均val_loss
+    val_loss_avg = np.mean(fold_metrics["val_loss"][-1])  # mean为平均
+    return val_loss_avg
 
 
 if __name__ == '__main__':
+    """
+    MedianPruner用于早停，
+    它会在每个间隔步骤(interval_steps)检查性能是否低于所有试验的中位数。如果是，则会停止当前试验。
+    n_startup_trials参数设置了在开始应用早停之前要完成的最小试验次数，
+    n_warmup_steps则设置了在开始考虑早停之前要运行的最小步骤数。
+    """
     # 创建一个早停的pruner对象
-    pruner = optuna.pruners.EarlyStoppingPruner(
-        patience=5,  # 不改善的试验次数
-        grace_period=5,  # 允许试验不改善的最小轮数
-        min_delta=0.01  # 不改善的最小幅度
-    )
+    pruner = optuna.pruners.SuccessiveHalvingPruner(
+        min_resource=10,
+        reduction_factor=2,
+        min_early_stopping_rate=2)
 
-    study = optuna.create_study(direction='minimize', pruner=pruner)
+    # 用贝叶斯优化自动调参
+    # study = optuna.create_study(direction='maximize', pruner=pruner)
+
+    # 用Quasi-Random-Search自动调参
+    study = optuna.create_study(
+        sampler=optuna.samplers.QMCSampler(),
+        direction='minimize',
+        pruner=pruner)
     study.optimize(objective, n_trials=100)
 
     # 输出最优的超参数
@@ -369,11 +421,29 @@ if __name__ == '__main__':
         for key, value in best_params.items():
             f.write(f"  {key}: {value}\n")
 
-    # 保存所有试验的详细结果到txt文件
-    with open('all_trials.txt', 'w') as f:
-        for trial in study.trials:
-            f.write(f"Trial {trial.number}:\n")
-            f.write(f"  Value: {trial.value}\n")
-            f.write(f"  Params: \n")
-            for key, value in trial.params.items():
-                f.write(f"    {key}: {value}\n")
+    # 将所有试验的详细结果导出到CSV文件
+    df = study.trials_dataframe()
+    df.to_csv('optuna_results.csv', index=False)
+
+    # 绘制参数重要性
+    fig_param_importance = vis.plot_param_importances(study)
+    fig_param_importance.show()
+
+    # 绘制参数与目标值的关系
+    fig_param_rel = vis.plot_slice(study)
+    fig_param_rel.show()
+
+    # 绘制优化历史图
+    fig_param_optim_history = vis.plot_optimization_history(study)
+    fig_param_optim_history.show()
+
+    # 绘制各参数间的关系
+    # 学习率与weight—decay
+    fig_param_contour_lr_wd = vis.plot_contour(study, params=['learning_rate', 'weight_decay']) #
+    fig_param_contour_lr_wd.show()
+    # 学习率与beat1
+    fig_param_contour_lr_beat1 = vis.plot_contour(study, params=['learning_rate', 'beat1'])
+    fig_param_contour_lr_beat1.show()
+    # 学习率与eps
+    fig_param_contour_lr_eps = vis.plot_contour(study, params=['learning_rate', 'eps'])
+    fig_param_contour_lr_eps.show()

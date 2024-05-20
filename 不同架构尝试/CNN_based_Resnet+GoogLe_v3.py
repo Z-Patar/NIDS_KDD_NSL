@@ -130,7 +130,8 @@ resnet_block4 = nn.Sequential(
     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
     Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
     Residual(96, (4, 8, 12), (24, 48), 12, 24, ),
-    nn.Conv2d(96, 128, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(128), nn.ReLU(),
+    nn.Conv2d(96, 128, kernel_size=3, stride=1, padding=0),
+    nn.BatchNorm2d(128), nn.ReLU(),
 )  # out.shape = (batch_size, 128, 3, 3)
 
 CNNNet_Resnet_Inception = nn.Sequential(
@@ -141,10 +142,13 @@ CNNNet_Resnet_Inception = nn.Sequential(
 )
 CNNNet_simple = nn.Sequential(
     nn.Conv2d(1, 8, kernel_size=1), nn.BatchNorm2d(8), nn.ReLU(),  # 11x11
-    nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(16), nn.ReLU(),  # 9x9
-    nn.Conv2d(16, 32, kernel_size=3, stride=2, padding=0), nn.BatchNorm2d(32), nn.ReLU(),  # 4x4
-    nn.MaxPool2d(kernel_size=4), nn.Flatten(),
-    nn.Linear(32, 5),  # 五分类问题
+    nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=1), nn.BatchNorm2d(16), nn.ReLU(),  # 11x11
+    nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(32), nn.ReLU(),  # 9x9
+    nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(64), nn.ReLU(),   # 7x7
+    nn.Conv2d(64, 96, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(96), nn.ReLU(),   # 5x5
+    nn.Conv2d(96, 128, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(128), nn.ReLU(),  # 3x3
+    nn.MaxPool2d(kernel_size=3), nn.Flatten(),
+    nn.Linear(128, 5),  # 五分类问题
 )
 
 
@@ -376,7 +380,7 @@ if __name__ == "__main__":
 
     # 设定超参数
     learning_rate = 0.01
-    numb_epochs = 50
+    numb_epochs = 30
     batch_size = 256
     train_file_path = '../Data_encoded/matrix_data/Train_20Percent_encoded.csv'  # KDD_NSL的训练集
     test_file_path = '../Data_encoded/matrix_data/Test_encoded.csv'
@@ -393,6 +397,7 @@ if __name__ == "__main__":
     # for layer in CNNNet_simple:
     #     X = layer(X)
     #     print(layer.__class__.__name__, 'output shape:\t', X.shape)
+
     Simple_CNN = CNNNet_simple
     train_ch6(Simple_CNN, train_data_loader, test__data_loader,
               num_epochs=numb_epochs, lr=learning_rate, device=try_device())

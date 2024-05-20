@@ -349,21 +349,85 @@ def train(model, data, batch_size, lr, w_decay, numb_epochs, device):
     print('Training Finished')
 
 
-if __name__ == '__main__':
-    # [调试用]查看模型每一层的输出
-    CNN_LSTM_model = CNNBiLSTMModel()
-    in_tensor = torch.randn(64, 1, 122)  # batch_size=32, in_channels=1, sequence_length=122
-    print_layer_shapes(CNN_LSTM_model, in_tensor)
-    # [调试结果]输出正常
+def plot_fold_accuracies(fold_metrics, numb_epochs):
+    epochs = range(1, numb_epochs + 1)
+    plt.figure(figsize=(10, 6))
 
+    for fold in range(num_folds):
+        plt.plot(epochs, [fold_metrics['train_accuracy'][epoch][fold] for epoch in range(numb_epochs)],
+                 label=f'Fold {fold + 1}')
+
+    # 计算并绘制模型总体的train_accuracy
+    overall_train_accuracy = [np.mean([fold_metrics['train_accuracy'][epoch][fold] for fold in range(num_folds)]) for
+                              epoch in range(numb_epochs)]
+    plt.plot(epochs, overall_train_accuracy, label='Overall Train Accuracy', color='black', linewidth=2, linestyle='--')
+
+    plt.title('Train Accuracy per Fold over Epochs')
+    plt.xlabel('Epochs')
+    plt.ylabel('Train Accuracy')
+    plt.legend()
+    plt.show()
+
+
+# 第二张图：模型总体的train_accuracy, train_loss, val_accuracy, val_loss随epoch变化的曲线
+def plot_overall_metrics(fold_metrics, numb_epochs):
+    epochs = range(1, numb_epochs + 1)
+    plt.figure(figsize=(10, 6))
+
+    # 绘制模型总体的train_accuracy和val_accuracy
+    overall_train_accuracy = [np.mean(fold_metrics['train_accuracy'][epoch]) for epoch in range(numb_epochs)]
+    overall_val_accuracy = [np.mean(fold_metrics['val_accuracy'][epoch]) for epoch in range(numb_epochs)]
+    plt.plot(epochs, overall_train_accuracy, label='Overall Train Accuracy', marker='o')
+    plt.plot(epochs, overall_val_accuracy, label='Overall Val Accuracy', marker='v')
+
+    # 绘制模型总体的train_loss和val_loss
+    overall_train_loss = [np.mean(fold_metrics['train_loss'][epoch]) for epoch in range(numb_epochs)]
+    overall_val_loss = [np.mean(fold_metrics['val_loss'][epoch]) for epoch in range(numb_epochs)]
+    plt.plot(epochs, overall_train_loss, label='Overall Train Loss', marker='s')
+    plt.plot(epochs, overall_val_loss, label='Overall Val Loss', marker='*')
+
+    plt.title('Overall Training/Validation Metrics over Epochs')
+    plt.xlabel('Epochs')
+    plt.ylabel('Metrics')
+    plt.legend()
+    plt.show()
+
+
+# 第三张图：模型的accuracy, recall, precision, f1分数随epoch变化的曲线
+def plot_performance_metrics(fold_metrics, numb_epochs):
+    epochs = range(1, numb_epochs + 1)
+    plt.figure(figsize=(10, 6))
+
+    # 计算模型总体的performance metrics
+    overall_accuracy = [np.mean(fold_metrics['val_accuracy'][epoch]) for epoch in range(numb_epochs)]
+    overall_recall = [np.mean(fold_metrics['val_recall'][epoch]) for epoch in range(numb_epochs)]
+    overall_precision = [np.mean(fold_metrics['val_precision'][epoch]) for epoch in range(numb_epochs)]
+    overall_f1 = [np.mean(fold_metrics['val_f1'][epoch]) for epoch in range(numb_epochs)]
+
+    # 绘制曲线
+    plt.plot(epochs, overall_accuracy, label='Accuracy', marker='o')
+    plt.plot(epochs, overall_recall, label='Recall', marker='v')
+    plt.plot(epochs, overall_precision, label='Precision', marker='s')
+    plt.plot(epochs, overall_f1, label='F1 Score', marker='*')
+
+    plt.title('Performance Metrics over Epochs')
+    plt.xlabel('Epochs')
+    plt.ylabel('Metrics')
+    plt.legend()
+    plt.show()
+
+
+
+if __name__ == '__main__':
     data_file = '../Data_encoded/LSTM_data/Train_processed.csv'
     train_data_f = pd.read_csv(data_file)
 
     # 设定超参数
-    learning_rate = 0.01
+    learning_rate = 0.001
+    momentum = 0.986
     numb_epochs = 30
     batch_size = 128
-    weight_decay = 0.005
+    weight_decay = 5.741753485035593e-07
     device = try_device()
 
     # 分层K折交叉验证
@@ -376,11 +440,12 @@ if __name__ == '__main__':
     model.apply(init_weights)
 
     # 模型传入device
-    print('Training on', device)
     model.to(device)
 
     # 设置优化器和损失函数
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    # optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    # 实例化带动量的SGD优化器
+    optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, min_lr=1e-5, factor=0.9, patience=5, verbose=True)
     loss_fn = nn.CrossEntropyLoss()
 
@@ -485,9 +550,10 @@ if __name__ == '__main__':
         # 打印epoch的平均统计数据（如果需要）
         # 循环没用，单纯想折叠大段代码
         for i in range(1):
-            print(f'Average Training Loss: {np.mean(fold_metrics["train_loss"][epoch]):.4f}, '
-                  f'Average Validation Loss: {np.mean(fold_metrics["val_loss"][epoch]):.4f}, '
-                  f'Average Validation Accuracy: {np.mean(fold_metrics["val_accuracy"][epoch]):.4f}, ')
+            print(f'Train Loss: {np.mean(fold_metrics["train_loss"][epoch]):.4f}, '
+                  f'Val Loss: {np.mean(fold_metrics["val_loss"][epoch]):.4f}, '
+                  f'Train Acc:{np.mean(fold_metrics["train_accuracy"][epoch]):.4f}, '
+                  f'Val Acc: {np.mean(fold_metrics["val_accuracy"][epoch]):.4f}, ')
 
     end_time = time.time()
     all_time = end_time - start_time
