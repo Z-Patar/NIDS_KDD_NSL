@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="搭建模型demo">
-      <change afterPath="$PROJECT_DIR$/demo-data/DoS1.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-data/normal2.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/02CNN_for_NIDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/02CNN_for_NIDS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PyQt5-demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PyQt5-demo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data-demo.csv" beforeDir="false" afterPath="$PROJECT_DIR$/demo-data/normal1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train_with_Kfoldcross.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/train_with_Kfoldcross.ipynb" afterDir="false" />
-    </list>
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="搭建模型demo" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -45,7 +37,7 @@
     </favorite-branches>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="CNN-for-NIDS" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -113,7 +105,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ShowUsagesActions.previewPropertyKey": "true",
     "ToolWindowPython 软件包.ShowToolbar": "false",
-    "git-widget-placeholder": "CNN-for-NIDS",
+    "git-widget-placeholder": "demo",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "E:/Git-Repository/NIDS_KDD_NSL/.venv/Scripts/pyuic5.exe",
     "node.js.detected.package.eslint": "true",
@@ -219,15 +211,7 @@
       <workItem from="1715325527151" duration="551000" />
       <workItem from="1715326132574" duration="1341000" />
       <workItem from="1715327772900" duration="88456000" />
-      <workItem from="1716469620214" duration="12732000" />
-    </task>
-    <task id="LOCAL-00044" summary="add some todo">
-      <option name="closed" value="true" />
-      <created>1714138038206</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1714138038206</updated>
+      <workItem from="1716469620214" duration="13115000" />
     </task>
     <task id="LOCAL-00045" summary="add some comment&#10;modified CNN_for_NIDS.py">
       <option name="closed" value="true" />
@@ -613,7 +597,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716485101884</updated>
     </task>
-    <option name="localTasksCounter" value="93" />
+    <task id="LOCAL-00093" summary="搭建模型demo">
+      <option name="closed" value="true" />
+      <created>1716488558940</created>
+      <option name="number" value="00093" />
+      <option name="presentableId" value="LOCAL-00093" />
+      <option name="project" value="LOCAL" />
+      <updated>1716488558940</updated>
+    </task>
+    <option name="localTasksCounter" value="94" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -722,7 +714,7 @@
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$build_simple_NN_pytroch.coverage" NAME="build_simple_NN_pytroch 覆盖结果" MODIFIED="1715160088952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$shape_of_AlexNet_based_CNN.coverage" NAME="shape_of_AlexNet_based_CNN 覆盖结果" MODIFIED="1714306428624" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01Data_preProcess.coverage" NAME="01Data_preProcess 覆盖结果" MODIFIED="1714894006315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$PyQt5_demo.coverage" NAME="PyQt5-demo 覆盖结果" MODIFIED="1716488239609" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$PyQt5_demo.coverage" NAME="PyQt5-demo 覆盖结果" MODIFIED="1716488441177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_BiLSTM.coverage" NAME="CNN_BiLSTM 覆盖结果" MODIFIED="1715490324088" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/不同架构尝试" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$001.coverage" NAME="001 覆盖结果" MODIFIED="1715424923662" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/调参尝试" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01matrix_Data_preProcess.coverage" NAME="01matrix_Data_preProcess 覆盖结果" MODIFIED="1714926874402" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

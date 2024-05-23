@@ -169,10 +169,21 @@ class MainWindow(QMainWindow):
             print(f"Input data shape: {input_data.shape}")  # 调试信息：打印输入数据形状
             if input_data.shape[-1] != 122:
                 raise ValueError("输入数据的长度必须为122")
-            with torch.no_grad():
-                self.model.eval()
-                output = self.model(input_data)
-                predicted_class = torch.argmax(output, dim=1).item()
+            # 统计预测结果
+            predictions = []
+            for _ in range(1000):
+                with torch.no_grad():
+                    self.model.eval()
+                    output = self.model(input_data)
+                    predicted_class = torch.argmax(output, dim=1).item()
+                    predictions.append(predicted_class)
+
+            # 统计每种类别的数量
+            count_dict = {label: predictions.count(label) for label in range(5)}
+            print("预测结果统计：", count_dict)  # 输出每种类别的数量统计
+
+            # 选择出现次数最多的类别作为最终预测结果
+            predicted_class = max(count_dict, key=count_dict.get)
 
             predicted_label = self.label_mapping.get(predicted_class, "未知标签")
             self.result_label.setText('预测结果：{}'.format(predicted_label))
