@@ -3,6 +3,7 @@
 import sys
 import torch
 import numpy as np
+import pandas as pd
 import torch.nn as nn
 from torch.nn import functional as F
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QLineEdit, QFileDialog, QVBoxLayout, QWidget
@@ -27,7 +28,7 @@ class BiLSTMLayer(nn.Module):
 class CNNBiLSTMModel(nn.Module):
     def __init__(self):
         super(CNNBiLSTMModel, self).__init__()
-        self.conv1d = nn.Conv1d(in_channels=1, out_channels=64, kernel_size=122, padding='same')  # 保持输出尺寸不变
+        self.conv1d = nn.Conv1d(in_channels=1, out_channels=64, kernel_size=122, padding=61)  # 保持输出尺寸不变
         self.maxpool1 = nn.MaxPool1d(kernel_size=5)
         self.batchnorm1 = nn.BatchNorm1d(64)
         # out.shape=(batch=32, channel = 64, seq=24(122池化后的数字))
@@ -45,7 +46,6 @@ class CNNBiLSTMModel(nn.Module):
 
         self.dropout = nn.Dropout(0.5)  # 将上一层随机丢弃一半传入下层
         self.fc = nn.Linear(256, 5)
-        # self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
         x = self.conv1d(x)
@@ -77,6 +77,26 @@ class CNNBiLSTMModel(nn.Module):
         x = self.dropout(x)
         x = self.fc(x)
         return x
+
+
+# [调试用]打印每一层的输出形状
+def print_layer_shapes(model, input_tensor):
+    def hook(module, input, output):
+        print(f"{module.__class__.__name__}: {output.shape}")
+
+    # 注册hook
+    hooks = []
+    for layer in model.children():
+        hook_handle = layer.register_forward_hook(hook)
+        hooks.append(hook_handle)
+
+    # 前向传播
+    with torch.no_grad():
+        model(input_tensor)
+
+    # 移除hooks
+    for hook in hooks:
+        hook.remove()
 
 
 # 加载保存的模型参数
@@ -115,28 +135,51 @@ class MainWindow(QMainWindow):
 
         # 加载模型
         self.model = CNNBiLSTMModel()
+        # 调试查看模型各层输出是否正常
+        if 1:
+            # [调试用]查看模型每一层的输出
+            in_tensor = torch.randn(1, 1, 122)  # batch_size=1, in_channels=1, sequence_length=122
+            print_layer_shapes(self.model, in_tensor)
+            # [调试结果]输出正常
         self.model_path = 'CNN_BiLSTM_state.pth'  # 替换为你保存的模型参数文件路径
         load_model(self.model, self.model_path)
 
+        # 定义标签映射字典
+        self.label_mapping = {
+            0: "Normal",
+            1: "DoS",
+            2: "R2L",
+            3: "Probe",
+            4: "U2R"
+        }
+
     # 选择文件
     def select_file(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, '选择数据文件', '', 'Data Files (*.csv *.txt)')  # 可以根据实际文件类型进行修改
+        file_path, _ = QFileDialog.getOpenFileName(self, '选择数据文件', '',
+                                                   'Data Files (*.csv *.txt)')  # 可以根据实际文件类型进行修改
         self.file_path_input.setText(file_path)
 
     # 预测
     def predict(self):
         file_path = self.file_path_input.text()
-        # 在这里进行数据预处理
-        # ...
+        try:
+            data = pd.read_csv(file_path)
+            print(f"Loaded data: {data.head()}")  # 调试信息：打印前几行数据
+            input_data = torch.tensor(data.values, dtype=torch.float32).unsqueeze(0)
+            print(f"Input data shape: {input_data.shape}")  # 调试信息：打印输入数据形状
+            if input_data.shape[-1] != 122:
+                raise ValueError("输入数据的长度必须为122")
+            with torch.no_grad():
+                self.model.eval()
+                output = self.model(input_data)
+                predicted_class = torch.argmax(output, dim=1).item()
 
-        # 进行预测
-        input_data = torch.tensor([[1.0]])  # 替换为你的输入数据
-        with torch.no_grad():
-            output = self.model(input_data)
-            predicted_class = torch.argmax(output, dim=1)  # 获取预测的类别
-
-        # 显示预测结果
-        self.result_label.setText('预测结果：{}'.format(predicted_class.item()))
+            predicted_label = self.label_mapping.get(predicted_class, "未知标签")
+            self.result_label.setText('预测结果：{}'.format(predicted_label))
+        except ValueError as ve:
+            self.result_label.setText('<font color="red">输入数据错误：{}</font>'.format(str(ve)))
+        except Exception as e:
+            self.result_label.setText('<font color="red">预测出现异常：{}</font>'.format(str(e)))
 
 
 if __name__ == '__main__':

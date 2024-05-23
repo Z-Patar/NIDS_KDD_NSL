@@ -530,6 +530,7 @@ if __name__ == '__main__':
     print_layer_shapes(CNN_LSTM_model, in_tensor)
     # [调试结果]输出正常
 
+    """
     data_file = 'Data_encoded/LSTM_data/combined_data_processed.csv'
     train_data_f = pd.read_csv(data_file)
 
@@ -784,3 +785,4 @@ if __name__ == '__main__':
     # plot_fpr_curve(fold_metrics, class_names)
     # plot_roc_auc_curve(fold_metrics, class_names)
 
+"""
