@@ -131,7 +131,7 @@ CNNNet_Resnet_Inception = nn.Sequential(
     before_resnet_block, resnet_block1, resnet_block2, resnet_block3, resnet_block4,
     nn.MaxPool2d(kernel_size=3),  # 对3x3大小的窗口池化，out.shape=(batch_size, 64, 1, 1)
     nn.Flatten(),
-    nn.Linear(128, 5),  # 五分类问题
+    nn.Linear(128, 2),  # 二分类问题
 )
 CNNNet_simple = nn.Sequential(
     nn.Conv2d(1, 8, kernel_size=1), nn.BatchNorm2d(8), nn.ReLU(),  # 11x11
@@ -141,33 +141,28 @@ CNNNet_simple = nn.Sequential(
     nn.Conv2d(64, 96, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(96), nn.ReLU(),   # 5x5
     nn.Conv2d(96, 128, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(128), nn.ReLU(),  # 3x3
     nn.MaxPool2d(kernel_size=3), nn.Flatten(),
-    nn.Linear(128, 5),  # 五分类问题
+    nn.Linear(128, 2),  # 二分类问题
 )
 simple_CNN = nn.Sequential(
     nn.Conv2d(1, 16, kernel_size=3), nn.BatchNorm2d(16), nn.ReLU(),
     nn.Conv2d(16, 32, kernel_size=3), nn.BatchNorm2d(32), nn.ReLU(),
     nn.Conv2d(32, 64, kernel_size=3), nn.BatchNorm2d(64), nn.ReLU(),
     nn.MaxPool2d(kernel_size=5), nn.Flatten(),
-    nn.Linear(64, 5),
+    nn.Linear(64, 2),
 )
 
 
-# 以下是自定义的Dataset类
+# 自定义Dataset类
 class CustomDataset(Dataset):
     def __init__(self, features, labels):
         self.features = features
-        # self.labels = labels
-        # 假设labels是独热编码的，取最大值的索引作为类别标签 # nn.CrossEntropyLoss 期望目标是类别的索引，而不是独热编码的形式。
-        self.labels = torch.argmax(torch.tensor(labels, dtype=torch.float32), dim=1)
+        self.labels = labels
+        # 定义标签映射
+        self.label_map = {"Normal": 0, "Attack": 1}
 
     def __len__(self):
         return len(self.features)
 
-    # def __getitem__(self, idx):
-    #     feature = torch.tensor(self.features[idx], dtype=torch.float32)
-    #     # label = torch.tensor(self.labels[idx], dtype=torch.long)
-    #     label = self.labels[idx]
-    #     return feature, label
     def __getitem__(self, idx):
         feature = self.features[idx]
         label = self.labels[idx]
@@ -184,6 +179,10 @@ class CustomDataset(Dataset):
         # 转换为 PyTorch 张量
         feature = torch.tensor(feature, dtype=torch.float32)
 
+        # 将字符型标签转换为数值标签
+        if isinstance(label, str):
+            label = self.label_map[label]
+
         # 如果标签不是一个张量，转换它
         if not torch.is_tensor(label):
             label = torch.tensor(label, dtype=torch.long)
@@ -195,16 +194,25 @@ def load_data(train_file_path, test_file_path):
     # 处理训练集
     train_df = pd.read_csv(train_file_path, header=0)  # 读取数据文件
     train_df = train_df.drop(columns=['is_host_login'])  # 删除is_host_login列，该列值全为0，删除不影响结果
-    train_features = train_df.iloc[:, :-5].values  # 特征项为前121列
-    train_labels = train_df.iloc[:, -5:].values  # label项为后5列
+    train_features = train_df.iloc[:, :-1].values  # 特征项为前121列
+    train_labels = train_df.iloc[:, -1].values  # label项为最后一列
+    # 打印训练集的形状
+    print(f"Train features shape before reshape: {train_features.shape}")
     # 将特征reshape为一个四维向量，其中 batch_size 等于数据项数, channel = 1, 高，宽为11的特征矩阵
     train_features = train_features.reshape(-1, 1, 11, 11)
 
     # 处理测试集，方法同训练集
     test_df = pd.read_csv(test_file_path, header=0)
     test_df = test_df.drop(columns=['is_host_login'])
-    test_features = test_df.iloc[:, :-5].values
-    test_labels = test_df.iloc[:, -5:].values
+    test_features = test_df.iloc[:, :-1].values
+    test_labels = test_df.iloc[:, -1].values
+    # 打印测试集的形状
+    print(f"Test features shape before reshape: {test_features.shape}")
+
+    # 确保特征数是 121 (11 * 11)
+    if test_features.shape[1] != 121:
+        raise ValueError(f"Expected 121 features, but got {test_features.shape[1]} features")
+
     test_features = test_features.reshape(-1, 1, 11, 11)
 
     # 创建数据集和数据加载器
@@ -281,7 +289,7 @@ def train_ch6(net, train_loader, test_loader, num_epochs, lr, device):
     # 绘制学习曲线
     plot_learning_curve(train_losses, train_accuracies, test_accuracies, num_epochs)
     # 绘制混淆矩阵
-    class_labels = ['DOS', 'Normal', 'Probe', 'R2L', 'U2R']
+    class_labels = ['Normal', 'Attack']
     plot_confusion_matrix(net, test_loader, device, class_labels)
     # 计算precision，recall，F1—score
     calculate_metrics(net, test_loader, device)
@@ -382,15 +390,15 @@ if __name__ == "__main__":
     learning_rate = 0.01
     numb_epochs = 30
     batch_size = 256
-    train_file_path = '../Data_encoded/matrix_data/Train_20Percent_encoded.csv'  # KDD_NSL的训练集
-    test_file_path = '../Data_encoded/matrix_data/Test_encoded.csv'
+    train_file_path = './data/Train_processed.csv'  # KDD_NSL的训练集
+    test_file_path = './data/Test_processed.csv'
     # 加载数据
     train_dataset, test_dataset = load_data(train_file_path, test_file_path)
     train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test__data_loader = DataLoader(test_dataset, batch_size=batch_size)
-    # ResCNN = CNNNet_Resnet_Inception
-    # train_ch6(ResCNN, train_data_loader, test__data_loader,
-    #           num_epochs=numb_epochs, lr=learning_rate, device=try_device())
+    ResCNN = CNNNet_Resnet_Inception
+    train_ch6(ResCNN, train_data_loader, test__data_loader,
+              num_epochs=numb_epochs, lr=learning_rate, device=try_device())
 
     # # 查看baseline模型每一层的输出
     # X = torch.rand(size=(1, 1, 11, 11))
@@ -398,10 +406,10 @@ if __name__ == "__main__":
     #     X = layer(X)
     #     print(layer.__class__.__name__, 'output shape:\t', X.shape)
 
-    # Simple_CNN = CNNNet_simple
-    # train_ch6(Simple_CNN, train_data_loader, test__data_loader,
-    #           num_epochs=numb_epochs, lr=learning_rate, device=try_device())
-
-    CNN = simple_CNN
-    train_ch6(CNN, train_data_loader, test__data_loader,
+    Simple_CNN = CNNNet_simple
+    train_ch6(Simple_CNN, train_data_loader, test__data_loader,
               num_epochs=numb_epochs, lr=learning_rate, device=try_device())
+
+    # CNN = simple_CNN
+    # train_ch6(CNN, train_data_loader, test__data_loader,
+    #           num_epochs=numb_epochs, lr=learning_rate, device=try_device())

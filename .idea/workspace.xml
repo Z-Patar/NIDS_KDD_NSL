@@ -4,23 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="demo直接print">
-      <change afterPath="$PROJECT_DIR$/KDD_NSL/attack_binary_type_file.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/二分类不同架构尝试/CNN_ResNet_GoogLeNet_v3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/二分类不同架构尝试/data/Train_20Percent_encoded.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/二分类不同架构尝试/data/combined_data-21_processed.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/五分类不同架构尝试/01_0data_preprocess_for_resnet.py" afterDir="false" />
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="二分类尝试">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/01_0data_preprocess_for_resnet.py" beforeDir="false" afterPath="$PROJECT_DIR$/二分类不同架构尝试/01_0data_preprocess_for_resnet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/01_1data_preprocess_for_BiLSTM.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/01_1data_preprocess_for_BiLSTM.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/02CNN_for_NIDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/02CNN_for_NIDS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDD_NSL/all_service_type_file.csv" beforeDir="false" afterPath="$PROJECT_DIR$/KDD_NSL/all_columns_name_file.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/不同架构尝试/CNN_BiLSTM.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/CNN_BiLSTM.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/不同架构尝试/CNN_based_Resnet+GoogLe_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/CNN_based_Resnet+GoogLe_v3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/不同架构尝试/MLP.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/MLP.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/不同架构尝试/all_trials.txt" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/all_trials.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/不同架构尝试/best_params.txt" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/best_params.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/不同架构尝试/optuna_results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/optuna_results.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/二分类不同架构尝试/00BiType_data_preprocess.py" beforeDir="false" afterPath="$PROJECT_DIR$/二分类不同架构尝试/00BiType_data_preprocess.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/二分类不同架构尝试/01BiType_CNN_ResNet_GoogLeNet_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/二分类不同架构尝试/01BiType_CNN_ResNet_GoogLeNet_v3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/二分类不同架构尝试/data/Test_processed.csv" beforeDir="false" afterPath="$PROJECT_DIR$/二分类不同架构尝试/data/Test_processed.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/五分类不同架构尝试/CNN_based_Resnet+GoogLe_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/CNN_based_Resnet+GoogLe_v3.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +43,7 @@
     </favorite-branches>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="CNN-for-NIDS" />
+        <entry key="$PROJECT_DIR$" value="demo" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -90,7 +79,10 @@
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Python.001.executor": "Run",
+    "Python.00BiType_data_preprocess.executor": "Run",
     "Python.00KDDCpu99_Data_preProcess.executor": "Run",
+    "Python.00data_preprocess_resnet.executor": "Run",
+    "Python.01BiType_CNN_ResNet_GoogLeNet_v3.executor": "Run",
     "Python.01Data_preProcess.executor": "Run",
     "Python.01_1_LSTM_data_preprocess.executor": "Run",
     "Python.01_1data_preprocess_for_BiLSTM.executor": "Run",
@@ -124,9 +116,9 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ShowUsagesActions.previewPropertyKey": "true",
     "ToolWindowPython 软件包.ShowToolbar": "false",
-    "git-widget-placeholder": "demo",
+    "git-widget-placeholder": "binary__class",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "E:/Git-Repository/NIDS_KDD_NSL/二分类不同架构尝试",
+    "last_opened_file_path": "D:/Users/Patar/Desktop",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.standard": "true",
     "node.js.detected.package.tslint": "true",
@@ -238,23 +230,7 @@
       <workItem from="1716577680707" duration="2754000" />
       <workItem from="1716893528249" duration="4390000" />
       <workItem from="1717039347865" duration="43000" />
-      <workItem from="1717039405298" duration="5542000" />
-    </task>
-    <task id="LOCAL-00047" summary="添加 cuda.device 判定">
-      <option name="closed" value="true" />
-      <created>1714623927086</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1714623927086</updated>
-    </task>
-    <task id="LOCAL-00048" summary="搭建基于Resnet+GoogLeNet_v3的CNN网络">
-      <option name="closed" value="true" />
-      <created>1714624019755</created>
-      <option name="number" value="00048" />
-      <option name="presentableId" value="LOCAL-00048" />
-      <option name="project" value="LOCAL" />
-      <updated>1714624019755</updated>
+      <workItem from="1717039405298" duration="16715000" />
     </task>
     <task id="LOCAL-00049" summary="添加了一个todo项">
       <option name="closed" value="true" />
@@ -632,7 +608,23 @@
       <option name="project" value="LOCAL" />
       <updated>1717056028527</updated>
     </task>
-    <option name="localTasksCounter" value="96" />
+    <task id="LOCAL-00096" summary="二分类尝试">
+      <option name="closed" value="true" />
+      <created>1717062800859</created>
+      <option name="number" value="00096" />
+      <option name="presentableId" value="LOCAL-00096" />
+      <option name="project" value="LOCAL" />
+      <updated>1717062800859</updated>
+    </task>
+    <task id="LOCAL-00097" summary="二分类尝试">
+      <option name="closed" value="true" />
+      <created>1717062918195</created>
+      <option name="number" value="00097" />
+      <option name="presentableId" value="LOCAL-00097" />
+      <option name="project" value="LOCAL" />
+      <updated>1717062918195</updated>
+    </task>
+    <option name="localTasksCounter" value="98" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -702,7 +694,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="完成模型搭建" />
     <MESSAGE value="reformated" />
     <MESSAGE value="delete todo" />
     <MESSAGE value="modified net structure" />
@@ -727,7 +718,8 @@
     <MESSAGE value="搭建模型demo" />
     <MESSAGE value="模型训练的参数有问题，预测结果都是3" />
     <MESSAGE value="demo直接print" />
-    <option name="LAST_COMMIT_MESSAGE" value="demo直接print" />
+    <MESSAGE value="二分类尝试" />
+    <option name="LAST_COMMIT_MESSAGE" value="二分类尝试" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$test_to_find_best_num_workers.coverage" NAME="test_to_find_best_num_workers 覆盖结果" MODIFIED="1715334028073" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -738,8 +730,10 @@
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01_1data_preprocess_for_BiLSTM.coverage" NAME="01_1data_preprocess_for_BiLSTM 覆盖结果" MODIFIED="1715342249012" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$cuda.coverage" NAME="cuda 覆盖结果" MODIFIED="1714356826714" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$txt_to_csv.coverage" NAME="txt_to_csv 覆盖结果" MODIFIED="1712678018648" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01BiType_CNN_ResNet_GoogLeNet_v3.coverage" NAME="01BiType_CNN_ResNet_GoogLeNet_v3 覆盖结果" MODIFIED="1717066781832" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/二分类不同架构尝试" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$build_simple_NN_pytroch.coverage" NAME="build_simple_NN_pytroch 覆盖结果" MODIFIED="1715160088952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$shape_of_AlexNet_based_CNN.coverage" NAME="shape_of_AlexNet_based_CNN 覆盖结果" MODIFIED="1714306428624" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$00data_preprocess_resnet.coverage" NAME="00data_preprocess_resnet 覆盖结果" MODIFIED="1717062708505" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/二分类不同架构尝试" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01Data_preProcess.coverage" NAME="01Data_preProcess 覆盖结果" MODIFIED="1714894006315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$PyQt5_demo.coverage" NAME="PyQt5-demo 覆盖结果" MODIFIED="1716598653868" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_BiLSTM.coverage" NAME="CNN_BiLSTM 覆盖结果" MODIFIED="1715490324088" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/不同架构尝试" />
@@ -750,6 +744,7 @@
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$main_pytroch_like_IDS.coverage" NAME="main_pytroch_like_IDS 覆盖结果" MODIFIED="1713018155292" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_preProcess.coverage" NAME="Data_preProcess 覆盖结果" MODIFIED="1712845043606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$GoogLeNet.coverage" NAME="GoogLeNet 覆盖结果" MODIFIED="1714355355814" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$00BiType_data_preprocess.coverage" NAME="00BiType_data_preprocess 覆盖结果" MODIFIED="1717066322311" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/二分类不同架构尝试" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_Pre_process.coverage" NAME="Data_Pre_process 覆盖结果" MODIFIED="1712680263854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$simple_CNN_MNIST.coverage" NAME="simple_CNN_MNIST 覆盖结果" MODIFIED="1714735388557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$02CNN_for_NIDS.coverage" NAME="02CNN_for_NIDS 覆盖结果" MODIFIED="1716535291264" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -758,7 +753,7 @@
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$00KDDCpu99_Data_preProcess.coverage" NAME="00KDDCpu99_Data_preProcess 覆盖结果" MODIFIED="1714843618378" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$structure_CNN.coverage" NAME="structure_CNN 覆盖结果" MODIFIED="1714642884127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_for_NIDS.coverage" NAME="CNN_for_NIDS 覆盖结果" MODIFIED="1714103325177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_based_Resnet_GoogLe_v3.coverage" NAME="CNN_based_Resnet+GoogLe_v3 覆盖结果" MODIFIED="1717055061669" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/不同架构尝试" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_based_Resnet_GoogLe_v3.coverage" NAME="CNN_based_Resnet+GoogLe_v3 覆盖结果" MODIFIED="1717082601396" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/五分类不同架构尝试" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$optuna_dashboard_set_RDB_backen.coverage" NAME="optuna_dashboard-set-RDB_backen 覆盖结果" MODIFIED="1715448086945" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/调参尝试" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_encoding.coverage" NAME="Data_encoding 覆盖结果" MODIFIED="1712676493403" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/KDD_NSL" />
   </component>

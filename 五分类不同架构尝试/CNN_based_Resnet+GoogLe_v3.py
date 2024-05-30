@@ -238,7 +238,7 @@ def train_ch6(net, train_loader, test_loader, num_epochs, lr, device):
     print('Training on', device)
     net.to(device)
 
-    optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=0.01)
+    optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=0.1)
     loss_fn = nn.CrossEntropyLoss()
 
     train_losses = []

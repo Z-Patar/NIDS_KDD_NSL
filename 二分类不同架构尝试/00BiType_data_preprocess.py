@@ -35,7 +35,7 @@ def preprocess(data_file):
     return data
 
 
-def one_hot(data, encode_cols):
+def one_hot(data, encode_cols, categories=None):
     df = pd.DataFrame()  # 创建一个空的dataframe，用来存储编码后的数据
     # 编码的列是连续的，所以直接将两段的数据分离出来，然后将label分离，对encode_cols编码后拼接回去
     before_encode_cols = data.columns[0]
@@ -44,7 +44,12 @@ def one_hot(data, encode_cols):
     end_encode_cols = data.columns[len(encode_cols)+1:]
 
     for col in encode_cols:
-        dummies = pd.get_dummies(data[col], prefix=col, drop_first=False)  # 对选定数据列独热编码
+        if categories and col in categories:
+            dummies = pd.get_dummies(data[col], prefix=col, drop_first=False).reindex(columns=categories[col], fill_value=0)
+        else:
+            dummies = pd.get_dummies(data[col], prefix=col, drop_first=False)  # 对选定数据列独热编码
+            if categories is not None:
+                categories[col] = dummies.columns.tolist()
         df = pd.concat([df, dummies], axis=1)   # 将编码后生成的列插入到df后面
 
     df = pd.concat([df, data[end_encode_cols]], axis=1)  # 最后将编码列后面的列数据插到df后
@@ -70,7 +75,7 @@ def normalize(data):
     return result
 
 
-def data_preProcess(data_indicator):
+def data_preProcess(data_indicator, categories=None):
     """
     # 读取数据，同时加表头name = filed_name, 去难度等级, 换label
     # data = preprocess(data_file)
@@ -91,68 +96,27 @@ def data_preProcess(data_indicator):
         save_path = '../二分类不同架构尝试/data/Test_processed.csv'
         data = preprocess(data_file)
 
-    elif data_indicator == 'Test-21':   # 只处理Test-21
-        data_file = '../KDD_NSL/KDDTest-21.csv'
-        save_path = '../二分类不同架构尝试/data/Test_21_processed.csv'
-        data = preprocess(data_file)
-
     elif data_indicator == 'combine':   # 将测试集和训练集合并处理
         train_file = '../KDD_NSL/KDDTrain+.csv'
         test_file = '../KDD_NSL/KDDTest+.csv'
         data = pd.concat([preprocess(train_file), preprocess(test_file)])
         save_path = '../二分类不同架构尝试/data/combined_data_processed.csv'
 
-    elif data_indicator == 'combine-21':    # 将train和test-21合并
-        train_file = '../KDD_NSL/KDDTrain+.csv'
-        test_file = '../KDD_NSL/KDDTest-21.csv'
-        data = pd.concat([preprocess(train_file), preprocess(test_file)])
-        save_path = '../二分类不同架构尝试/data/combined_data-21_processed.csv'
     else:
         print("please check your data_indicator")
         return
 
+    unique_values = data['service'].unique()
+    print(f'{data_indicator}文件中service列的属性值共有{len(unique_values)}种')
     encode_cols = ['protocol_type', 'service', 'flag']
-    data = normalize(one_hot(data, encode_cols))
+    data = normalize(one_hot(data, encode_cols, categories))
     print("处理完毕,保存中...")
     data.to_csv(save_path, index=False)
-    print(f"{data_indicator} data processed.csv 保存完毕!")
-
-
-# 用resnet预处理函数处理好的数据生成Train_20Precent
-def Train_20precent_preProcess():
-    # 将子集按照全集的方式进行独热编码后的数据
-    data = pd.read_csv('Data_encoded/matrix_data/Train_20Percent_encoded.csv')
-    # 分离label列,即后五列
-    labels = data.iloc[:, -5:]
-    print(labels)
-    print(data)
-    labels = labels.to_numpy()
-    print(labels)
-    # labels还原
-    indices = np.argmax(labels, axis=1)
-    print(indices)
-    # 如果有一个类别列表对应于独热编码的列
-    categories = ['Dos', 'Normal', 'Probe', 'R2L', 'U2L']
-    # label转为Class
-    original_labels = [categories[index] for index in indices]
-    print(original_labels)
-    # list 转为Dataframe类型
-    Class = pd.DataFrame(original_labels, columns=['Class'])
-    print(Class)
-
-    # 将Class拼接到data后
-    data_class = data.iloc[:, :-5]
-    print(data_class)
-    data_processed = pd.concat([data_class, Class], axis=1)
-    print(data_processed)
-    data_processed.to_csv('Data_encoded/LSTM_data/Train_20P_processed.csv', index=False)
+    print(f"{data_indicator} data processed.csv 保存完毕!\n")
 
 
 if __name__ == '__main__':
-    data_preProcess('combine')
-    # data_preProcess('combine-21')
-    data_preProcess('Train')
-    data_preProcess('Test')
-    # data_preProcess('Test-21')
-    # data_preProcess('21')
-    # Train_20precent_preProcess()
+    categories = {}
+    data_preProcess('combine', categories)
+    data_preProcess('Train', categories)
+    data_preProcess('Test', categories)
