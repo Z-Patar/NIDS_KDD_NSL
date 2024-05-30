@@ -109,13 +109,6 @@ resnet_block2 = nn.Sequential(
     nn.BatchNorm2d(64), nn.ReLU(),  # 注意通道数
 )  # out.shape = (batch_size, 32, 4, 4)
 
-# resnet_block3 = nn.Sequential(
-#     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
-#     Residual(32, (2, 4, 6), (12, 24), 6, 12, use_1x1conv=True),
-#     Residual(48, (2, 4, 8), (16, 32), 8, 16, use_1x1conv=True),
-#     nn.BatchNorm2d(64), nn.ReLU(),
-# )  # out.shape = (batch_size, 64, 3, 3)
-
 # Resnet 3: Residual*2+一个3x3conv,
 resnet_block3 = nn.Sequential(
     # Residual(in_channels, (c1[0], c1[1], c1[2]), (c2[0], c2[1]), c3, c4, use_1x1conv)
@@ -149,6 +142,13 @@ CNNNet_simple = nn.Sequential(
     nn.Conv2d(96, 128, kernel_size=3, stride=1, padding=0), nn.BatchNorm2d(128), nn.ReLU(),  # 3x3
     nn.MaxPool2d(kernel_size=3), nn.Flatten(),
     nn.Linear(128, 5),  # 五分类问题
+)
+simple_CNN = nn.Sequential(
+    nn.Conv2d(1, 16, kernel_size=3), nn.BatchNorm2d(16), nn.ReLU(),
+    nn.Conv2d(16, 32, kernel_size=3), nn.BatchNorm2d(32), nn.ReLU(),
+    nn.Conv2d(32, 64, kernel_size=3), nn.BatchNorm2d(64), nn.ReLU(),
+    nn.MaxPool2d(kernel_size=5), nn.Flatten(),
+    nn.Linear(64, 5),
 )
 
 
@@ -238,7 +238,7 @@ def train_ch6(net, train_loader, test_loader, num_epochs, lr, device):
     print('Training on', device)
     net.to(device)
 
-    optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=1)
+    optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=0.01)
     loss_fn = nn.CrossEntropyLoss()
 
     train_losses = []
@@ -388,9 +388,9 @@ if __name__ == "__main__":
     train_dataset, test_dataset = load_data(train_file_path, test_file_path)
     train_data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test__data_loader = DataLoader(test_dataset, batch_size=batch_size)
-    ResCNN = CNNNet_Resnet_Inception
-    train_ch6(ResCNN, train_data_loader, test__data_loader,
-              num_epochs=numb_epochs, lr=learning_rate, device=try_device())
+    # ResCNN = CNNNet_Resnet_Inception
+    # train_ch6(ResCNN, train_data_loader, test__data_loader,
+    #           num_epochs=numb_epochs, lr=learning_rate, device=try_device())
 
     # # 查看baseline模型每一层的输出
     # X = torch.rand(size=(1, 1, 11, 11))
@@ -398,6 +398,10 @@ if __name__ == "__main__":
     #     X = layer(X)
     #     print(layer.__class__.__name__, 'output shape:\t', X.shape)
 
-    Simple_CNN = CNNNet_simple
-    train_ch6(Simple_CNN, train_data_loader, test__data_loader,
+    # Simple_CNN = CNNNet_simple
+    # train_ch6(Simple_CNN, train_data_loader, test__data_loader,
+    #           num_epochs=numb_epochs, lr=learning_rate, device=try_device())
+
+    CNN = simple_CNN
+    train_ch6(CNN, train_data_loader, test__data_loader,
               num_epochs=numb_epochs, lr=learning_rate, device=try_device())

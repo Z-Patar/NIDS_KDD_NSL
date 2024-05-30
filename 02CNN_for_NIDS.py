@@ -245,7 +245,7 @@ def plot_accuracies(fold_metrics, numb_epochs):
 
 
 # 第二张图：模型总体的train_accuracy, train_loss, val_accuracy, val_loss随epoch变化的曲线
-def plot_overall_metrics(fold_metrics, numb_epochs):
+def plot_overall_loss_acc(fold_metrics, numb_epochs):
     epochs = range(1, numb_epochs + 1)
     plt.figure(figsize=(10, 6))
 
@@ -530,7 +530,6 @@ if __name__ == '__main__':
     print_layer_shapes(CNN_LSTM_model, in_tensor)
     # [调试结果]输出正常
 
-    """
     data_file = 'Data_encoded/LSTM_data/combined_data_processed.csv'
     train_data_f = pd.read_csv(data_file)
 
@@ -538,7 +537,7 @@ if __name__ == '__main__':
     learning_rate = 0.0799
     beat1 = 0.8062
     momentum = 0.983785954155676
-    numb_epochs = 30
+    numb_epochs = 10
     batch_size = 128
     weight_decay = 0.005
     device = try_device()
@@ -765,24 +764,24 @@ if __name__ == '__main__':
     # 所有epoch和fold完成后，合并混淆矩阵
     combined_conf_matrix = np.sum(all_conf_matrices, axis=0)
 
-    # 保存模型权重
-    torch.save(CNN_LSTM_model.state_dict(), 'CNN_BiLSTM_state.pth')
+    # 打印特定层的参数
+    for name, param in model.named_parameters():
+        if 'fc1' in name:
+            print(f"Parameter name: {name}")
+            print(param.data[:100])  # 打印前5个参数值
 
-    # # 保存整个模型
-    # torch.save({
-    #     'epoch': numb_epochs,
-    #     'state_dict': CNN_LSTM_model.state_dict(),
-    #     'optimizer_state_dict': CNN_LSTM_model.optimizer.state_dict(),
-    # }, 'CNN_BiLSTM_all_state.pth')
+    # 保存模型权重
+    torch.save(CNN_LSTM_model.state_dict(), 'CNN_BiLSTM_state111.pth')
+
+    # 保存整个模型
+    torch.save(CNN_LSTM_model, 'CNN_BiLSTM_all111.pth')
 
     # 画图
     plot_confusion_matrix(combined_conf_matrix, class_names, )
 
-    plot_overall_metrics(fold_metrics, numb_epochs)
+    plot_overall_loss_acc(fold_metrics, numb_epochs)
     plot_performance_metrics(fold_metrics, numb_epochs)
 
     # plot_dr_curve(fold_metrics, class_names)
     # plot_fpr_curve(fold_metrics, class_names)
     # plot_roc_auc_curve(fold_metrics, class_names)
-
-"""
