@@ -4,36 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="模型训练的参数有问题，预测结果都是3">
-      <change afterPath="$PROJECT_DIR$/CNN_BiLSTM_all.pth" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CNN_BiLSTM_all111.pth" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CNN_BiLSTM_state111.pth" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Demo_plus.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/correct_predictions.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-data/DoS2.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-data/DoS_plus.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-data/Probe1.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-data/Probe2.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-data/R2L.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-data/U2R1.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/demo-data/U2R2.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/find-right-data.py" afterDir="false" />
+    <list default="true" id="6280f515-bb2e-4605-8dd6-976f226a3648" name="更改" comment="demo直接print">
+      <change afterPath="$PROJECT_DIR$/KDD_NSL/attack_binary_type_file.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/二分类不同架构尝试/CNN_ResNet_GoogLeNet_v3.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/二分类不同架构尝试/data/Train_20Percent_encoded.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/二分类不同架构尝试/data/combined_data-21_processed.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/五分类不同架构尝试/01_0data_preprocess_for_resnet.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/02CNN_for_NIDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/02CNN_for_NIDS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CNN_BiLSTM_state.pth" beforeDir="false" afterPath="$PROJECT_DIR$/CNN_BiLSTM_state.pth" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDDCup99/00field_name_file.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDDCup99/01attack_type_file.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDDCup99/KDDCpu99_Data_preProcess.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDDCup99/Temp_data99.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDDCup99/data.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDDCup99/data_encoded/Test_data.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDDCup99/data_encoded/Train_data.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/KDDCup99/data_encoded/Train_data_10Percent.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/PyQt5-demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/Demo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-data/DoS1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/demo-data/DoS1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-data/normal1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/demo-data/normal1.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo-data/normal2.csv" beforeDir="false" afterPath="$PROJECT_DIR$/demo-data/normal2.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/不同架构尝试/CNN_based_Resnet+GoogLe_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/不同架构尝试/CNN_based_Resnet+GoogLe_v3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01_0data_preprocess_for_resnet.py" beforeDir="false" afterPath="$PROJECT_DIR$/二分类不同架构尝试/01_0data_preprocess_for_resnet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/01_1data_preprocess_for_BiLSTM.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/01_1data_preprocess_for_BiLSTM.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/02CNN_for_NIDS.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/02CNN_for_NIDS.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/KDD_NSL/all_service_type_file.csv" beforeDir="false" afterPath="$PROJECT_DIR$/KDD_NSL/all_columns_name_file.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/不同架构尝试/CNN_BiLSTM.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/CNN_BiLSTM.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/不同架构尝试/CNN_based_Resnet+GoogLe_v3.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/CNN_based_Resnet+GoogLe_v3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/不同架构尝试/MLP.py" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/MLP.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/不同架构尝试/all_trials.txt" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/all_trials.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/不同架构尝试/best_params.txt" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/best_params.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/不同架构尝试/optuna_results.csv" beforeDir="false" afterPath="$PROJECT_DIR$/五分类不同架构尝试/optuna_results.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,7 +126,7 @@
     "ToolWindowPython 软件包.ShowToolbar": "false",
     "git-widget-placeholder": "demo",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "D:/Users/Patar/Desktop",
+    "last_opened_file_path": "E:/Git-Repository/NIDS_KDD_NSL/二分类不同架构尝试",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.standard": "true",
     "node.js.detected.package.tslint": "true",
@@ -157,12 +144,16 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\Git-Repository\NIDS_KDD_NSL\二分类不同架构尝试" />
+      <recent name="E:\Git-Repository\NIDS_KDD_NSL\二分类不同架构尝试\data" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Git-Repository\NIDS_KDD_NSL\五分类不同架构尝试" />
       <recent name="E:\Git-Repository\NIDS_KDD_NSL\demo-data" />
       <recent name="E:\Git-Repository\NIDS_KDD_NSL" />
       <recent name="C:\Users\Patar\AppData\Roaming\JetBrains\PyCharm2024.1\scratches" />
       <recent name="E:\Git-Repository\NIDS_KDD_NSL\KDDCup99" />
-      <recent name="E:\Git-Repository\NIDS_KDD_NSL/KDDCup99" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -247,15 +238,7 @@
       <workItem from="1716577680707" duration="2754000" />
       <workItem from="1716893528249" duration="4390000" />
       <workItem from="1717039347865" duration="43000" />
-      <workItem from="1717039405298" duration="1817000" />
-    </task>
-    <task id="LOCAL-00046" summary="add some comment&#10;modified CNN_for_NIDS.py">
-      <option name="closed" value="true" />
-      <created>1714395013067</created>
-      <option name="number" value="00046" />
-      <option name="presentableId" value="LOCAL-00046" />
-      <option name="project" value="LOCAL" />
-      <updated>1714395013067</updated>
+      <workItem from="1717039405298" duration="5542000" />
     </task>
     <task id="LOCAL-00047" summary="添加 cuda.device 判定">
       <option name="closed" value="true" />
@@ -641,7 +624,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716488914586</updated>
     </task>
-    <option name="localTasksCounter" value="95" />
+    <task id="LOCAL-00095" summary="demo直接print">
+      <option name="closed" value="true" />
+      <created>1717056028526</created>
+      <option name="number" value="00095" />
+      <option name="presentableId" value="LOCAL-00095" />
+      <option name="project" value="LOCAL" />
+      <updated>1717056028527</updated>
+    </task>
+    <option name="localTasksCounter" value="96" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -711,7 +702,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="交换normal列和dos列,将normal列放到前面(123列)" />
     <MESSAGE value="完成模型搭建" />
     <MESSAGE value="reformated" />
     <MESSAGE value="delete todo" />
@@ -736,7 +726,8 @@
     <MESSAGE value="rename" />
     <MESSAGE value="搭建模型demo" />
     <MESSAGE value="模型训练的参数有问题，预测结果都是3" />
-    <option name="LAST_COMMIT_MESSAGE" value="模型训练的参数有问题，预测结果都是3" />
+    <MESSAGE value="demo直接print" />
+    <option name="LAST_COMMIT_MESSAGE" value="demo直接print" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$test_to_find_best_num_workers.coverage" NAME="test_to_find_best_num_workers 覆盖结果" MODIFIED="1715334028073" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -752,7 +743,7 @@
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01Data_preProcess.coverage" NAME="01Data_preProcess 覆盖结果" MODIFIED="1714894006315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$PyQt5_demo.coverage" NAME="PyQt5-demo 覆盖结果" MODIFIED="1716598653868" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_BiLSTM.coverage" NAME="CNN_BiLSTM 覆盖结果" MODIFIED="1715490324088" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/不同架构尝试" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$001.coverage" NAME="001 覆盖结果" MODIFIED="1715424923662" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/调参尝试" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$001.coverage" NAME="001 覆盖结果" MODIFIED="1717055816678" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/调参尝试" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$01matrix_Data_preProcess.coverage" NAME="01matrix_Data_preProcess 覆盖结果" MODIFIED="1714926874402" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$.coverage" NAME="贝叶斯调参 覆盖结果" MODIFIED="1715343756681" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$find_right_data.coverage" NAME="find-right-data 覆盖结果" MODIFIED="1716534241201" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -767,7 +758,7 @@
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$00KDDCpu99_Data_preProcess.coverage" NAME="00KDDCpu99_Data_preProcess 覆盖结果" MODIFIED="1714843618378" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$structure_CNN.coverage" NAME="structure_CNN 覆盖结果" MODIFIED="1714642884127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_for_NIDS.coverage" NAME="CNN_for_NIDS 覆盖结果" MODIFIED="1714103325177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_based_Resnet_GoogLe_v3.coverage" NAME="CNN_based_Resnet+GoogLe_v3 覆盖结果" MODIFIED="1717054743463" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/不同架构尝试" />
+    <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$CNN_based_Resnet_GoogLe_v3.coverage" NAME="CNN_based_Resnet+GoogLe_v3 覆盖结果" MODIFIED="1717055061669" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/不同架构尝试" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$optuna_dashboard_set_RDB_backen.coverage" NAME="optuna_dashboard-set-RDB_backen 覆盖结果" MODIFIED="1715448086945" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/调参尝试" />
     <SUITE FILE_PATH="coverage/NIDS_KDD_NSL$Data_encoding.coverage" NAME="Data_encoding 覆盖结果" MODIFIED="1712676493403" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/KDD_NSL" />
   </component>
